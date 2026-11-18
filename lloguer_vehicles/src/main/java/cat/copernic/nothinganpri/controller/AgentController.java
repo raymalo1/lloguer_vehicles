@@ -111,7 +111,7 @@ public class AgentController {
     public String listarClients(Model model) {
 
         List<ClientJpaEntity> clients = clientService.cercarFiltres(
-                null, null, null, null, null, null);
+                null, null, null, null, null, null, null);
 
         model.addAttribute(
                 "clients",
@@ -125,6 +125,7 @@ public class AgentController {
         model.addAttribute("cognoms", null);
         model.addAttribute("telefon", null);
         model.addAttribute("email", null);
+        model.addAttribute("poblacio", null);
 
         carregarSolicitudes(model);
 
@@ -143,6 +144,7 @@ public class AgentController {
      * @param cognoms apellidos por los que se desea filtrar
      * @param telefon teléfono por el que se desea filtrar
      * @param email correo electrónico por el que se desea filtrar
+     * @param poblacio población por la que se desea filtrar
      * @param model modelo donde se almacenarán los resultados
      * @return nombre de la vista del listado de clientes
      */
@@ -154,6 +156,7 @@ public class AgentController {
             @RequestParam(required = false) String cognoms,
             @RequestParam(required = false) String telefon,
             @RequestParam(required = false) String email,
+            @RequestParam(required = false) String poblacio,
             Model model) {
 
         List<ClientJpaEntity> clients = clientService.cercarFiltres(
@@ -162,7 +165,8 @@ public class AgentController {
                 dni,
                 cognoms,
                 telefon,
-                email);
+                email,
+                poblacio);
 
         model.addAttribute(
                 "clients",
@@ -176,6 +180,7 @@ public class AgentController {
         model.addAttribute("cognoms", cognoms);
         model.addAttribute("telefon", telefon);
         model.addAttribute("email", email);
+        model.addAttribute("poblacio", poblacio);
 
         carregarSolicitudes(model);
 

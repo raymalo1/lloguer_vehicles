@@ -42,7 +42,8 @@ public interface ClientRepository extends JpaRepository<ClientJpaEntity, Long> {
             "(:dni IS NULL OR LOWER(c.DNI) LIKE LOWER(CONCAT('%', :dni, '%'))) AND " +
             "(:cognoms IS NULL OR LOWER(c.cognoms) LIKE LOWER(CONCAT('%', :cognoms, '%'))) AND " +
             "(:telefon IS NULL OR LOWER(c.telefon) LIKE LOWER(CONCAT('%', :telefon, '%'))) AND " +
-            "(:email IS NULL OR LOWER(c.email) LIKE LOWER(CONCAT('%', :email, '%')))")
+            "(:email IS NULL OR LOWER(c.email) LIKE LOWER(CONCAT('%', :email, '%'))) AND " +
+            "(:poblacio IS NULL OR LOWER(c.poblacio) LIKE LOWER(CONCAT('%', :poblacio, '%')))")
     List<ClientJpaEntity> cercarClients(
             @Param("nacionalitat") String nacionalitat,
             @Param("provincia") String provincia,
@@ -50,6 +51,7 @@ public interface ClientRepository extends JpaRepository<ClientJpaEntity, Long> {
             @Param("cognoms") String cognoms,
             @Param("telefon") String telefon,
             @Param("email") String email,
+            @Param("poblacio") String poblacio,
             @Param("rol") String rol
     );
 }

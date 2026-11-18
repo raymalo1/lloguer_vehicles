@@ -285,6 +285,7 @@ public class UsuariService {
         client.setNacionalitat(registre.getNacionalitat());
         client.setAdreca(registre.getAdreca());
         client.setProvincia(registre.getProvincia());
+        client.setPoblacio(registre.getPoblacio());
 
         client.setPassword(
                 passwordEncoder.encode(registre.getPassword()));

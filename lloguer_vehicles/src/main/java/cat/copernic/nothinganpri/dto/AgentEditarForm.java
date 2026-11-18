@@ -45,6 +45,10 @@ public class AgentEditarForm {
     @Size(max = 150, message = "L'adreça no pot superar els 150 caràcters")
     private String adreca;
 
+    @NotBlank(message = "La població és obligatòria")
+    @Size(max = 100, message = "La població no pot superar els 100 caràcters")
+    private String poblacio;
+
     @NotBlank(message = "La província és obligatòria")
     @Size(max = 80, message = "La província no pot superar els 80 caràcters")
     @ProvinciaValida
@@ -213,4 +217,22 @@ public class AgentEditarForm {
    public void setPremium(boolean premium) {
        this.premium = premium;
    }
+
+    /**
+     * Obté la població.
+     *
+     * @return població
+     */
+    public String getPoblacio() {
+        return poblacio;
+    }
+
+    /**
+     * Estableix la població.
+     *
+     * @param poblacio població
+     */
+    public void setPoblacio(String poblacio) {
+        this.poblacio = net(poblacio);
+    }
 }

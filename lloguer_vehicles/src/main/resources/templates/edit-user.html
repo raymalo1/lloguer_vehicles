@@ -250,6 +250,17 @@
                         </div>
 
                         <div class="field">
+                            <label>Població <span class="required">*</span></label>
+                            <input type="text"
+                                   th:field="*{poblacio}"
+                                   class="input"
+                                   th:classappend="${#fields.hasErrors('poblacio')} ? ' input-error' : ''"/>
+                            <span th:if="${#fields.hasErrors('poblacio')}"
+                                  th:errors="*{poblacio}"
+                                  class="error-message"></span>
+                        </div>
+
+                        <div class="field">
                             <label>Província <span class="required">*</span></label>
                             <select th:field="*{provincia}"
                                     class="input"

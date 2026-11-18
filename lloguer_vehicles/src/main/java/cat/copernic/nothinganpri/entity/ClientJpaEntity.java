@@ -26,8 +26,8 @@ public class ClientJpaEntity extends UsuariJpaEntity {
     private String cdLLiconduir;
     private String numtarjetacredit;
     private String adreca;
-    private String nacionalitat;
     private String poblacio;
+    private String nacionalitat;
     private String fotoDniReverso;
 
     @Lob
@@ -314,6 +314,24 @@ public class ClientJpaEntity extends UsuariJpaEntity {
     }
 
     /**
+     * Obté la població.
+     *
+     * @return població del client
+     */
+    public String getPoblacio() {
+        return poblacio;
+    }
+
+    /**
+     * Estableix la població.
+     *
+     * @param poblacio població del client
+     */
+    public void setPoblacio(String poblacio) {
+        this.poblacio = poblacio;
+    }
+
+    /**
      * Obté la nacionalitat.
      *
      * @return nacionalitat
@@ -329,14 +347,6 @@ public class ClientJpaEntity extends UsuariJpaEntity {
      */
     public void setNacionalitat(String nacionalitat) {
         this.nacionalitat = nacionalitat;
-    }
-
-    public String getPoblacio() {
-        return poblacio;
-    }
-
-    public void setPoblacio(String poblacio) {
-        this.poblacio = poblacio;
     }
 
     /**

@@ -114,7 +114,7 @@ class ClientServiceTest {
                 "Garcia",
                 "600123456",
                 "joan@gmail.com",
-                "CLIENT"
+                null, "CLIENT"
         )).thenReturn(Arrays.asList(client));
 
         List<ClientJpaEntity> resultat = clientService.cercarFiltres(
@@ -123,7 +123,7 @@ class ClientServiceTest {
                 "12345678A",
                 "Garcia",
                 "600123456",
-                "joan@gmail.com"
+                "joan@gmail.com", null
         );
 
         assertEquals(1, resultat.size());
@@ -136,14 +136,14 @@ class ClientServiceTest {
                 "Garcia",
                 "600123456",
                 "joan@gmail.com",
-                "CLIENT"
+                null, "CLIENT"
         );
     }
 
     @Test
     void testCercarFiltresAmbValorsBuits() {
         when(clientRepository.cercarClients(
-                null, null, null, null, null, null, "CLIENT"
+                null, null, null, null, null, null, null, "CLIENT"
         )).thenReturn(Collections.emptyList());
 
         List<ClientJpaEntity> resultat = clientService.cercarFiltres(
@@ -152,13 +152,13 @@ class ClientServiceTest {
                 null,
                 "   ",
                 " ",
-                ""
+                "", null
         );
 
         assertTrue(resultat.isEmpty());
 
         verify(clientRepository).cercarClients(
-                null, null, null, null, null, null, "CLIENT"
+                null, null, null, null, null, null, null, "CLIENT"
         );
     }
 
@@ -171,7 +171,7 @@ class ClientServiceTest {
                 "Garcia",
                 "600123456",
                 "joan@gmail.com",
-                "CLIENT"
+                null, "CLIENT"
         )).thenReturn(Arrays.asList(client));
 
         clientService.cercarFiltres(
@@ -180,7 +180,7 @@ class ClientServiceTest {
                 " 12345678A ",
                 " Garcia ",
                 " 600123456 ",
-                " joan@gmail.com "
+                " joan@gmail.com ", null
         );
 
         verify(clientRepository).cercarClients(
@@ -190,42 +190,42 @@ class ClientServiceTest {
                 "Garcia",
                 "600123456",
                 "joan@gmail.com",
-                "CLIENT"
+                null, "CLIENT"
         );
     }
 
     @Test
     void testCercarFiltresAmbUnSolFiltre() {
         when(clientRepository.cercarClients(
-                null, "Barcelona", null, null, null, null, "CLIENT"
+                null, "Barcelona", null, null, null, null, null, "CLIENT"
         )).thenReturn(Arrays.asList(client));
 
         List<ClientJpaEntity> resultat = clientService.cercarFiltres(
-                null, "Barcelona", null, null, null, null
+                null, "Barcelona", null, null, null, null, null
         );
 
         assertEquals(1, resultat.size());
 
         verify(clientRepository).cercarClients(
-                null, "Barcelona", null, null, null, null, "CLIENT"
+                null, "Barcelona", null, null, null, null, null, "CLIENT"
         );
     }
 
     @Test
     void testCercarFiltresNomésEmail() {
         when(clientRepository.cercarClients(
-                null, null, null, null, null, "joan@gmail.com", "CLIENT"
+                null, null, null, null, null, "joan@gmail.com", null, "CLIENT"
         )).thenReturn(Arrays.asList(client));
 
         List<ClientJpaEntity> resultat = clientService.cercarFiltres(
-                null, null, null, null, null, "joan@gmail.com"
+                null, null, null, null, null, "joan@gmail.com", null
         );
 
         assertEquals(1, resultat.size());
         assertEquals(client, resultat.get(0));
 
         verify(clientRepository).cercarClients(
-                null, null, null, null, null, "joan@gmail.com", "CLIENT"
+                null, null, null, null, null, "joan@gmail.com", null, "CLIENT"
         );
     }
 

@@ -216,6 +216,7 @@ public class AdminClientController {
         form.setTelefon(client.getTelefon());
         form.setEmail(client.getEmail());
         form.setAdreca(client.getAdreca());
+        form.setPoblacio(client.getPoblacio());
         form.setNacionalitat(client.getNacionalitat());
         form.setProvincia(client.getProvincia());
         form.setPremium(client.isPremium());
@@ -318,6 +319,7 @@ public class AdminClientController {
             client.setTelefon(dades.getTelefon());
             client.setEmail(dades.getEmail());
             client.setAdreca(dades.getAdreca());
+            client.setPoblacio(dades.getPoblacio());
             client.setNacionalitat(dades.getNacionalitat());
             client.setProvincia(dades.getProvincia());
             client.setPremium(dades.isPremium());

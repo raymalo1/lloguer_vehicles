@@ -235,6 +235,22 @@
                                 </small>
                             </div>
 
+                            <div class="field">
+                                <label for="poblacio">Població *</label>
+
+                                <input class="input"
+                                       th:classappend="${#fields.hasErrors('poblacio')} ? 'input-error' : ''"
+                                       type="text"
+                                       id="poblacio"
+                                       th:field="*{poblacio}"
+                                       required>
+
+                                <small class="error"
+                                       th:if="${#fields.hasErrors('poblacio')}"
+                                       th:errors="*{poblacio}">
+                                </small>
+                            </div>
+
                         </div>
 <!-- PROVÍNCIA -->
 <div class="field">

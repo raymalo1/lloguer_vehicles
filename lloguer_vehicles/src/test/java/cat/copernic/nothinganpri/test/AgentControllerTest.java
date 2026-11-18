@@ -93,7 +93,7 @@ class AgentControllerTest {
     void testMostrarClients() throws Exception {
 
         when(clientService.cercarFiltres(
-                null, null, null, null, null, null
+                null, null, null, null, null, null, null
         )).thenReturn(List.of());
 
         when(solicitudService.obtenerPendientes())
@@ -110,7 +110,7 @@ class AgentControllerTest {
                 .andExpect(model().attributeExists("canvisPerSolicitud"));
 
         verify(clientService).cercarFiltres(
-                null, null, null, null, null, null
+                null, null, null, null, null, null, null
         );
 
         verify(solicitudService).obtenerPendientes();

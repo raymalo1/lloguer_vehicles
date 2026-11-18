@@ -30,6 +30,10 @@ public class RegistreForm {
     @NotBlank(message = "L'adreça és obligatòria")
     private String adreca;
 
+    @NotBlank(message = "La població és obligatòria")
+    @Size(max = 100, message = "La població no pot superar els 100 caràcters")
+    private String poblacio;
+
     @NotBlank(message = "La província és obligatòria")
     private String provincia;
 
@@ -203,5 +207,23 @@ public class RegistreForm {
      */
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    /**
+     * Obté la població.
+     *
+     * @return població
+     */
+    public String getPoblacio() {
+        return poblacio;
+    }
+
+    /**
+     * Estableix la població.
+     *
+     * @param poblacio població
+     */
+    public void setPoblacio(String poblacio) {
+        this.poblacio = poblacio;
     }
 }

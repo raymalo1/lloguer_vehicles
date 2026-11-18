@@ -95,6 +95,7 @@ public class ClientService {
      * @param cognoms      apellidos del cliente
      * @param telefon      teléfono del cliente
      * @param email        correo electrónico del cliente
+     * @param poblacio    población del cliente
      * @return lista de clientes que cumplen los filtros
      */
     public List<ClientJpaEntity> cercarFiltres(
@@ -103,7 +104,8 @@ public class ClientService {
             String dni,
             String cognoms,
             String telefon,
-            String email) {
+            String email,
+            String poblacio) {
 
         try {
             return clientRepository.cercarClients(
@@ -113,6 +115,7 @@ public class ClientService {
                     buitANull(cognoms),
                     buitANull(telefon),
                     buitANull(email),
+                    buitANull(poblacio),
                     "CLIENT");
 
         } catch (RuntimeException e) {
@@ -322,6 +325,7 @@ public class ClientService {
             client.setAdreca(datos.getAdreca());
             client.setNacionalitat(datos.getNacionalitat());
             client.setProvincia(datos.getProvincia());
+            client.setPoblacio(datos.getPoblacio());
             client.setPremium(datos.isPremium());
             
             if (fotoDni != null && !fotoDni.isEmpty()) {
