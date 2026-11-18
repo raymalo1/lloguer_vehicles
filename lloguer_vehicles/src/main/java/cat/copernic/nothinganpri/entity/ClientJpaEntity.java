@@ -49,7 +49,9 @@ public class ClientJpaEntity extends UsuariJpaEntity {
 
     @Column(name = "caducitat_targeta")
     private String caducitatTargeta;
-
+    
+    @Column(name = "premium", nullable = false)
+    private boolean premium = false;
     /**
      * Constructor per defecte necessari per JPA.
      */
@@ -462,4 +464,23 @@ public class ClientJpaEntity extends UsuariJpaEntity {
     public void setCaducitatTargeta(String caducitatTargeta) {
         this.caducitatTargeta = caducitatTargeta;
     }
+    /**
+    * Indica si el client té el mode premium activat.
+    *
+    * @return {@code true} si el mode premium està actiu
+    */
+   public boolean isPremium() {
+       return premium;
+   }
+
+   /**
+    * Activa o desactiva el mode premium del client.
+    * Amb premium, la fiança dels vehicles té un descompte del 25%.
+    *
+    * @param premium {@code true} per activar, {@code false} per desactivar
+    */
+   public void setPremium(boolean premium) {
+       this.premium = premium;
+   }
+  
 }

@@ -322,7 +322,8 @@ public class ClientService {
             client.setAdreca(datos.getAdreca());
             client.setNacionalitat(datos.getNacionalitat());
             client.setProvincia(datos.getProvincia());
-
+            client.setPremium(datos.isPremium());
+            
             if (fotoDni != null && !fotoDni.isEmpty()) {
                 validarImatge(fotoDni);
                 client.setFotoDniAnverso(fotoDni.getBytes());

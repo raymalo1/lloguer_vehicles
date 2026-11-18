@@ -1,6 +1,7 @@
 package cat.copernic.nothinganpri.controller;
 
 import cat.copernic.nothinganpri.dto.CreateReservaRequest;
+import cat.copernic.nothinganpri.entity.ClientJpaEntity;
 import cat.copernic.nothinganpri.entity.ReservaJpaEntity;
 import cat.copernic.nothinganpri.entity.UsuariJpaEntity;
 import cat.copernic.nothinganpri.entity.VehicleJpaEntity;
@@ -252,7 +253,10 @@ public class ReservaController {
 
         dto.setSubtotal(null);
         dto.setFianca(null);
+        dto.setFiancaOriginal(null);
+        dto.setDescomptePremium(false);
         dto.setTotal(null);
+        dto.setTotalSenseDescompte(null);
 
         if (dto.getDataInici() == null || dto.getDataFi() == null) {
             throw new Exception("Introdueix les dates d'inici i final per calcular el preu.");
@@ -285,26 +289,40 @@ public class ReservaController {
         }
 
         double preuHora = 2.0;
-        double fianca = 150.0;
+        double fiancaOriginal = 150.0;
 
         if (dto.getVehicleId() != null) {
             VehicleJpaEntity v = vehicleRepository.findById(dto.getVehicleId()).orElse(null);
 
             if (v != null) {
                 if (v.getPreuHora() != null) {
-                    // preuHora ja és el preu per hora: no cal dividir
                     preuHora = v.getPreuHora().doubleValue();
                 }
                 if (v.getFiancaEstandard() != null) {
-                    fianca = v.getFiancaEstandard().doubleValue();
+                    fiancaOriginal = v.getFiancaEstandard().doubleValue();
                 }
+            }
+        }
+
+        double fianca = fiancaOriginal;
+        boolean descomptePremium = false;
+
+        // Mode premium: 25% de descompte a la fiança
+        if (dto.getClientId() != null) {
+            UsuariJpaEntity u = usuariRepository.findById(dto.getClientId()).orElse(null);
+            if (u instanceof ClientJpaEntity client && client.isPremium()) {
+                fianca = fiancaOriginal * 0.75;
+                descomptePremium = true;
             }
         }
 
         double subtotal = hores * preuHora;
 
         dto.setSubtotal(subtotal);
+        dto.setFiancaOriginal(fiancaOriginal);
         dto.setFianca(fianca);
+        dto.setDescomptePremium(descomptePremium);
+        dto.setTotalSenseDescompte(subtotal + fiancaOriginal);
         dto.setTotal(subtotal + fianca);
 
         return hores;
@@ -712,7 +730,7 @@ public class ReservaController {
     }
 
     // ---------- ENDPOINTS FOTOS ----------
-     @GetMapping("/entrega/{id}/foto/{num}")
+    @GetMapping("/entrega/{id}/foto/{num}")
     public ResponseEntity<byte[]> fotoLliurament(@PathVariable Long id,
                                                   @PathVariable int num) {
         return reservaRepository.findById(id)

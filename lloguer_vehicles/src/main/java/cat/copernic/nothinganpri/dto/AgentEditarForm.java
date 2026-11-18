@@ -53,6 +53,11 @@ public class AgentEditarForm {
     @NotBlank(message = "La nacionalitat és obligatòria")
     @Size(max = 50, message = "La nacionalitat no pot superar els 50 caràcters")
     private String nacionalitat;
+    
+    /**
+    * Mode premium del client: aplica un 25% de descompte a la fiança dels vehicles.
+    */
+   private boolean premium;
 
     // UTILIDAD
 
@@ -191,4 +196,21 @@ public class AgentEditarForm {
     public void setNacionalitat(String nacionalitat) {
         this.nacionalitat = net(nacionalitat);
     }
+    /**
+    * Indica si el mode premium està activat.
+    *
+    * @return {@code true} si el mode premium està actiu
+    */
+   public boolean isPremium() {
+       return premium;
+   }
+
+   /**
+    * Activa o desactiva el mode premium.
+    *
+    * @param premium {@code true} per activar, {@code false} per desactivar
+    */
+   public void setPremium(boolean premium) {
+       this.premium = premium;
+   }
 }

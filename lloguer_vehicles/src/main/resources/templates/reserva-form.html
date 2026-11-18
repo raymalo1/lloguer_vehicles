@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ca" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
@@ -9,12 +8,6 @@
     <title th:text="${esClient} ? 'Nova reserva · Nothingan Pri S.A.' : 'Nova reserva des de l\'oficina · Nothingan Pri S.A.'">Nova reserva · Nothingan Pri S.A.</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
-
-<!--
-   Una sola plantilla amb dues vistes segons el rol:
-     - CLIENT: veu el seu nom i el vehicle triat al catàleg.
-     - AGENT / ADMIN: tria el client, el vehicle i les dates.
--->
 
 <body>
 <div th:replace="~{fragments/office :: topbar}"></div>
@@ -120,7 +113,6 @@
                                style="width: 100%; padding: 10px; border: 1px solid #1a202c; border-radius: 4px;"/>
                     </div>
 
-                    <!-- NOU CAMP: HORA DE RECOLLIDA -->
                     <div class="field mt" style="margin-top: 15px;">
                         <label for="horaInici">Hora de recollida <span class="req">*</span></label>
                         <input type="time" id="horaInici" class="input"
@@ -147,7 +139,6 @@
                                style="width: 100%; padding: 10px; border: 1px solid #1a202c; border-radius: 4px;"/>
                     </div>
 
-                    <!-- CHECKBOX DOCUMENTACIÓN (antes de Calcular preu, solo para CLIENT) -->
                     <div class="field mt" style="margin-top: 15px;" th:if="${esClient}">
                         <label class="checkbox-label">
                             <input type="checkbox" id="acceptaDocumentacio" name="acceptaDocumentacio" th:field="*{acceptaDocumentacio}" required>
@@ -155,7 +146,6 @@
                         </label>
                     </div>
 
-                    <!-- AGENT / ADMIN: tria el vehicle -->
                     <div class="field mt" style="margin-top: 15px;" th:unless="${esClient}">
                         <label for="vehicleId">Vehicle disponible <span class="req">*</span></label>
                         <select id="vehicleId" class="select" th:field="*{vehicleId}" required style="width: 100%; padding: 10px; border: 1px solid #1a202c; border-radius: 4px;">
@@ -177,13 +167,40 @@
                             <dt>Subtotal</dt>
                             <dd class="right" th:text="${reservaDto.subtotal != null ? #numbers.formatDecimal(reservaDto.subtotal, 1, 2) + ' €' : 'Pendent'}">Pendent</dd>
 
-                            <dt>Fiança</dt>
-                            <dd class="right" th:text="${reservaDto.fianca != null ? #numbers.formatDecimal(reservaDto.fianca, 1, 2) + ' €' : 'Pendent'}">Pendent</dd>
+                            <!-- Sense premium -->
+                            <th:block th:if="${reservaDto.descomptePremium == null or !reservaDto.descomptePremium}">
+                                <dt>Fiança</dt>
+                                <dd class="right" th:text="${reservaDto.fianca != null ? #numbers.formatDecimal(reservaDto.fianca, 1, 2) + ' €' : 'Pendent'}">Pendent</dd>
+                            </th:block>
+
+                            <!-- Amb premium: abans i després -->
+                            <th:block th:if="${reservaDto.descomptePremium}">
+                                <dt style="grid-column: 1 / -1; color: #18794e; font-weight: 600; margin-top: 4px;">
+                                    ✓ Mode premium · 25% de descompte a la fiança
+                                </dt>
+
+                                <dt>Fiança original</dt>
+                                <dd class="right" style="text-decoration: line-through; color: #888;"
+                                    th:text="${reservaDto.fiancaOriginal != null ? #numbers.formatDecimal(reservaDto.fiancaOriginal, 1, 2) + ' €' : 'Pendent'}">Pendent</dd>
+
+                                <dt>Fiança amb descompte</dt>
+                                <dd class="right" style="color: #18794e; font-weight: 700;"
+                                    th:text="${reservaDto.fianca != null ? #numbers.formatDecimal(reservaDto.fianca, 1, 2) + ' €' : 'Pendent'}">Pendent</dd>
+                            </th:block>
                         </dl>
+
+                        <!-- Total sense descompte (només si premium) -->
+                        <div th:if="${reservaDto.descomptePremium}"
+                             style="display: flex; justify-content: space-between; color: #888; margin-bottom: 6px;">
+                            <span>Total sense descompte</span>
+                            <span style="text-decoration: line-through;"
+                                  th:text="${reservaDto.totalSenseDescompte != null ? #numbers.formatDecimal(reservaDto.totalSenseDescompte, 1, 2) + ' €' : '-- €'}">-- €</span>
+                        </div>
 
                         <div class="total" style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.2em; border-top: 2px solid #eee; padding-top: 10px;">
                             <span>Total</span>
-                            <span th:text="${reservaDto.total != null ? #numbers.formatDecimal(reservaDto.total, 1, 2) + ' €' : '-- €'}">-- €</span>
+                            <span th:style="${reservaDto.descomptePremium} ? 'color: #18794e;' : ''"
+                                  th:text="${reservaDto.total != null ? #numbers.formatDecimal(reservaDto.total, 1, 2) + ' €' : '-- €'}">-- €</span>
                         </div>
                     </div>
 
@@ -205,11 +222,9 @@
                 </div>
             </div>
 
-            <!-- Camp ocult per conservar el total -->
             <input type="hidden" th:field="*{total}" />
         </form>
 
-        <!-- Si el client canvia dates o hora, cal tornar a calcular el preu -->
         <script th:if="${esClient}">
             (function () {
                 var btn = document.getElementById('btn-confirmar');

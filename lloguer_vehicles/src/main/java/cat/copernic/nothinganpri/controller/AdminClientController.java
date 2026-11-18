@@ -148,6 +148,7 @@ public class AdminClientController {
         model.addAttribute("dni", client.getDNI());
         model.addAttribute("client", form);
         model.addAttribute("documentacioForm", documentacioForm);
+        model.addAttribute("premium", client.isPremium());
 
         model.addAttribute(
                 "provincias",
@@ -217,6 +218,7 @@ public class AdminClientController {
         form.setAdreca(client.getAdreca());
         form.setNacionalitat(client.getNacionalitat());
         form.setProvincia(client.getProvincia());
+        form.setPremium(client.isPremium());
 
         return form;
     }
@@ -318,6 +320,7 @@ public class AdminClientController {
             client.setAdreca(dades.getAdreca());
             client.setNacionalitat(dades.getNacionalitat());
             client.setProvincia(dades.getProvincia());
+            client.setPremium(dades.isPremium());
 
             clientService.actualizarClientAdmin(
                     dni,

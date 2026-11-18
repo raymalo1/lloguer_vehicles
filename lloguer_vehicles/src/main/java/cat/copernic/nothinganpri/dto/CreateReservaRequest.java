@@ -60,6 +60,15 @@ public class CreateReservaRequest {
     /** Importe total (subtotal + fianza). */
     private Double total;
 
+    /** Fianza original sin descuento (antes del 25% premium). */
+    private Double fiancaOriginal;
+
+    /** true si se ha aplicado el descuento premium del 25% a la fianza. */
+    private Boolean descomptePremium;
+
+
+    /** Total sin descuento (subtotal + fianza original). */
+    private Double totalSenseDescompte;
     /**
      * Obtiene la fecha de inicio de la reserva.
      *
@@ -200,7 +209,62 @@ public class CreateReservaRequest {
      *
      * @param total total
      */
+    
     public void setTotal(Double total) {
         this.total = total;
+    }
+    
+     /**
+     * Obtiene la fianza original sin descuento.
+     *
+     * @return fianza original, o {@code null} si aún no se ha calculado
+     */
+    public Double getFiancaOriginal() {
+        return fiancaOriginal;
+    }
+
+    /**
+     * Establece la fianza original sin descuento.
+     *
+     * @param fiancaOriginal fianza estándar del vehículo antes del descuento premium
+     */
+    public void setFiancaOriginal(Double fiancaOriginal) {
+        this.fiancaOriginal = fiancaOriginal;
+    }
+
+    /**
+     * Indica si se ha aplicado el descuento premium a la fianza.
+     *
+     * @return {@code true} si el cliente es premium y se aplicó el 25% de descuento
+     */
+    public Boolean getDescomptePremium() {
+        return descomptePremium;
+    }
+
+    /**
+     * Marca si se ha aplicado el descuento premium.
+     *
+     * @param descomptePremium {@code true} si se aplicó el descuento; {@code false} en caso contrario
+     */
+    public void setDescomptePremium(Boolean descomptePremium) {
+        this.descomptePremium = descomptePremium;
+    }
+
+    /**
+     * Obtiene el total sin descuento (subtotal + fianza original).
+     *
+     * @return total sin descuento, o {@code null} si aún no se ha calculado
+     */
+    public Double getTotalSenseDescompte() {
+        return totalSenseDescompte;
+    }
+
+    /**
+     * Establece el total sin descuento.
+     *
+     * @param totalSenseDescompte subtotal más la fianza original
+     */
+    public void setTotalSenseDescompte(Double totalSenseDescompte) {
+        this.totalSenseDescompte = totalSenseDescompte;
     }
 }

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ca" xmlns:th="http://www.thymeleaf.org">
 
@@ -50,18 +49,17 @@
                 <a th:href="@{/perfil/seguretat}" class="tab">Seguretat</a>
             </nav>
 
-            <!-- Missatges de confirmació i error -->
-<div th:if="${mensaje != null}"
-     class="mensaje-exito"
-     role="alert"
-     th:text="${mensaje}">
-</div>
+            <div th:if="${mensaje != null}"
+                 class="mensaje-exito"
+                 role="alert"
+                 th:text="${mensaje}">
+            </div>
 
-<div th:if="${error != null}"
-     class="mensaje-error"
-     role="alert"
-     th:text="${error}">
-</div>
+            <div th:if="${error != null}"
+                 class="mensaje-error"
+                 role="alert"
+                 th:text="${error}">
+            </div>
 
             <div class="split">
 
@@ -119,6 +117,24 @@
                             <input type="text" id="nacionalitat" class="input"
                                    th:value="${client.nacionalitat}"
                                    readonly>
+                        </div>
+
+                        <!-- Tipus de compte: Normal / Premium -->
+                        <div class="field">
+                            <label>Tipus de compte</label>
+                            <div style="padding: 10px 0;">
+                                <span th:if="${client.premium}"
+                                      style="background:#e9f8f0; color:#18794e; padding:5px 12px; border-radius:8px; font-weight:700;">
+                                    Premium
+                                </span>
+                                <span th:unless="${client.premium}"
+                                      style="background:#f1f2f7; color:#5d6378; padding:5px 12px; border-radius:8px; font-weight:700;">
+                                    Normal
+                                </span>
+                            </div>
+                            <p th:if="${client.premium}" class="muted" style="color:#18794e; margin-top:6px;">
+                                Tens un 25% de descompte a la fiança dels vehicles.
+                            </p>
                         </div>
 
                     </div>
@@ -224,12 +240,12 @@
 
                         <h3>Documents d'identificació</h3>
                         <div th:if="${mensaje != null
-      and #strings.contains(mensaje, 'validarà els canvis')}"
-     class="mensaje-exito"
-     role="alert">
-    ✓ La teva sol·licitud de documentació s'ha enviat correctament.
-    Un agent revisarà els canvis abans d'actualitzar els documents.
-</div>
+                              and #strings.contains(mensaje, 'validarà els canvis')}"
+                             class="mensaje-exito"
+                             role="alert">
+                            ✓ La teva sol·licitud de documentació s'ha enviat correctament.
+                            Un agent revisarà els canvis abans d'actualitzar els documents.
+                        </div>
 
                         <p class="muted mb">
                             Estat i informació dels documents:
@@ -252,7 +268,7 @@
                                 Documentació pendent
                             </span>
                         </div>
-                        <!-- Missatges de confirmació i error -->
+
                         <div th:if="${mensaje != null}"
                              class="mensaje-exito"
                              role="alert"
@@ -368,7 +384,6 @@
                         </p>
 
                     </article>
-
 
                 </aside>
 
