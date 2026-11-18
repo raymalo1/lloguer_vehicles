@@ -1,19 +1,45 @@
-# Lloguer de vehicles Prisitia
+# 🏢 Nothingan Pri S.A. — Sistema de Gestión Empresarial
 
-Aplicació web que fa de **ERP i CRM** per a una empresa de reserva de vehicles. Es tracta d'un producte mínim viable (PMV) que centralitza en un sol lloc la gestió de clients, vehicles i reserves, i substitueix el paper i les trucades per un sistema on tot queda registrat.
+<p align="center">
+  <img src="banner.jpeg" alt="Nothingan Pri S.A. Banner" width="100%">
+</p>
 
-## Què permet fer
+Aplicación web empresarial desarrollada con **Java y Spring Boot** siguiendo el patrón **MVC (Modelo-Vista-Controlador)**. Diseñada para la gestión interna, control de acceso basado en roles y administración de operaciones corporativas.
 
-- **Els clients** es registren a la web, esperen que un administrador validi el seu registre i, un cop aprovats, consulten els vehicles disponibles per unes dates i fan la reserva. El vehicle queda bloquejat per aquell període i el client rep un codi de reserva.
-- **Els agents** gestionen clients, vehicles i reserves. Quan arriba el client, lliuren el vehicle i en documenten l'estat amb fotografies; quan el retorna, comproven si hi ha desperfectes i decideixen si es reté la fiança.
-- **L'administrador** té accés total, valida els registres de nous clients, gestiona els agents i consulta els informes de reserves per client.
+---
 
-## Com funciona
+## 🛠️ Stack Tecnológico
 
-L'aplicació és accessible des d'un navegador, pot ser utilitzada per diversos usuaris alhora i guarda les dades en dues bases de dades: una de relacional (**MySQL**) per a la informació estructurada, i una de no relacional (**MongoDB**) per a l'històric de reserves.
+![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white)
+![Spring Security](https://img.shields.io/badge/Spring_Security-6DB33F?style=for-the-badge&logo=spring-security&logoColor=white)
+![Thymeleaf](https://img.shields.io/badge/Thymeleaf-005F0F?style=for-the-badge&logo=thymeleaf&logoColor=white)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+![Maven](https://img.shields.io/badge/Apache_Maven-C71A36?style=for-the-badge&logo=apache-maven&logoColor=white)
 
+---
 
+## ✨ Características Principales
 
-## Context
+- **🔐 Autenticación y Control de Roles:** Gestión segura de usuarios con permisos diferenciados (Administrador, Usuario estándar, etc.) y protección de rutas mediante **Spring Security**.
+- **🎨 Sistema de Diseño Propio:** Interfaz web responsiva y modular construida con **Thymeleaf** y hojas de estilo personalizadas (`styles.css`).
+- **🗄️ Persistencia de Datos:** Conexión e integración con base de datos relacional (**MySQL / MariaDB**) utilizando **Spring Data JPA / JDBC**.
+- **📐 Arquitectura Limpia:** Separación clara entre controladores, servicios, repositorios y entidades para facilitar el mantenimiento y la escalabilidad.
 
-Projecte de 2DAM (matí) de l'Institut Nicolau Copèrnic, curs 2026-27.
+---
+
+## 📁 Estructura del Proyecto
+
+```text
+nothinganprisa/
+├── src/
+│   └── main/
+│       ├── java/            # Controladores, Entidades, Repositorios y Servicios
+│       └── resources/
+│           ├── static/      # Archivos estáticos (CSS, JS, imágenes)
+│           │   └── css/styles.css
+│           ├── templates/   # Vistas dinámicas HTML con Thymeleaf
+│           └── application.properties
+└── pom.xml                  # Dependencias y configuración de Maven
