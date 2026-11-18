@@ -1,0 +1,571 @@
+
+<!DOCTYPE html>
+<html lang="ca" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#1e2a5e">
+
+    <title>Registrar agent · Nothingan Pri S.A.</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f5f6fa;
+            color: #263247;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 45px auto;
+            padding: 0 25px;
+        }
+
+        .breadcrumb {
+            color: #8993a3;
+            font-size: 13px;
+            margin-bottom: 18px;
+        }
+
+        .breadcrumb a {
+            color: #526174;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: #294caa;
+            text-decoration: underline;
+        }
+
+        .page-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            gap: 15px;
+        }
+
+        .page-heading h1 {
+            font-size: 26px;
+            color: #1e2a5e;
+            margin-bottom: 6px;
+        }
+
+        .page-heading p {
+            color: #8993a3;
+            font-size: 13px;
+        }
+
+        .back-button {
+            background: white;
+            color: #526174;
+            border: 1px solid #e0e5ed;
+            border-radius: 8px;
+            padding: 11px 16px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .back-button:hover {
+            background: #f0f3fa;
+        }
+
+        .form-card {
+            background: white;
+            border: 1px solid #e9edf3;
+            border-radius: 13px;
+            box-shadow: 0 4px 18px rgba(25, 42, 85, .07);
+        }
+
+        .form-card-header {
+            padding: 23px 28px;
+            border-bottom: 1px solid #edf0f5;
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .form-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            background: #e9efff;
+            color: #294caa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 21px;
+        }
+
+        .form-card-header h2 {
+            font-size: 16px;
+            color: #1e2a5e;
+            margin-bottom: 4px;
+        }
+
+        .form-card-header p {
+            font-size: 12px;
+            color: #8993a3;
+        }
+
+        .form-content {
+            padding: 28px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #294caa;
+            margin-bottom: 18px;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 19px 25px;
+            margin-bottom: 30px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .field.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 12px;
+            font-weight: 650;
+            color: #46546a;
+        }
+
+        .required {
+            color: #df5151;
+        }
+
+        .input {
+            height: 42px;
+            width: 100%;
+            border: 1px solid #dfe4ec;
+            border-radius: 7px;
+            padding: 0 12px;
+            font-family: inherit;
+            font-size: 13px;
+            color: #263247;
+            background: white;
+            outline: none;
+            transition: .2s;
+        }
+
+        .input:focus {
+            border-color: #4264cf;
+            box-shadow: 0 0 0 3px rgba(66, 100, 207, .09);
+        }
+
+        .input::placeholder {
+            color: #a5adba;
+        }
+
+        .hint {
+            font-size: 11px;
+            color: #929bab;
+        }
+
+        .error-message {
+            background: #fff1f0;
+            border: 1px solid #ffd0ca;
+            color: #b42318;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-bottom: 23px;
+            font-size: 13px;
+        }
+
+        .field-error {
+            color: #b42318;
+            font-size: 11px;
+            margin-top: 2px;
+        }
+
+        .input-error {
+            border-color: #df5151 !important;
+            background: #fffafa;
+        }
+
+        .input-error:focus {
+            border-color: #df5151 !important;
+            box-shadow: 0 0 0 3px rgba(223, 81, 81, .09);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 12px;
+            padding-top: 22px;
+            border-top: 1px solid #edf0f5;
+        }
+
+        .btn {
+            height: 41px;
+            padding: 0 19px;
+            border-radius: 7px;
+            border: none;
+            font-size: 13px;
+            font-weight: 650;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-cancel {
+            background: #f0f2f6;
+            color: #526174;
+        }
+
+        .btn-cancel:hover {
+            background: #e4e8ef;
+        }
+
+        .btn-submit {
+            background: #294caa;
+            color: white;
+        }
+
+        .btn-submit:hover {
+            background: #1e2a5e;
+        }
+
+        .footer-note {
+            margin-right: auto;
+            align-self: center;
+            color: #929bab;
+            font-size: 11px;
+        }
+
+        @media(max-width: 700px) {
+            .container {
+                margin: 22px auto;
+                padding: 0 13px;
+            }
+
+            .page-heading {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .form-content {
+                padding: 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .field.full {
+                grid-column: auto;
+            }
+
+            .form-actions {
+                flex-wrap: wrap;
+            }
+
+            .footer-note {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="container">
+
+        <div class="breadcrumb">
+            <a th:href="@{/admin/agents}">Administració</a>
+            /
+            <a th:href="@{/admin/agents}">Agents</a>
+            /
+            Registrar agent
+        </div>
+
+        <div class="page-heading">
+            <div>
+                <h1>Registrar agent</h1>
+                <p>Crea un nou compte i incorpora un agent a la plataforma.</p>
+            </div>
+
+            <a th:href="@{/admin/agents}" class="back-button">
+                ← Tornar al llistat
+            </a>
+        </div>
+
+        <section class="form-card">
+
+            <div class="form-card-header">
+                <div class="form-icon">👤</div>
+                <div>
+                    <h2>Informació de l'agent</h2>
+                    <p>Completa les dades per registrar el nou agent.</p>
+                </div>
+            </div>
+
+            <div class="form-content">
+
+                <form th:action="@{/admin/agents/guardar}"
+                      th:object="${agent}"
+                      method="post">
+
+                    <input type="hidden"
+                           th:name="${_csrf.parameterName}"
+                           th:value="${_csrf.token}">
+
+                    <div th:if="${error != null}"
+                         class="error-message"
+                         th:text="${error}">
+                    </div>
+
+                    <h3 class="section-title">Dades personals</h3>
+
+                    <div class="form-grid">
+
+                        <div class="field">
+                            <label for="DNI">
+                                DNI <span class="required">*</span>
+                            </label>
+
+                            <input class="input"
+                                   th:classappend="${#fields.hasErrors('DNI')} ? ' input-error' : ''"
+                                   type="text"
+                                   id="DNI"
+                                   th:field="*{DNI}"
+                                   placeholder="12345678Z"
+                                   maxlength="9"
+                                   autocomplete="off"
+                                   required>
+
+                            <div class="field-error"
+                                 th:if="${#fields.hasErrors('DNI')}"
+                                 th:errors="*{DNI}">
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label for="telefon">
+                                Telèfon <span class="required">*</span>
+                            </label>
+
+                            <input class="input"
+                                   th:classappend="${#fields.hasErrors('telefon')} ? ' input-error' : ''"
+                                   type="tel"
+                                   id="telefon"
+                                   th:field="*{telefon}"
+                                   placeholder="612345678"
+                                   maxlength="9"
+                                   required>
+
+                            <div class="field-error"
+                                 th:if="${#fields.hasErrors('telefon')}"
+                                 th:errors="*{telefon}">
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label for="nom">
+                                Nom <span class="required">*</span>
+                            </label>
+
+                            <input class="input"
+                                   th:classappend="${#fields.hasErrors('nom')} ? ' input-error' : ''"
+                                   type="text"
+                                   id="nom"
+                                   th:field="*{nom}"
+                                   placeholder="Nom"
+                                   required>
+
+                            <div class="field-error"
+                                 th:if="${#fields.hasErrors('nom')}"
+                                 th:errors="*{nom}">
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label for="cognoms">
+                                Cognoms <span class="required">*</span>
+                            </label>
+
+                            <input class="input"
+                                   th:classappend="${#fields.hasErrors('cognoms')} ? ' input-error' : ''"
+                                   type="text"
+                                   id="cognoms"
+                                   th:field="*{cognoms}"
+                                   placeholder="Cognoms"
+                                   required>
+
+                            <div class="field-error"
+                                 th:if="${#fields.hasErrors('cognoms')}"
+                                 th:errors="*{cognoms}">
+                            </div>
+                        </div>
+
+                        <div class="field full">
+                            <label for="provincia">
+                                Província <span class="required">*</span>
+                            </label>
+
+                            <select class="input"
+                                    th:classappend="${#fields.hasErrors('provincia')} ? ' input-error' : ''"
+                                    id="provincia"
+                                    th:field="*{provincia}"
+                                    required>
+
+                                <option value="">Selecciona una província</option>
+
+                                <option th:each="provincia : ${provincies}"
+                                        th:value="${provincia}"
+                                        th:text="${provincia}">
+                                </option>
+                            </select>
+
+                            <div class="field-error"
+                                 th:if="${#fields.hasErrors('provincia')}"
+                                 th:errors="*{provincia}">
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <h3 class="section-title">Dades del compte</h3>
+
+                    <div class="form-grid">
+
+                        <div class="field full">
+                            <label for="email">
+                                Correu electrònic <span class="required">*</span>
+                            </label>
+
+                            <input class="input"
+                                   th:classappend="${#fields.hasErrors('email')} ? ' input-error' : ''"
+                                   type="email"
+                                   id="email"
+                                   th:field="*{email}"
+                                   placeholder="agent@empresa.com"
+                                   required>
+
+                            <div class="field-error"
+                                 th:if="${#fields.hasErrors('email')}"
+                                 th:errors="*{email}">
+                            </div>
+                        </div>
+
+                        <div class="field full">
+                            <label for="password">
+                                Contrasenya <span class="required">*</span>
+                            </label>
+
+                            <input class="input"
+                                   th:classappend="${#fields.hasErrors('password')} ? ' input-error' : ''"
+                                   type="password"
+                                   id="password"
+                                   th:field="*{password}"
+                                   placeholder="Introdueix una contrasenya"
+                                   autocomplete="new-password"
+                                   required>
+
+                            <div class="field-error"
+                                 th:if="${#fields.hasErrors('password')}"
+                                 th:errors="*{password}">
+                            </div>
+
+                            <span class="hint">
+                                La contrasenya ha de tenir almenys 8 caràcters.
+                                Es guardarà de manera segura.
+                            </span>
+                        </div>
+
+                        <div class="field full">
+                            <label for="rol">
+                                Tipus de compte <span class="required">*</span>
+                            </label>
+
+                            <select class="input"
+                                    th:classappend="${#fields.hasErrors('rol')} ? ' input-error' : ''"
+                                    id="rol"
+                                    th:field="*{rol}"
+                                    required>
+
+                                <option value="">Selecciona un tipus de compte</option>
+                                <option value="AGENT">Agent</option>
+                                <option value="ADMINISTRADOR">Administrador</option>
+
+                            </select>
+
+                            <div class="field-error"
+                                 th:if="${#fields.hasErrors('rol')}"
+                                 th:errors="*{rol}">
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label for="dataContracte">
+                                Data de contractació
+                                <span class="required">*</span>
+                            </label>
+
+                            <input class="input"
+                                   th:classappend="${#fields.hasErrors('dataContracte')} ? ' input-error' : ''"
+                                   type="date"
+                                   id="dataContracte"
+                                   th:field="*{dataContracte}"
+                                   required>
+
+                            <div class="field-error"
+                                 th:if="${#fields.hasErrors('dataContracte')}"
+                                 th:errors="*{dataContracte}">
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="form-actions">
+
+                        <span class="footer-note">
+                            * Camps obligatoris
+                        </span>
+
+                        <a th:href="@{/admin/agents}" class="btn btn-cancel">
+                            Cancel·lar
+                        </a>
+
+                        <button type="submit" class="btn btn-submit">
+                            + Crear compte
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+        </section>
+
+    </main>
+
+</body>
+</html>

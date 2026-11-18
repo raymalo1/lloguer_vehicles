@@ -1,0 +1,494 @@
+
+<!DOCTYPE html>
+<html lang="ca" xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="theme-color" content="#1e2a5e">
+
+        <title>Registre de client · Nothingan Pri S.A.</title>
+
+        <link rel="stylesheet" th:href="@{/css/styles.css}">
+    </head>
+
+    <body>
+
+        <header class="topbar">
+            <div class="topbar-inner">
+
+                <a class="brand" th:href="@{/}">
+                    <span class="brand-mark">N</span>
+                    <span>Nothingan Pri S.A.</span>
+                </a>
+
+                <nav class="nav">
+                    <a th:href="@{/login}">Inicia sessió</a>
+                    <a class="active" th:href="@{/registre}">Registra't</a>
+                </nav>
+
+            </div>
+        </header>
+
+        <main class="container">
+            <div class="center-col">
+
+                <section class="card wide">
+
+                    <!-- PASSOS DEL REGISTRE -->
+                    <div class="steps">
+                        <span class="step active">1. Dades personals</span>
+                        <span class="step">2. Documentació</span>
+                        <span class="step">3. Revisió</span>
+                    </div>
+
+                    <h1>Crea el teu compte</h1>
+
+                    <p class="muted">
+                        Introdueix les teves dades per registrar-te com a client.
+                    </p>
+
+                    <!-- FORMULARI DE REGISTRE -->
+                    <form th:action="@{/registre}"
+                          th:object="${registre}"
+                          method="post"
+                          onsubmit="return comprovarContrasenyes()">
+
+                        <!-- PROTECCIÓ CSRF -->
+                        <input type="hidden"
+                               th:name="${_csrf.parameterName}"
+                               th:value="${_csrf.token}">
+
+                        <!-- RESUM D'ERRORS DEL SERVIDOR -->
+                        <div th:if="${error != null or #fields.hasErrors()}"
+                             class="error-summary"
+                             role="alert">
+
+                            <h3>
+                                <span aria-hidden="true">⚠️</span>
+                                Hi ha alguns errors al formulari
+                            </h3>
+
+                            <p th:if="${error != null}" th:text="${error}"></p>
+
+                            <ul th:if="${#fields.hasErrors()}">
+                                <li th:each="err : ${#fields.allErrors()}"
+                                    th:text="${err}">
+                                </li>
+                            </ul>
+
+                            <p>Revisa els camps indicats abans de continuar.</p>
+                        </div>
+
+                        <!-- NOM I COGNOMS -->
+                        <div class="row-2">
+
+                            <div class="field">
+                                <label for="nom">Nom *</label>
+
+                                <input class="input"
+                                       th:classappend="${#fields.hasErrors('nom')} ? 'input-error' : ''"
+                                       type="text"
+                                       id="nom"
+                                       th:field="*{nom}"
+                                       autocomplete="given-name"
+                                       required>
+
+                                <small class="error"
+                                       th:if="${#fields.hasErrors('nom')}"
+                                       th:errors="*{nom}">
+                                </small>
+                            </div>
+
+                            <div class="field">
+                                <label for="cognoms">Cognoms *</label>
+
+                                <input class="input"
+                                       th:classappend="${#fields.hasErrors('cognoms')} ? 'input-error' : ''"
+                                       type="text"
+                                       id="cognoms"
+                                       th:field="*{cognoms}"
+                                       autocomplete="family-name"
+                                       required>
+
+                                <small class="error"
+                                       th:if="${#fields.hasErrors('cognoms')}"
+                                       th:errors="*{cognoms}">
+                                </small>
+                            </div>
+
+                        </div>
+
+                        <!-- CORREU I TELÈFON -->
+                        <div class="row-2">
+
+                            <div class="field">
+                                <label for="email">Correu electrònic *</label>
+
+                                <input class="input"
+                                       th:classappend="${#fields.hasErrors('email')} ? 'input-error' : ''"
+                                       type="email"
+                                       id="email"
+                                       th:field="*{email}"
+                                       autocomplete="email"
+                                       required>
+
+                                <small class="error"
+                                       th:if="${#fields.hasErrors('email')}"
+                                       th:errors="*{email}">
+                                </small>
+                            </div>
+
+                            <div class="field">
+                                <label for="telefon">Telèfon internacional *</label>
+
+                                <input class="input"
+                                       th:classappend="${#fields.hasErrors('telefon') or #fields.hasErrors('telefonValid')} ? 'input-error' : ''"
+                                       type="tel"
+                                       id="telefon"
+                                       th:field="*{telefon}"
+                                       placeholder="+34 600 000 000"
+                                       autocomplete="tel"
+                                       required>
+
+                                <small class="muted">
+                                    Introdueix el prefix internacional del teu país.
+                                </small>
+
+                                <small class="error"
+                                       th:if="${#fields.hasErrors('telefon')}"
+                                       th:errors="*{telefon}">
+                                </small>
+
+                                <small class="error"
+                                       th:if="${#fields.hasErrors('telefonValid')}"
+                                       th:errors="*{telefonValid}">
+                                </small>
+                            </div>
+
+                        </div>
+
+                        <!-- NACIONALITAT I ADREÇA -->
+                        <div class="row-2">
+
+                            <div class="field">
+                                <label for="nacionalitat">Nacionalitat *</label>
+
+                                <select class="input"
+                                        th:classappend="${#fields.hasErrors('nacionalitat')} ? 'input-error' : ''"
+                                        id="nacionalitat"
+                                        th:field="*{nacionalitat}"
+                                        required>
+
+                                    <option value="">Selecciona una nacionalitat</option>
+                                    <option value="Espanyola">Espanyola</option>
+                                    <option value="Andorrana">Andorrana</option>
+                                    <option value="Francesa">Francesa</option>
+                                    <option value="Italiana">Italiana</option>
+                                    <option value="Portuguesa">Portuguesa</option>
+                                    <option value="Alemanya">Alemanya</option>
+                                    <option value="Britànica">Britànica</option>
+                                    <option value="Romanesa">Romanesa</option>
+                                    <option value="Marroquina">Marroquina</option>
+                                    <option value="Algeriana">Algeriana</option>
+                                    <option value="Xinesa">Xinesa</option>
+                                    <option value="Índia">Índia</option>
+                                    <option value="Pakistanesa">Pakistanesa</option>
+                                    <option value="Estatunidenca">Estatunidenca</option>
+                                    <option value="Veneçola">Veneçola</option>
+                                    <option value="Canadenca">Canadenca</option>
+                                    <option value="Brasilenya">Brasilenya</option>
+                                    <option value="Argentina">Argentina</option>
+                                    <option value="Colombiana">Colombiana</option>
+                                    <option value="Mexicana">Mexicana</option>
+                                    <option value="Xilena">Xilena</option>
+                                    <option value="Ucraïnesa">Ucraïnesa</option>
+                                    <option value="Russa">Russa</option>
+                                    <option value="Senegalesa">Senegalesa</option>
+                                    <option value="Nigeriana">Nigeriana</option>
+                                    <option value="Japonesa">Japonesa</option>
+                                    <option value="Australiana">Australiana</option>
+                                    <option value="Una altra">Una altra</option>
+
+                                </select>
+
+                                <small class="error"
+                                       th:if="${#fields.hasErrors('nacionalitat')}"
+                                       th:errors="*{nacionalitat}">
+                                </small>
+                            </div>
+
+                            <div class="field">
+                                <label for="adreca">Adreça *</label>
+
+                                <input class="input"
+                                       th:classappend="${#fields.hasErrors('adreca')} ? 'input-error' : ''"
+                                       type="text"
+                                       id="adreca"
+                                       th:field="*{adreca}"
+                                       autocomplete="street-address"
+                                       required>
+
+                                <small class="error"
+                                       th:if="${#fields.hasErrors('adreca')}"
+                                       th:errors="*{adreca}">
+                                </small>
+                            </div>
+
+                        </div>
+<!-- PROVÍNCIA -->
+<div class="field">
+
+    <label for="provincia">
+        Província <span class="required">*</span>
+    </label>
+
+    <select id="provincia"
+            th:field="*{provincia}"
+            class="input"
+            required>
+
+        <option value="">Selecciona una província</option>
+
+        <option value="Araba">Araba</option>
+        <option value="Albacete">Albacete</option>
+        <option value="Alacant">Alacant</option>
+        <option value="Almería">Almería</option>
+        <option value="Astúries">Astúries</option>
+        <option value="Àvila">Àvila</option>
+        <option value="Badajoz">Badajoz</option>
+        <option value="Barcelona">Barcelona</option>
+        <option value="Burgos">Burgos</option>
+        <option value="Càceres">Càceres</option>
+        <option value="Cadis">Cadis</option>
+        <option value="Cantàbria">Cantàbria</option>
+        <option value="Castelló">Castelló</option>
+        <option value="Ciudad Real">Ciudad Real</option>
+        <option value="Còrdova">Còrdova</option>
+        <option value="A Corunya">A Corunya</option>
+        <option value="Conca">Conca</option>
+        <option value="Girona">Girona</option>
+        <option value="Granada">Granada</option>
+        <option value="Guadalajara">Guadalajara</option>
+        <option value="Guipúscoa">Guipúscoa</option>
+        <option value="Huelva">Huelva</option>
+        <option value="Osca">Osca</option>
+        <option value="Illes Balears">Illes Balears</option>
+        <option value="Jaén">Jaén</option>
+        <option value="Lleó">Lleó</option>
+        <option value="Lleida">Lleida</option>
+        <option value="Lugo">Lugo</option>
+        <option value="Madrid">Madrid</option>
+        <option value="Màlaga">Màlaga</option>
+        <option value="Múrcia">Múrcia</option>
+        <option value="Navarra">Navarra</option>
+        <option value="Pontevedra">Pontevedra</option>
+        <option value="La Rioja">La Rioja</option>
+        <option value="Salamanca">Salamanca</option>
+        <option value="Santa Cruz de Tenerife">Santa Cruz de Tenerife</option>
+        <option value="Segòvia">Segòvia</option>
+        <option value="Sevilla">Sevilla</option>
+        <option value="Sòria">Sòria</option>
+        <option value="Tarragona">Tarragona</option>
+        <option value="Terol">Terol</option>
+        <option value="Toledo">Toledo</option>
+        <option value="València">València</option>
+        <option value="Valladolid">Valladolid</option>
+        <option value="Biscaia">Biscaia</option>
+        <option value="Zamora">Zamora</option>
+        <option value="Saragossa">Saragossa</option>
+        <option value="Ceuta">Ceuta</option>
+        <option value="Melilla">Melilla</option>
+        <option value="Las Palmas">Las Palmas</option>
+
+    </select>
+
+    <small class="error"
+           th:if="${#fields.hasErrors('provincia')}"
+           th:errors="*{provincia}">
+    </small>
+
+</div>
+
+                        <!-- CONTRASENYES -->
+                        <div class="row-2">
+
+                            <div class="field">
+                                <label for="password">Contrasenya *</label>
+
+                                <div style="position: relative;">
+
+                                    <input class="input"
+                                           th:classappend="${#fields.hasErrors('password')} ? 'input-error' : ''"
+                                           type="password"
+                                           id="password"
+                                           th:field="*{password}"
+                                           autocomplete="new-password"
+                                           minlength="8"
+                                           required
+                                           style="padding-right: 45px;">
+
+                                    <button type="button"
+                                            onclick="mostrarPassword('password', this)"
+                                            aria-label="Mostrar contrasenya"
+                                            style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: transparent; border: none; padding: 0; cursor: pointer;">
+                                        👁
+                                    </button>
+
+                                </div>
+
+                                <small class="error"
+                                       th:if="${#fields.hasErrors('password')}"
+                                       th:errors="*{password}">
+                                </small>
+                            </div>
+
+                            <div class="field">
+                                <label for="confirmacio">Repeteix la contrasenya *</label>
+
+                                <div style="position: relative;">
+
+                                    <input class="input"
+                                           type="password"
+                                           id="confirmacio"
+                                           name="confirmacio"
+                                           autocomplete="new-password"
+                                           minlength="8"
+                                           required
+                                           style="padding-right: 45px;">
+
+                                    <button type="button"
+                                            onclick="mostrarPassword('confirmacio', this)"
+                                            aria-label="Mostrar confirmació de contrasenya"
+                                            style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: transparent; border: none; padding: 0; cursor: pointer;">
+                                        👁
+                                    </button>
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- ERROR DE CONTRASENYES -->
+                        <div id="errorContrasenya"
+                             class="password-error-summary"
+                             role="alert">
+                            ⚠️ Les contrasenyes no coincideixen. Comprova que les dues siguin iguals.
+                        </div>
+
+                        <!-- POLÍTICA DE PRIVACITAT -->
+                        <div class="field">
+
+                            <label style="display: flex; align-items: flex-start; gap: 8px;">
+
+                                <input type="checkbox"
+                                       id="privacitat"
+                                       name="privacitat"
+                                       required
+                                       style="margin-top: 4px;">
+
+                                <span>
+                                    He llegit la
+                                    <a th:href="@{/privacitat}"
+                                       target="_blank"
+                                       rel="noopener noreferrer">
+                                        política de privacitat
+                                    </a>
+                                    i accepto el tractament de les meves dades
+                                    per a les finalitats que s'hi expliquen.
+                                </span>
+
+                            </label>
+
+                        </div>
+
+                        <!-- BOTÓ PER ENVIAR EL FORMULARI -->
+                        <button type="submit" class="btn btn-block">
+                            Continuar a la documentació
+                        </button>
+
+                        <p class="muted center-text mt">
+                            Ja tens un compte?
+                            <a th:href="@{/login}">Inicia sessió</a>
+                        </p>
+
+                    </form>
+
+                </section>
+
+            </div>
+        </main>
+
+        <!-- FUNCIONS JAVASCRIPT -->
+        <script>
+
+            // MOSTRAR O AMAGAR LA CONTRASENYA
+            function mostrarPassword(id, boto) {
+
+                const camp = document.getElementById(id);
+
+                if (camp.type === "password") {
+
+                    camp.type = "text";
+                    boto.textContent = "🙈";
+                    boto.setAttribute("aria-label", "Amagar contrasenya");
+
+                } else {
+
+                    camp.type = "password";
+                    boto.textContent = "👁";
+                    boto.setAttribute("aria-label", "Mostrar contrasenya");
+
+                }
+            }
+
+            // COMPROVAR QUE LES CONTRASENYES COINCIDEIXIN
+            function comprovarContrasenyes() {
+
+                const password = document.getElementById("password").value;
+                const confirmacio = document.getElementById("confirmacio").value;
+                const error = document.getElementById("errorContrasenya");
+
+                if (password !== confirmacio) {
+
+                    error.style.display = "block";
+                    error.scrollIntoView({behavior: "smooth", block: "center"});
+
+                    return false;
+
+                }
+
+                error.style.display = "none";
+                return true;
+            }
+            // FER DESAPARÈIXER ELS MISSATGES D'ERROR DESPRÉS DE 10 SEGONS
+            document.addEventListener("DOMContentLoaded", function () {
+
+                const errors = document.querySelectorAll(".error-summary, .password-error-summary");
+
+                errors.forEach(function (error) {
+
+                    if (error.style.display === "none") {
+                        return;
+                    }
+
+                    setTimeout(function () {
+
+                        error.style.transition = "opacity 0.5s ease, transform 0.5s ease";
+                        error.style.opacity = "0";
+                        error.style.transform = "translateY(-10px)";
+
+                        setTimeout(function () {
+                            error.style.display = "none";
+                        }, 500);
+
+                    }, 5000);
+
+                });
+
+            });
+
+        </script>
+
+    </body>
+</html>

@@ -1,0 +1,380 @@
+
+<!DOCTYPE html>
+<html lang="ca" xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>El meu perfil | Nothingan Pri S.A.</title>
+        <link rel="stylesheet" th:href="@{/css/styles.css}">
+
+        <style>
+            .mensaje-exito {
+                background-color: #d4edda;
+                color: #155724;
+                border: 1px solid #c3e6cb;
+                padding: 12px 20px;
+                border-radius: 8px;
+                margin: 15px 0;
+                text-align: center;
+            }
+
+            .mensaje-error {
+                background-color: #f8d7da;
+                color: #721c24;
+                border: 1px solid #f5c6cb;
+                padding: 12px 20px;
+                border-radius: 8px;
+                margin: 15px 0;
+                text-align: center;
+            }
+        </style>
+    </head>
+
+    <body>
+
+        <main class="container profile-container">
+
+            <header class="page-head profile-page-head">
+                <a th:href="@{/cataleg}" class="profile-back">
+                    ← Tornar al catàleg
+                </a>
+
+                <h1>El meu perfil</h1>
+                <p>Gestió de dades personals, reserves i seguretat del teu compte.</p>
+            </header>
+
+            <nav class="tabs" aria-label="Seccions del perfil">
+                <a th:href="@{/perfil}" class="tab active">Dades personals</a>
+                <a th:href="@{/perfil/reserves}" class="tab">Reserves</a>
+                <a th:href="@{/perfil/seguretat}" class="tab">Seguretat</a>
+            </nav>
+
+            <!-- Missatges de confirmació i error -->
+<div th:if="${mensaje != null}"
+     class="mensaje-exito"
+     role="alert"
+     th:text="${mensaje}">
+</div>
+
+<div th:if="${error != null}"
+     class="mensaje-error"
+     role="alert"
+     th:text="${error}">
+</div>
+
+            <div class="split">
+
+                <!-- DADES PERSONALS -->
+                <section class="card">
+
+                    <h2>Dades personals</h2>
+
+                    <div class="field">
+                        <label for="nom">Nom</label>
+                        <input type="text" id="nom" class="input"
+                               th:value="${usuari != null ? usuari.nom : ''}"
+                               readonly>
+                    </div>
+
+                    <div class="field">
+                        <label for="cognoms">Cognoms</label>
+                        <input type="text" id="cognoms" class="input"
+                               th:value="${usuari != null ? usuari.cognoms : ''}"
+                               readonly>
+                    </div>
+
+                    <div class="field">
+                        <label for="email">Correu electrònic</label>
+                        <input type="email" id="email" class="input"
+                               th:value="${usuari != null ? usuari.email : ''}"
+                               readonly>
+                    </div>
+
+                    <div class="field">
+                        <label for="telefon">Telèfon</label>
+                        <input type="tel" id="telefon" class="input"
+                               th:value="${usuari != null ? usuari.telefon : ''}"
+                               readonly>
+                    </div>
+
+                    <div class="field">
+                        <label for="provincia">Província</label>
+                        <input type="text" id="provincia" class="input"
+                               th:value="${usuari != null ? usuari.provincia : ''}"
+                               readonly>
+                    </div>
+
+                    <div th:if="${client != null}">
+
+                        <div class="field">
+                            <label for="adreca">Domicili</label>
+                            <input type="text" id="adreca" class="input"
+                                   th:value="${client.adreca}"
+                                   readonly>
+                        </div>
+
+                        <div class="field">
+                            <label for="nacionalitat">Nacionalitat</label>
+                            <input type="text" id="nacionalitat" class="input"
+                                   th:value="${client.nacionalitat}"
+                                   readonly>
+                        </div>
+
+                    </div>
+
+                    <div class="btn-row">
+
+                        <div class="profile-actions">
+                            <h3>Gestiona el teu compte</h3>
+                            <p class="muted">
+                                Pots modificar les teves dades personals quan ho necessitis.
+                            </p>
+                        </div>
+
+                        <a class="btn" th:href="@{/perfil/editar-dades}">
+                            ✏️ Editar les meves dades
+                        </a>
+
+                        <a class="btn btn-outline" th:href="@{/cataleg}">
+                            Tornar al catàleg
+                        </a>
+
+                    </div>
+
+                </section>
+
+                <!-- COLUMNA DRETA -->
+                <aside class="stack-gap">
+
+                    <!-- MÈTODE DE PAGAMENT -->
+                    <article class="card">
+
+                        <div class="row-between mb">
+                            <h3>Mètode de pagament</h3>
+
+                            <span th:if="${client != null
+                                  and client.numtarjetacredit != null
+                                  and !#strings.isEmpty(client.numtarjetacredit)}"
+                                  class="pill validat">
+                                ✓ Configurat
+                            </span>
+
+                            <span th:unless="${client != null
+                                  and client.numtarjetacredit != null
+                                  and !#strings.isEmpty(client.numtarjetacredit)}"
+                                  class="pill pendent">
+                                Pendent
+                            </span>
+                        </div>
+
+                        <p class="muted mb">
+                            Gestiona la teva targeta de crèdit per realitzar
+                            el pagament de les teves reserves de forma ràpida.
+                        </p>
+
+                        <div class="field mb">
+                            <label>Targeta actual</label>
+
+                            <div class="doc-preview"
+                                 style="padding: 10px; font-weight: 600;">
+
+                                <span th:if="${client != null
+                                      and client.numtarjetacredit != null
+                                      and !#strings.isEmpty(client.numtarjetacredit)}">
+                                    💳 **** **** ****
+                                    <span th:text="${#strings.length(client.numtarjetacredit) >= 4
+                                          ? #strings.substring(client.numtarjetacredit,
+                                          #strings.length(client.numtarjetacredit) - 4)
+                                          : client.numtarjetacredit}">
+                                    </span>
+                                </span>
+
+                                <span th:unless="${client != null
+                                      and client.numtarjetacredit != null
+                                      and !#strings.isEmpty(client.numtarjetacredit)}"
+                                      class="muted">
+                                    Cap targeta registrada
+                                </span>
+
+                            </div>
+                        </div>
+
+                        <a th:href="@{/perfil/tarjeta}"
+                           class="btn btn-outline btn-sm btn-block">
+
+                            <span th:if="${client != null
+                                  and client.numtarjetacredit != null
+                                  and !#strings.isEmpty(client.numtarjetacredit)}">
+                                Modificar targeta &gt;
+                            </span>
+
+                            <span th:unless="${client != null
+                                  and client.numtarjetacredit != null
+                                  and !#strings.isEmpty(client.numtarjetacredit)}">
+                                Afegir targeta &gt;
+                            </span>
+
+                        </a>
+
+                    </article>
+
+                    <!-- DOCUMENTS D'IDENTIFICACIÓ -->
+                    <article class="card">
+
+                        <h3>Documents d'identificació</h3>
+                        <div th:if="${mensaje != null
+      and #strings.contains(mensaje, 'validarà els canvis')}"
+     class="mensaje-exito"
+     role="alert">
+    ✓ La teva sol·licitud de documentació s'ha enviat correctament.
+    Un agent revisarà els canvis abans d'actualitzar els documents.
+</div>
+
+                        <p class="muted mb">
+                            Estat i informació dels documents:
+                        </p>
+
+                        <div th:if="${client != null
+                             and client.fotoDniAnverso != null
+                             and client.fotoPermiso != null}"
+                             class="mb">
+                            <span class="pill validat">
+                                ✓ Documentació carregada
+                            </span>
+                        </div>
+
+                        <div th:unless="${client != null
+                             and client.fotoDniAnverso != null
+                             and client.fotoPermiso != null}"
+                             class="mb">
+                            <span class="pill pendent">
+                                Documentació pendent
+                            </span>
+                        </div>
+                        <!-- Missatges de confirmació i error -->
+                        <div th:if="${mensaje != null}"
+                             class="mensaje-exito"
+                             role="alert"
+                             th:text="${mensaje}">
+                        </div>
+
+                        <div th:if="${error != null}"
+                             class="mensaje-error"
+                             role="alert"
+                             th:text="${error}">
+                        </div>
+
+                        <!-- DNI -->
+                        <div class="field">
+                            <label>Document d'identitat (DNI / NIE)</label>
+
+                            <div class="doc-preview">
+
+                                <div th:if="${client != null
+                                     and client.fotoDniAnverso != null}">
+
+                                    <img th:if="${client.fotoDniAnversoTipus != null
+                                         and #strings.startsWith(client.fotoDniAnversoTipus, 'image/')}"
+                                         th:src="@{/perfil/documentacio/dni}"
+                                         alt="Document d'identitat"
+                                         style="max-width:100%; max-height:220px; border-radius:8px;">
+
+                                    <a th:if="${client.fotoDniAnversoTipus != null
+                                       and #strings.equals(client.fotoDniAnversoTipus, 'application/pdf')}"
+                                       th:href="@{/perfil/documentacio/dni}"
+                                       target="_blank">
+                                        📄 Veure document DNI (PDF)
+                                    </a>
+
+                                    <p class="muted">
+                                        ✓ DNI registrat:
+                                        <span th:text="${client.DNI}"></span>
+                                    </p>
+
+                                </div>
+
+                                <span th:unless="${client != null
+                                      and client.fotoDniAnverso != null}"
+                                      class="muted">
+                                    Sense document d'identitat
+                                </span>
+
+                            </div>
+                        </div>
+
+                        <!-- PERMÍS DE CONDUIR -->
+                        <div class="field">
+                            <label>Permís de conduir</label>
+
+                            <div class="doc-preview">
+
+                                <div th:if="${client != null
+                                     and client.fotoPermiso != null}">
+
+                                    <img th:if="${client.fotoPermisoTipus != null
+                                         and #strings.startsWith(client.fotoPermisoTipus, 'image/')}"
+                                         th:src="@{/perfil/documentacio/permis}"
+                                         alt="Permís de conduir"
+                                         style="max-width:100%; max-height:220px; border-radius:8px;">
+
+                                    <a th:if="${client.fotoPermisoTipus != null
+                                       and #strings.equals(client.fotoPermisoTipus, 'application/pdf')}"
+                                       th:href="@{/perfil/documentacio/permis}"
+                                       target="_blank">
+                                        📄 Veure permís de conduir (PDF)
+                                    </a>
+
+                                    <p class="muted">
+                                        ✓ Llicència:
+                                        <span th:text="${client.Lliconduir}"></span>
+                                    </p>
+
+                                </div>
+
+                                <span th:unless="${client != null
+                                      and client.fotoPermiso != null}"
+                                      class="muted">
+                                    Sense permís de conduir
+                                </span>
+
+                            </div>
+                        </div>
+
+                        <p class="mt">
+                            <a th:href="@{/perfil/documentacio}"
+                               class="btn btn-outline btn-sm btn-block">
+                                Actualitzar documents &gt;
+                            </a>
+                        </p>
+
+                    </article>
+
+                    <!-- CANVIAR CONTRASENYA -->
+                    <article class="card">
+
+                        <h3>Canviar contrasenya</h3>
+
+                        <p class="muted">
+                            Accedeix a la pàgina de seguretat per gestionar
+                            la contrasenya i la protecció del teu compte.
+                        </p>
+
+                        <p class="mt">
+                            <a th:href="@{/perfil/contrasenya}"
+                               class="btn btn-outline btn-sm">
+                                Canviar contrasenya &gt;
+                            </a>
+                        </p>
+
+                    </article>
+
+
+                </aside>
+
+            </div>
+
+        </main>
+
+    </body>
+</html>

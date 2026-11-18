@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ca" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#1e2a5e">
+    <title>Detall de la reserva · Nothingan Pri S.A.</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+
+<body>
+
+<div th:replace="~{fragments/office :: topbar}"></div>
+
+<div class="app">
+    <input type="checkbox" id="side" class="side-toggle" aria-label="Menú de gestió">
+    <div th:replace="~{fragments/office :: sidebar(activeMenu='reserves')}"></div>
+    <label class="scrim" for="side" aria-label="Tancar el menú"></label>
+
+    <main class="main">
+        <section class="card center-text" style="max-width: 720px; margin: 0 auto; padding: 30px;">
+
+            <h1 style="margin-top: 0;">Detall de la reserva</h1>
+            <p class="lead">Totes les dades d'aquesta reserva.</p>
+
+            <!-- Foto del vehicle -->
+            <div th:if="${reserva.vehicle != null and reserva.vehicle.fotoUrl != null}"
+                 style="width: 100%; max-width: 360px; height: 180px; overflow: hidden; margin: 20px auto 0; border-radius: 8px;">
+                <img th:src="@{${reserva.vehicle.fotoUrl}}"
+                     th:alt="${reserva.vehicle.marca + ' ' + reserva.vehicle.model}"
+                     style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div th:if="${reserva.vehicle == null or reserva.vehicle.fotoUrl == null}"
+                 style="width: 100%; max-width: 360px; height: 120px; margin: 20px auto 0; border-radius: 8px; background:#f0f2f5; display:flex; align-items:center; justify-content:center; color:#8a97a3;">
+                Sense foto del vehicle
+            </div>
+
+            <!-- Dades completes (RF53) -->
+            <dl style="display: grid; grid-template-columns: 1fr auto; gap: 12px 20px; text-align: left; margin: 25px 0 10px; padding: 0 10px;">
+
+                <dt style="color: #666;">Codi de reserva</dt>
+                <dd style="text-align: right; font-weight: bold; margin: 0;" th:text="${reserva.codiReserva}">ABC12345</dd>
+
+                <dt style="color: #666;">Estat</dt>
+                <dd style="text-align: right; margin: 0; font-weight: bold;"
+                    th:style="${reserva.estat != null and reserva.estat.name() == 'ACTIVA'} ? 'color: green;' : 'color: #b83232;'"
+                    th:text="${reserva.estat != null ? reserva.estat.nomFormatejat : '—'}">Activa</dd>
+
+                <dt style="color: #666;">Client</dt>
+                <dd style="text-align: right; margin: 0;"
+                    th:text="${reserva.client != null ? ((reserva.client.nom != null ? reserva.client.nom : '') + (reserva.client.cognoms != null ? ' ' + reserva.client.cognoms : '')) : '—'}">Nom Cognoms</dd>
+
+                <dt style="color: #666;">Email del client</dt>
+                <dd style="text-align: right; margin: 0;"
+                    th:text="${reserva.client != null ? reserva.client.email : '—'}">email@exemple.com</dd>
+
+                <dt style="color: #666;">Vehicle</dt>
+                <dd style="text-align: right; margin: 0;"
+                    th:text="${reserva.vehicle != null ? (reserva.vehicle.marca + ' ' + reserva.vehicle.model) : '—'}">Marca Model</dd>
+
+                <dt style="color: #666;">Matrícula</dt>
+                <dd style="text-align: right; margin: 0;"
+                    th:text="${reserva.vehicle != null ? reserva.vehicle.matricula : '—'}">1234ABC</dd>
+
+                <dt style="color: #666;">Data d'inici</dt>
+                <dd style="text-align: right; margin: 0;" th:text="${reserva.dataInici}">01/01/26</dd>
+
+                <dt style="color: #666;" th:if="${reserva.horaInici != null}">Hora de recollida</dt>
+                <dd style="text-align: right; margin: 0;" th:if="${reserva.horaInici != null}" th:text="${reserva.horaInici}">10:00</dd>
+
+                <dt style="color: #666;">Data de retorn</dt>
+                <dd style="text-align: right; margin: 0;" th:text="${reserva.dataFi}">03/01/26</dd>
+
+                <dt style="color: #666;" th:if="${reserva.horaFi != null}">Hora de retorn</dt>
+                <dd style="text-align: right; margin: 0;" th:if="${reserva.horaFi != null}" th:text="${reserva.horaFi}">18:00</dd>
+
+                <dt style="color: #666;" th:if="${dies != null}">Durada</dt>
+                <dd style="text-align: right; margin: 0;" th:if="${dies != null}"
+                    th:text="${dies == 1} ? '1 dia' : |${dies} dies|">2 dies</dd>
+
+            </dl>
+
+            <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.2em; border-top: 2px solid #eee; padding: 12px 10px 0; margin-bottom: 25px;">
+                <span>Import total <small style="font-weight: normal; color: #666;">(inclou la fiança)</small></span>
+                <span th:text="${reserva.importTotal != null ? #numbers.formatDecimal(reserva.importTotal, 1, 2) + ' €' : '—'}">0,00 €</span>
+            </div>
+
+            <!-- Botons -->
+            <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+                <a th:href="@{/reserva/meves}"
+                   style="display:inline-block; background-color:#1e2a5e; color:white; padding:12px 20px; border-radius:6px; text-decoration:none; font-weight:600; font-size:14px;">
+                    Tornar enrere
+                </a>
+                <a th:href="@{/cataleg}"
+                   style="display:inline-block; background-color:#0d7377; color:white; padding:12px 20px; border-radius:6px; text-decoration:none; font-weight:600; font-size:14px;">
+                    Tornar al catàleg
+                </a>
+            </div>
+
+        </section>
+    </main>
+</div>
+</body>
+</html>

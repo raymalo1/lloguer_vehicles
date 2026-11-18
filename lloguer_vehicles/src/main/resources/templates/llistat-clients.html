@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="ca" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#1e2a5e">
+    <title>Gestió de clients · Nothingan Pri S.A.</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+
+    <style>
+        .page-head { margin-bottom: 25px; }
+        .page-head p { color: #78849a; }
+
+        .section-card {
+            margin-bottom: 25px;
+            padding: 24px;
+            border-radius: 14px;
+            background: white;
+            box-shadow: 0 4px 18px rgba(25, 42, 85, .07);
+            border: 1px solid #edf0f6;
+        }
+
+        .section-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .section-heading h2 {
+            margin: 0;
+            color: #1e2a5e;
+            font-size: 19px;
+        }
+
+        .counter {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 29px;
+            height: 29px;
+            padding: 0 9px;
+            border-radius: 20px;
+            background: #e9efff;
+            color: #294caa;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .section-description {
+            color: #8791a3;
+            font-size: 13px;
+            margin: -8px 0 18px;
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .toolbar .field {
+            min-width: 150px;
+            flex: 1 1 150px;
+        }
+
+        .toolbar .field:has(#provincia) {
+            min-width: 220px;
+            flex: 1.5 1 220px;
+        }
+
+        .toolbar #provincia {
+            width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+            padding-right: 25px;
+        }
+
+        .toolbar .field label {
+            display: block;
+            margin-bottom: 4px;
+            color: #1a202c;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .toolbar .input {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .table-wrap { overflow-x: auto; }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table thead th {
+            background: #f3f5fa;
+            color: #1a202c;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            padding: 14px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .table tbody td {
+            padding: 15px 14px;
+            border-bottom: 1px solid #edf0f5;
+            vertical-align: middle;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .table tbody td:last-child .actions {
+            margin: 0 auto;
+            justify-content: center;
+        }
+
+        .table tbody tr:hover { background: #fafbff; }
+
+        .table thead th:last-child,
+        .table tbody td:last-child {
+            width: 1%;
+            white-space: nowrap;
+        }
+
+        .client-email {
+            display: inline-block;
+            color: #253b70;
+            overflow-wrap: anywhere;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 11px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .status-pending { background: #fff2d8; color: #996500; }
+        .status-active { background: #e1f6e9; color: #197344; }
+        .status-inactive { background: #fde8e8; color: #b83232; }
+
+        .change-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 220px;
+        }
+
+        .change-item {
+            padding: 10px 12px;
+            border-left: 3px solid #526fe0;
+            border-radius: 6px;
+            background: #f5f7ff;
+        }
+
+        .change-name {
+            display: block;
+            margin-bottom: 4px;
+            color: #344675;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .change-value {
+            color: #16804b;
+            font-weight: 600;
+            overflow-wrap: anywhere;
+        }
+
+        .change-old {
+            color: #b83232;
+            text-decoration: line-through;
+            overflow-wrap: anywhere;
+        }
+
+        .change-arrow { margin: 0 6px; color: #1a202c; }
+        .change-note { color: #1a202c; font-size: 12px; }
+
+        .actions {
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: center;
+            gap: 4px;
+            min-width: 0;
+            width: max-content;
+            margin: 0;
+            padding: 0;
+        }
+
+        .actions form {
+            display: inline-flex;
+            margin: 0;
+            padding: 0;
+        }
+
+        .actions .btn {
+            display: inline-block;
+            padding: 7px 9px;
+            border: 0;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .btn-consult { background: #e9efff; color: #294caa; }
+        .btn-approve { background: #e1f6e9; color: #197344; }
+        .btn-reject { background: #fde8e8; color: #b83232; }
+        .actions .btn:hover { filter: brightness(.96); }
+
+        .empty-row {
+            padding: 25px !important;
+            text-align: center;
+            color: #1a202c;
+        }
+
+        .alert {
+            padding: 13px 16px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+
+        .alert-success { background: #e1f6e9; color: #197344; }
+        .alert-danger { background: #fde8e8; color: #b83232; }
+
+        @media(max-width: 750px) {
+            .section-card { padding: 16px; }
+
+            .table.stack thead { display: none; }
+
+            .table.stack,
+            .table.stack tbody,
+            .table.stack tr,
+            .table.stack td {
+                display: block;
+                width: 100%;
+            }
+
+            .table.stack tr {
+                padding: 10px 0;
+                border-bottom: 1px solid #edf0f5;
+            }
+
+            .table.stack tbody td {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                gap: 15px;
+                padding: 9px 5px;
+                border: none;
+                text-align: right;
+                white-space: normal;
+                box-sizing: border-box;
+            }
+
+            .table.stack tbody td:last-child { width: 100%; }
+
+            .table.stack tbody td::before {
+                content: attr(data-label);
+                color: #1a202c;
+                font-weight: 700;
+                text-align: left;
+                flex: 0 0 38%;
+            }
+
+            .table.stack tbody td.empty-row {
+                display: block;
+                text-align: center;
+            }
+
+            .table.stack tbody td.empty-row::before { display: none; }
+            .change-list { min-width: 0; }
+
+            .actions {
+                min-width: 0;
+                width: auto;
+                max-width: 100%;
+                flex-wrap: wrap;
+                justify-content: flex-start;
+            }
+
+            .actions .btn { font-size: 11px; }
+        }
+    </style>
+</head>
+
+<body>
+
+<div th:replace="~{fragments/office :: topbar}"></div>
+
+<div class="app">
+
+    <input type="checkbox" id="side" class="side-toggle"
+           aria-label="Menú de gestió">
+
+    <div th:replace="~{fragments/office :: sidebar(activeMenu='clients')}"></div>
+
+    <div class="scrim" aria-hidden="true"></div>
+
+    <main class="main">
+
+        <div class="page-head">
+            <h1>Llistat i gestió de clients</h1>
+            <p>
+                Consulta els clients, revisa els canvis proposats
+                i gestiona les sol·licituds pendents.
+            </p>
+        </div>
+
+        <!-- MISSATGES -->
+        <div th:if="${missatge != null}"
+             class="alert alert-success"
+             role="alert"
+             th:text="${missatge}"></div>
+
+        <div th:if="${mensaje != null}"
+             class="alert alert-success"
+             role="alert"
+             th:text="${mensaje}"></div>
+
+        <div th:if="${success != null}"
+             class="alert alert-success"
+             role="alert"
+             th:text="${success}"></div>
+
+        <div th:if="${error != null}"
+             class="alert alert-danger"
+             role="alert"
+             th:text="${error}"></div>
+
+        <!-- CLIENTS REGISTRATS -->
+        <section class="section-card">
+
+            <div class="section-heading">
+                <h2>Clients registrats</h2>
+                <span class="counter"
+                      th:text="${clients != null ? #lists.size(clients) : 0}">0</span>
+            </div>
+
+            <p class="section-description">
+                Cerca clients combinant els diferents criteris de filtratge.
+            </p>
+
+            <!-- FILTRES -->
+            <form class="toolbar"
+                  th:action="@{/agent/clients}"
+                  method="post">
+
+                <input type="hidden"
+                       th:name="${_csrf.parameterName}"
+                       th:value="${_csrf.token}">
+
+                <div class="field">
+                    <label for="dni">DNI</label>
+                    <input class="input" type="text"
+                           id="dni" name="dni"
+                           placeholder="DNI..."
+                           th:value="${dni}">
+                </div>
+
+                <div class="field">
+                    <label for="cognoms">Cognoms</label>
+                    <input class="input" type="text"
+                           id="cognoms" name="cognoms"
+                           placeholder="Cognoms..."
+                           th:value="${cognoms}">
+                </div>
+
+                <div class="field">
+                    <label for="email">Email</label>
+                    <input class="input" type="text"
+                           id="email" name="email"
+                           placeholder="Email..."
+                           th:value="${email}">
+                </div>
+
+                <div class="field">
+                    <label for="telefon">Telèfon</label>
+                    <input class="input" type="text"
+                           id="telefon" name="telefon"
+                           placeholder="Telèfon..."
+                           th:value="${telefon}">
+                </div>
+
+                <div class="field">
+                    <label for="provincia">Província</label>
+
+                    <select class="input"
+                            id="provincia"
+                            name="provincia">
+
+                        <option value=""
+                                th:selected="${provincia == null or provincia == ''}">
+                            Totes les províncies
+                        </option>
+
+                        <option th:each="prov : ${provincias}"
+                                th:value="${prov}"
+                                th:text="${prov}"
+                                th:selected="${provincia != null and provincia == prov}">
+                        </option>
+
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="nacionalitat">Nacionalitat</label>
+                    <input class="input" type="text"
+                           id="nacionalitat" name="nacionalitat"
+                           placeholder="Nacionalitat..."
+                           th:value="${nacionalitat}">
+                </div>
+
+                <button class="btn" type="submit">Filtrar</button>
+
+                <a class="btn" th:href="@{/agent/clients}">
+                    Netejar
+                </a>
+
+                <a class="btn" th:href="@{/registre}" target="_blank">
+                    + Registrar nou client
+                </a>
+            </form>
+
+            <!-- TAULA DE CLIENTS -->
+            <div class="table-wrap">
+                <table class="table stack">
+
+                    <thead>
+                    <tr>
+                        <th>DNI</th>
+                        <th>Nom</th>
+                        <th>Cognoms</th>
+                        <th>Telèfon</th>
+                        <th>Email</th>
+                        <th>Província</th>
+                        <th>Nacionalitat</th>
+                        <th>Accions</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="client : ${clients}">
+
+                        <td data-label="DNI" th:text="${client.DNI}">DNI</td>
+                        <td data-label="Nom" th:text="${client.nom}">Nom</td>
+                        <td data-label="Cognoms" th:text="${client.cognoms}">Cognoms</td>
+                        <td data-label="Telèfon" th:text="${client.telefon}">Telèfon</td>
+
+                        <td data-label="Email">
+                            <span class="client-email"
+                                  th:text="${client.email}">Email</span>
+                        </td>
+
+                        <td data-label="Província"
+                            th:text="${client.provincia}">Província</td>
+
+                        <td data-label="Nacionalitat"
+                            th:text="${client.nacionalitat}">Nacionalitat</td>
+
+                        <td data-label="Accions">
+                            <div class="actions">
+
+                                <a class="btn btn-consult"
+                                   th:if="${client.DNI != null and !client.DNI.isBlank()}"
+                                   th:href="@{/clients/{dni}(dni=${client.DNI})}">
+                                    Més informació
+                                </a>
+
+                                <a class="btn btn-outline"
+                                   th:if="${client.DNI != null and !client.DNI.isBlank()}"
+                                   th:href="@{/agent/clients/{dni}/perfil(dni=${client.DNI})}">
+                                    Editar
+                                </a>
+
+                                <!-- ELIMINAR CLIENT -->
+                                <form th:action="@{/clients/eliminar/{id}(id=${client.id})}"
+                                      method="post"
+                                      onsubmit="return confirm('Estàs segur que vols eliminar definitivament aquest client?');">
+
+                                    <input type="hidden"
+                                           th:name="${_csrf.parameterName}"
+                                           th:value="${_csrf.token}">
+
+                                    <button type="submit" class="btn btn-danger">
+                                        Eliminar client
+                                    </button>
+                                </form>
+
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${clients == null or #lists.isEmpty(clients)}">
+                        <td colspan="8" class="empty-row">
+                            No s'han trobat clients.
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SOL·LICITUDS D'ANUL·LACIÓ DE RESERVES -->
+        <section class="section-card">
+
+            <div class="section-heading">
+                <h2>Sol·licituds d'anul·lació de reserves</h2>
+                <span class="counter"
+                      th:text="${solicitudAnulacions != null ? #lists.size(solicitudAnulacions) : 0}">
+                    0
+                </span>
+            </div>
+
+            <p class="section-description">
+                Revisa els motius de cancel·lació i decideix si aproves o rebutges
+                les sol·licituds dels clients.
+            </p>
+
+            <div class="table-wrap">
+                <table class="table stack">
+                    <thead>
+                    <tr>
+                        <th>Reserva</th>
+                        <th>Client</th>
+                        <th>Data de sol·licitud</th>
+                        <th>Motiu</th>
+                        <th>Devolució informativa</th>
+                        <th>Import retingut</th>
+                        <th>Accions</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="solicitud : ${solicitudAnulacions}">
+
+                        <td data-label="Reserva">
+                            <strong th:text="${solicitud.reserva != null ? solicitud.reserva.id : 'No disponible'}">Reserva</strong>
+                        </td>
+
+                        <td data-label="Client">
+                            <span class="client-email"
+                                  th:text="${solicitud.reserva != null and solicitud.reserva.client != null ? solicitud.reserva.client.email : 'Client desconegut'}">Client</span>
+                        </td>
+
+                        <td data-label="Data de sol·licitud"
+                            th:text="${solicitud.fechaSolicitud != null ? #temporals.format(solicitud.fechaSolicitud, 'dd/MM/yyyy HH:mm') : 'Data no disponible'}">Data</td>
+
+                        <td data-label="Motiu"
+                            th:text="${solicitud.motivo != null ? solicitud.motivo : 'Sense motiu'}">Motiu</td>
+
+                        <td data-label="Devolució informativa">
+                            <strong th:text="${solicitud.porcentajeDevolucion + '%'}">100%</strong>
+                            <br>
+                            <span th:text="${#numbers.formatDecimal(solicitud.importeDevolucion, 1, 2) + ' €'}">0,00 €</span>
+                        </td>
+
+                        <td data-label="Import retingut">
+                            <strong th:text="${#numbers.formatDecimal(solicitud.importeRetenido, 1, 2) + ' €'}">0,00 €</strong>
+                        </td>
+
+                        <td data-label="Accions">
+                            <div class="actions">
+
+                                <form th:action="@{/reserva/anullar/{id}(id=${solicitud.id})}"
+                                      method="post"
+                                      onsubmit="return confirm('Segur que vols aprovar aquesta anul·lació?');">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                    <button class="btn btn-approve" type="submit">Aprovar</button>
+                                </form>
+
+                                <form th:action="@{/reserva/rebutjar-anulacio/{id}(id=${solicitud.id})}"
+                                      method="post"
+                                      onsubmit="return confirm('Segur que vols rebutjar aquesta sol·licitud?');">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                    <input type="text" name="motivoRechazo" class="input"
+                                           maxlength="1000"
+                                           placeholder="Motiu del rebuig (opcional)">
+                                    <button class="btn btn-reject" type="submit">Rebutjar</button>
+                                </form>
+
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${solicitudAnulacions == null or #lists.isEmpty(solicitudAnulacions)}">
+                        <td colspan="7" class="empty-row">
+                            No hi ha sol·licituds d'anul·lació pendents.
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p class="section-description">
+                Els imports de devolució i retenció són informatius.
+                No representen cap transferència bancària real.
+            </p>
+        </section>
+
+        <!-- SOL·LICITUDS DE REGISTRE INICIAL -->
+        <section class="section-card">
+
+            <div class="section-heading">
+                <h2>Sol·licituds de registre inicial</h2>
+                <span class="counter"
+                      th:text="${solicitudPorCliente != null ? #lists.size(solicitudPorCliente) : 0}">0</span>
+            </div>
+
+            <p class="section-description">
+                Nous clients que esperen la validació del seu registre.
+            </p>
+
+            <div class="table-wrap">
+                <table class="table stack">
+                    <thead>
+                    <tr>
+                        <th>Client que ho sol·licita</th>
+                        <th>Data</th>
+                        <th>Estat</th>
+                        <th>Accions</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="solicitud : ${solicitudPorCliente}">
+                        <td data-label="Client">
+                            <span class="client-email"
+                                  th:text="${solicitud.cliente != null ? solicitud.cliente.email : 'Client desconegut'}">Client</span>
+                        </td>
+
+                        <td data-label="Data"
+                            th:text="${solicitud.dataSolicitud != null ? #temporals.format(solicitud.dataSolicitud, 'dd/MM/yyyy HH:mm') : 'Data no disponible'}">Data</td>
+
+                        <td data-label="Estat">
+                            <span class="status status-pending">Pendent</span>
+                        </td>
+
+                        <td data-label="Accions">
+                            <div class="actions">
+                                <a class="btn btn-consult"
+                                   th:href="@{/agent/solicitudes/rebutjar(id=${solicitud.id})}">Consultar</a>
+
+                                <form th:action="@{/agent/solicitudes/aprobar}" method="post">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                    <input type="hidden" name="id" th:value="${solicitud.id}">
+                                    <button class="btn btn-approve" type="submit">Aprovar</button>
+                                </form>
+
+                                <a class="btn btn-reject"
+                                   th:href="@{/agent/solicitudes/rebutjar(id=${solicitud.id})}">Rebutjar</a>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${solicitudPorCliente == null or #lists.isEmpty(solicitudPorCliente)}">
+                        <td colspan="4" class="empty-row">No hi ha registres pendents.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- MODIFICACIÓ DE DADES PERSONALS -->
+        <section class="section-card">
+
+            <div class="section-heading">
+                <h2>Modificació de dades personals</h2>
+                <span class="counter"
+                      th:text="${solicitudesDatos != null ? #lists.size(solicitudesDatos) : 0}">0</span>
+            </div>
+
+            <p class="section-description">
+                Aquí pots veure qui demana el canvi i quines dades vol modificar.
+            </p>
+
+            <div class="table-wrap">
+                <table class="table stack">
+                    <thead>
+                    <tr>
+                        <th>Client que ho sol·licita</th>
+                        <th>Data</th>
+                        <th>Canvis proposats (actual → nou)</th>
+                        <th>Estat</th>
+                        <th>Accions</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="solicitud : ${solicitudesDatos}">
+                        <td data-label="Client">
+                            <span class="client-email"
+                                  th:text="${solicitud.cliente != null ? solicitud.cliente.email : 'Client desconegut'}">Client</span>
+                        </td>
+
+                        <td data-label="Data"
+                            th:text="${solicitud.dataSolicitud != null ? #temporals.format(solicitud.dataSolicitud, 'dd/MM/yyyy HH:mm') : 'Data no disponible'}">Data</td>
+
+                        <td data-label="Canvis">
+                            <div class="change-list"
+                                 th:if="${canvisPerSolicitud[solicitud.id] != null and !#lists.isEmpty(canvisPerSolicitud[solicitud.id])}">
+                                <div class="change-item"
+                                     th:each="canvi : ${canvisPerSolicitud[solicitud.id]}">
+                                    <span class="change-name" th:text="${canvi.camp}">Camp</span>
+                                    <span class="change-old" th:text="${canvi.actual}">Valor actual</span>
+                                    <span class="change-arrow">→</span>
+                                    <span class="change-value" th:text="${canvi.proposat}">Valor proposat</span>
+                                </div>
+                            </div>
+
+                            <span class="change-note"
+                                  th:if="${canvisPerSolicitud[solicitud.id] == null or #lists.isEmpty(canvisPerSolicitud[solicitud.id])}">
+                                No s'han pogut carregar els canvis proposats.
+                            </span>
+                        </td>
+
+                        <td data-label="Estat">
+                            <span class="status status-pending">Pendent</span>
+                        </td>
+
+                        <td data-label="Accions">
+                            <div class="actions">
+                                <form th:action="@{/agent/solicitudes/aprobar-cambios}" method="post">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                    <input type="hidden" name="id" th:value="${solicitud.id}">
+                                    <button class="btn btn-approve" type="submit">Aprovar canvis</button>
+                                </form>
+
+                                <a class="btn btn-reject"
+                                   th:href="@{/agent/solicitudes/rebutjar(id=${solicitud.id})}">Rebutjar</a>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${solicitudesDatos == null or #lists.isEmpty(solicitudesDatos)}">
+                        <td colspan="5" class="empty-row">No hi ha sol·licituds de modificació pendents.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- MODIFICACIÓ DE DOCUMENTACIÓ -->
+        <section class="section-card">
+
+            <div class="section-heading">
+                <h2>Modificació de documentació</h2>
+                <span class="counter"
+                      th:text="${solicitudesDocumentacion != null ? #lists.size(solicitudesDocumentacion) : 0}">0</span>
+            </div>
+
+            <p class="section-description">
+                Actualitzacions del DNI i de la llicència de conduir.
+            </p>
+
+            <div class="table-wrap">
+                <table class="table stack">
+                    <thead>
+                    <tr>
+                        <th>Client que ho sol·licita</th>
+                        <th>Data</th>
+                        <th>Canvis proposats (actual → nou)</th>
+                        <th>Estat</th>
+                        <th>Accions</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="solicitud : ${solicitudesDocumentacion}">
+                        <td data-label="Client">
+                            <span class="client-email"
+                                  th:text="${solicitud.cliente != null ? solicitud.cliente.email : 'Client desconegut'}">Client</span>
+                        </td>
+
+                        <td data-label="Data"
+                            th:text="${solicitud.dataSolicitud != null ? #temporals.format(solicitud.dataSolicitud, 'dd/MM/yyyy HH:mm') : 'Data no disponible'}">Data</td>
+
+                        <td data-label="Documentació">
+                            <div class="change-list"
+                                 th:if="${canvisPerSolicitud[solicitud.id] != null and !#lists.isEmpty(canvisPerSolicitud[solicitud.id])}">
+                                <div class="change-item"
+                                     th:each="canvi : ${canvisPerSolicitud[solicitud.id]}">
+                                    <span class="change-name" th:text="${canvi.camp}">Camp</span>
+                                    <span class="change-old" th:text="${canvi.actual}">Valor actual</span>
+                                    <span class="change-arrow">→</span>
+                                    <span class="change-value" th:text="${canvi.proposat}">Valor proposat</span>
+                                </div>
+                            </div>
+
+                            <span class="change-note"
+                                  th:if="${canvisPerSolicitud[solicitud.id] == null or #lists.isEmpty(canvisPerSolicitud[solicitud.id])}">
+                                No hi ha dades de documentació disponibles.
+                            </span>
+                        </td>
+
+                        <td data-label="Estat">
+                            <span class="status status-pending">Pendent</span>
+                        </td>
+
+                        <td data-label="Accions">
+                            <div class="actions">
+                                <form th:action="@{/agent/solicitudes/aprobar-cambios}" method="post">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                    <input type="hidden" name="id" th:value="${solicitud.id}">
+                                    <button class="btn btn-approve" type="submit">Aprovar canvis</button>
+                                </form>
+
+                                <a class="btn btn-reject"
+                                   th:href="@{/agent/solicitudes/rebutjar(id=${solicitud.id})}">Rebutjar</a>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${solicitudesDocumentacion == null or #lists.isEmpty(solicitudesDocumentacion)}">
+                        <td colspan="5" class="empty-row">No hi ha sol·licituds de documentació pendents.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- MODIFICACIÓ DE TARGETA -->
+        <section class="section-card">
+
+            <div class="section-heading">
+                <h2>Modificació de targeta</h2>
+                <span class="counter"
+                      th:text="${solicitudesTarjeta != null ? #lists.size(solicitudesTarjeta) : 0}">0</span>
+            </div>
+
+            <p class="section-description">
+                Canvis de titular, caducitat i informació segura de la targeta.
+            </p>
+
+            <div class="table-wrap">
+                <table class="table stack">
+                    <thead>
+                    <tr>
+                        <th>Client que ho sol·licita</th>
+                        <th>Data</th>
+                        <th>Canvis proposats (actual → nou)</th>
+                        <th>Estat</th>
+                        <th>Accions</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="solicitud : ${solicitudesTarjeta}">
+                        <td data-label="Client">
+                            <span class="client-email"
+                                  th:text="${solicitud.cliente != null ? solicitud.cliente.email : 'Client desconegut'}">Client</span>
+                        </td>
+
+                        <td data-label="Data"
+                            th:text="${solicitud.dataSolicitud != null ? #temporals.format(solicitud.dataSolicitud, 'dd/MM/yyyy HH:mm') : 'Data no disponible'}">Data</td>
+
+                        <td data-label="Dades">
+                            <div class="change-list"
+                                 th:if="${canvisPerSolicitud[solicitud.id] != null and !#lists.isEmpty(canvisPerSolicitud[solicitud.id])}">
+                                <div class="change-item"
+                                     th:each="canvi : ${canvisPerSolicitud[solicitud.id]}">
+                                    <span class="change-name" th:text="${canvi.camp}">Camp</span>
+                                    <span class="change-old" th:text="${canvi.actual}">Valor actual</span>
+                                    <span class="change-arrow">→</span>
+                                    <span class="change-value" th:text="${canvi.proposat}">Valor proposat</span>
+                                </div>
+                            </div>
+
+                            <span class="change-note"
+                                  th:if="${canvisPerSolicitud[solicitud.id] == null or #lists.isEmpty(canvisPerSolicitud[solicitud.id])}">
+                                No hi ha dades de targeta disponibles.
+                            </span>
+                        </td>
+
+                        <td data-label="Estat">
+                            <span class="status status-pending">Pendent</span>
+                        </td>
+
+                        <td data-label="Accions">
+                            <div class="actions">
+                                <form th:action="@{/agent/solicitudes/aprobar-cambios}" method="post">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                    <input type="hidden" name="id" th:value="${solicitud.id}">
+                                    <button class="btn btn-approve" type="submit">Aprovar canvis</button>
+                                </form>
+
+                                <a class="btn btn-reject"
+                                   th:href="@{/agent/solicitudes/rebutjar(id=${solicitud.id})}">Rebutjar</a>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${solicitudesTarjeta == null or #lists.isEmpty(solicitudesTarjeta)}">
+                        <td colspan="5" class="empty-row">No hi ha sol·licituds de targeta pendents.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+</body>
+</html>

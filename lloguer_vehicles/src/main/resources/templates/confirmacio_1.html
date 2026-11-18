@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmació de Reserva</title>
+    <!-- Usa tu CSS principal aquí -->
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f6f9; padding: 20px; }
+        .ticket { background: white; max-width: 500px; margin: 0 auto; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .ticket h2 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        .dades p { margin: 10px 0; font-size: 16px; }
+        .preus { margin-top: 20px; border-top: 1px dashed #1a202c; padding-top: 15px; }
+        .total { font-size: 24px; font-weight: bold; color: #27ae60; margin-top: 15px; }
+        .btn-tornar { display: block; width: 100%; text-align: center; background: #3498db; color: white; padding: 12px; text-decoration: none; border-radius: 5px; margin-top: 25px; }
+        .btn-tornar:hover { background: #2980b9; }
+    </style>
+</head>
+<body>
+
+<div class="ticket">
+    <h2>Reserva Confirmada!</h2>
+    <div class="dades">
+        <p><strong>Codi de reserva:</strong> <span th:text="${reserva.codiReserva}">Codi</span></p>
+        <p><strong>Client:</strong> <span th:text="${reserva.client.nom + ' ' + reserva.client.cognoms}">Nom Client</span></p>
+        <p><strong>Vehicle:</strong> <span th:text="${reserva.vehicle.marca + ' ' + reserva.vehicle.model}">Marca Model</span></p>
+        <p><strong>Matrícula:</strong> <span th:text="${reserva.vehicle.matricula}">0000XXX</span></p>
+        <p><strong>Data d'inici:</strong> <span th:text="${reserva.dataInici}">Data</span></p>
+        <p><strong>Data final:</strong> <span th:text="${reserva.dataFi}">Data</span></p>
+    </div>
+
+    <div class="preus">
+        <p>Subtotal (Hores x Preu/hora): <span th:text="${subtotal} + ' €'">0.00 €</span></p>
+        <p>Fiança del vehicle: <span th:text="${fianca} + ' €'">0.00 €</span></p>
+        <div class="total">
+            TOTAL PAGAT: <span th:text="${total} + ' €'">0.00 €</span>
+        </div>
+    </div>
+
+    <a href="/reserva/meves" class="btn-tornar">Veure les meves reserves</a>
+</div>
+
+</body>
+</html>

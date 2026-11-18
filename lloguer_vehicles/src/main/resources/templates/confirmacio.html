@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ca" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registre pendent de validació</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+
+<body>
+
+    <main class="container">
+
+        <div class="page-head">
+            <h1>Registre rebut!</h1>
+            <p>El teu compte està pendent de validació.</p>
+        </div>
+
+        <section class="card stack-gap">
+
+            <div class="alert info">
+                <h2>El teu registre està pendent de revisió</h2>
+                <p>
+                    T'has registrat correctament a Nothingan Pri.
+                    Ara un agent ha de revisar i validar el teu compte.
+                </p>
+                <p>
+                    Rebràs la confirmació quan el teu compte hagi estat validat.
+                    Fins aleshores, no podràs accedir a totes les funcionalitats
+                    de la plataforma.
+                </p>
+            </div>
+
+            <div class="btn-row">
+                <a th:href="@{/login}" class="btn btn-teal">
+                    Tornar al login
+                </a>
+            </div>
+
+        </section>
+
+    </main>
+
+</body>
+</html>

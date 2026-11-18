@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ca"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#1e2a5e">
+
+    <title>Catàleg de Vehicles · Nothingan Pri S.A.</title>
+
+    <!-- CSS compartit -->
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+
+</head>
+
+<body>
+
+<!-- CAPÇALERA / MENÚ SUPERIOR -->
+<header class="topbar">
+
+    <div class="topbar-inner">
+
+        <!-- LOGO -->
+       <a class="brand" th:href="@{/}" aria-label="Nothingan Pri S.A.">
+    <img th:src="@{/img/logo.png}"
+         alt="Nothingan Pri S.A."
+         class="brand-logo">
+    <span>Nothingan <b>Pri S.A.</b></span>
+        </a>
+
+        <!-- NAVEGACIÓ -->
+        <nav class="nav">
+
+            <a th:href="@{/cataleg}" class="active">
+                Nova reserva
+            </a>
+
+            <a th:href="@{/reserva/meves}">
+                Les meves reserves
+            </a>
+
+            <a sec:authorize="hasAnyRole('ADMIN','ADMINISTRADOR','AGENT')"
+               th:href="@{/agent/clients}">
+                Gestió de clients
+            </a>
+
+        </nav>
+
+        <!-- MENÚ DEL PERFIL -->
+        <div class="profile-menu" sec:authorize="isAuthenticated()">
+
+            <button type="button"
+                    class="profile-avatar"
+                    aria-label="Obrir menú d'usuari"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                    onclick="toggleProfileMenu(this)">
+
+                <span th:text="${nomUsuari != null and !nomUsuari.isBlank()
+                    ? #strings.toUpperCase(#strings.substring(nomUsuari, 0, 1))
+                    : 'U'}">
+                    U
+                </span>
+
+            </button>
+
+            <!-- MENÚ DESPLEGABLE -->
+            <div class="profile-dropdown">
+
+                <!-- INFORMACIÓ DE L'USUARI -->
+                <div class="profile-dropdown-header">
+
+                    <span class="profile-name"
+                          th:text="${nomUsuari != null
+                          ? nomUsuari : 'El meu compte'}">
+
+                        Nom de l'usuari
+
+                    </span>
+
+                    <span class="profile-subtitle"
+                          th:text="${emailUsuari != null
+                          ? emailUsuari : ''}">
+
+                        correu@gmail.com
+
+                    </span>
+
+                </div>
+
+                <div class="dropdown-divider"></div>
+
+                <!-- PERFIL -->
+                <a th:href="@{/perfil}">
+
+                    <span class="menu-icon">👤</span>
+                    <span>El meu perfil</span>
+
+                </a>
+
+                <!-- RESERVES -->
+                <a th:href="@{/reserva/meves}">
+
+                    <span class="menu-icon">📅</span>
+                    <span>Les meves reserves</span>
+
+                </a>
+
+                <!-- CONFIGURACIÓ -->
+                <a th:href="@{/perfil/configuracio}">
+
+                    <span class="menu-icon">⚙️</span>
+                    <span>Configuració del compte</span>
+
+                </a>
+
+                <div class="dropdown-divider"></div>
+
+                <!-- TANCAR SESSIÓ -->
+                <form th:action="@{/logout}" method="post">
+
+                    <button type="submit" class="dropdown-logout">
+
+                        <span class="menu-icon">↪</span>
+                        <span>Tancar sessió</span>
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- CONTINGUT PRINCIPAL -->
+<main class="container">
+
+    <!-- TÍTOL DE LA PÀGINA -->
+    <div class="page-head">
+        <h1>Cerca de vehicles disponibles</h1>
+        <p class="lead">
+            Filtra per dates, categoria, preu o combustible per trobar el teu vehicle ideal.
+        </p>
+    </div>
+
+    <!-- Un sol formulari: la barra de dates i el panell lateral s'envien junts (RF45) -->
+    <form th:action="@{/cataleg}" method="get">
+
+        <!-- BARRA SUPERIOR: DATES -->
+        <div class="card mb">
+            <div class="search-grid">
+                <div class="field">
+                    <label for="dataInici">Data d'inici</label>
+                    <input id="dataInici" type="date" name="dataInici" class="input"
+                           th:value="${dataInici}">
+                </div>
+                <div class="field">
+                    <label for="dataFi">Data final</label>
+                    <input id="dataFi" type="date" name="dataFi" class="input"
+                           th:value="${dataFi}">
+                </div>
+                <div class="field" style="display:flex; align-items:flex-end; gap:8px;">
+                    <button type="submit" class="btn btn-teal" style="height:44px;">Filtrar</button>
+                    <a th:href="@{/cataleg}" class="btn btn-outline" style="height:44px;">Netejar</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Missatge d'error de negoci (dates incorrectes, etc.) -->
+        <div class="alert err" role="alert" th:if="${errorNegoci != null}" th:text="${errorNegoci}">Error</div>
+
+        <div class="cataleg-layout">
+
+            <!-- PANELL LATERAL DE FILTRES -->
+            <aside class="card filters-side" aria-label="Filtres">
+
+                <h2>Filtres</h2>
+
+                <fieldset class="filter-group">
+                    <legend>Categoria</legend>
+                    <label class="filter-option" th:each="c : ${categories}">
+                        <input type="checkbox" name="categoria"
+                               th:value="${c}"
+                               th:checked="${categoriesSel != null and categoriesSel.contains(c)}">
+                        <span th:text="${#strings.capitalize(#strings.toLowerCase(c))}">Turisme</span>
+                    </label>
+                </fieldset>
+
+                <fieldset class="filter-group">
+                    <legend>Preu per hora (€/h)</legend>
+                    <div class="price-row">
+                        <input type="number" name="preuMin" class="input" min="0" step="0.01"
+                               placeholder="Mín." aria-label="Preu mínim" th:value="${preuMin}">
+                        <input type="number" name="preuMax" class="input" min="0" step="0.01"
+                               placeholder="Màx." aria-label="Preu màxim" th:value="${preuMax}">
+                    </div>
+                </fieldset>
+
+                <fieldset class="filter-group">
+                    <legend>Combustible</legend>
+                    <label class="filter-option" th:each="c : ${combustibles}">
+                        <input type="checkbox" name="combustible"
+                               th:value="${c}"
+                               th:checked="${combustiblesSel != null and combustiblesSel.contains(c)}">
+                        <span th:text="${#strings.capitalize(#strings.toLowerCase(c))}">Gasolina</span>
+                    </label>
+                </fieldset>
+
+                <fieldset class="filter-group">
+                    <legend>Marca / model / matrícula</legend>
+                    <div class="field">
+                        <label for="marca">Marca</label>
+                        <input id="marca" type="text" name="marca" class="input"
+                               th:value="${marca}" placeholder="Ex: Seat">
+                    </div>
+                    <div class="field">
+                        <label for="model">Model</label>
+                        <input id="model" type="text" name="model" class="input"
+                               th:value="${modelVehicle}" placeholder="Ex: León">
+                    </div>
+                    <div class="field">
+                        <label for="matricula">Matrícula</label>
+                        <input id="matricula" type="text" name="matricula" class="input"
+                               th:value="${matricula}" placeholder="Ex: 1234 ABC">
+                    </div>
+                    <div class="field">
+                        <label for="any">Any de matriculació</label>
+                        <input id="any" type="number" name="any" class="input"
+                               th:value="${any}" placeholder="Ex: 2022" min="1990" max="2030">
+                    </div>
+                </fieldset>
+
+                <button type="submit" class="btn btn-teal btn-block">Aplicar filtres</button>
+            </aside>
+
+            <!-- RESULTATS -->
+            <section>
+                <p class="muted" th:text="${#lists.size(vehicles)} + ' vehicles trobats'">0 vehicles trobats</p>
+
+                <div class="alert info" th:if="${#lists.isEmpty(vehicles)}">
+                    Cap vehicle coincideix amb els filtres. Prova de treure'n algun.
+                </div>
+
+                <div class="grid-cards mt">
+                    <div class="vehicle" th:each="v : ${vehicles}" th:if="${v.actiu}">
+
+                        <div class="foto"
+                             style="width:100%; height:180px; overflow:hidden; display:flex; align-items:center; justify-content:center;">
+                            <img th:if="${v.fotoUrl != null and !v.fotoUrl.isEmpty()}"
+                                 th:src="${v.fotoUrl}"
+                                 th:alt="${v.marca + ' ' + v.model}"
+                                 loading="lazy"
+                                 style="width:100%; height:100%; object-fit:cover;">
+                            <img th:unless="${v.fotoUrl != null and !v.fotoUrl.isEmpty()}"
+                                 th:src="@{/img/Corsa.png}"
+                                 alt="Vehicle"
+                                 style="width:100%; height:100%; object-fit:cover;">
+                        </div>
+
+                        <div class="nom" th:text="${v.marca + ' ' + v.model}">Marca Model</div>
+                        <div class="muted" style="font-size:13px;"
+                             th:text="${#strings.capitalize(#strings.toLowerCase(v.combustible))} + ' · ' + ${v.places} + ' places'">Gasolina · 5 places</div>
+                        <div class="preu" th:text="${v.preuHora + ' EUR/hora'}">0 EUR/hora</div>
+
+                        <div class="actions-grid mt">
+                            <a th:href="@{/reserva/nova(vehicleId=${v.id})}" class="btn btn-teal btn-block">Reservar</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </form>
+
+</main>
+
+
+<!-- CHATBOT -->
+<div th:replace="~{fragments/chatbot :: prisita}"></div>
+
+
+<!-- JAVASCRIPT DEL MENÚ -->
+<script>
+
+    // Obrir i tancar el menú del perfil
+    function toggleProfileMenu(button) {
+
+        const menu = button.closest('.profile-menu');
+
+        const isOpen = menu.classList.toggle('open');
+
+        button.setAttribute('aria-expanded', isOpen);
+
+    }
+
+
+    // Tancar el menú quan es prem fora
+    document.addEventListener('click', function(event) {
+
+        document.querySelectorAll('.profile-menu').forEach(function(menu) {
+
+            if (!menu.contains(event.target)) {
+
+                menu.classList.remove('open');
+
+                const button = menu.querySelector('.profile-avatar');
+
+                if (button) {
+
+                    button.setAttribute('aria-expanded', 'false');
+
+                }
+
+            }
+
+        });
+
+    });
+
+
+    // Tancar el menú amb la tecla ESC
+    document.addEventListener('keydown', function(event) {
+
+        if (event.key === 'Escape') {
+
+            document.querySelectorAll('.profile-menu').forEach(function(menu) {
+
+                menu.classList.remove('open');
+
+                const button = menu.querySelector('.profile-avatar');
+
+                if (button) {
+
+                    button.setAttribute('aria-expanded', 'false');
+
+                }
+
+            });
+
+        }
+
+    });
+
+</script>
+
+</body>
+</html>

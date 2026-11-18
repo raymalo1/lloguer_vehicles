@@ -1,0 +1,234 @@
+
+<!DOCTYPE html>
+<html lang="ca" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#1e2a5e">
+    <title th:text="${esClient} ? 'Nova reserva · Nothingan Pri S.A.' : 'Nova reserva des de l\'oficina · Nothingan Pri S.A.'">Nova reserva · Nothingan Pri S.A.</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+
+<!--
+   Una sola plantilla amb dues vistes segons el rol:
+     - CLIENT: veu el seu nom i el vehicle triat al catàleg.
+     - AGENT / ADMIN: tria el client, el vehicle i les dates.
+-->
+
+<body>
+<div th:replace="~{fragments/office :: topbar}"></div>
+<div class="app">
+    <input type="checkbox" id="side" class="side-toggle" aria-label="Menú de gestió">
+    <div th:replace="~{fragments/office :: sidebar(activeMenu='nova')}"></div>
+    <div class="scrim" aria-hidden="true"></div>
+    <main class="main">
+
+        <!-- CAPÇALERA -->
+        <div class="page-head center-text mb">
+            <th:block th:if="${esClient}">
+                <h1>Nova reserva</h1>
+                <p class="lead">Tria les dates i l'hora del lloguer, calcula el preu i confirma la reserva.</p>
+            </th:block>
+            <th:block th:unless="${esClient}">
+                <h1>Nova reserva des de l'oficina</h1>
+                <p class="lead">Crea una reserva manualment assignant un client i un vehicle.</p>
+            </th:block>
+        </div>
+
+        <div th:if="${error}" class="alert err mb" style="color: #a94442; background-color: #f2dede; padding: 15px; border-radius: 4px;">
+            <strong th:text="${error}"></strong>
+            <div th:if="${esClient and senseTargeta == true}" style="margin-top: 8px;">
+                <a th:href="@{/perfil/tarjeta}" style="color: #a94442; text-decoration: underline; font-weight: bold;">Afegeix la teva targeta de crèdit</a>
+            </div>
+        </div>
+
+        <div th:if="${missatge}" class="alert ok mb" style="color: #3c763d; background-color: #dff0d8; padding: 15px; border-radius: 4px;">
+            <strong th:text="${missatge}"></strong>
+        </div>
+
+        <form th:action="@{/reserva/guardar}" th:object="${reservaDto}" method="post">
+            <div class="cols-3">
+
+                <!-- 1. CLIENT -->
+                <div class="card" th:if="${esClient}">
+                    <h2>1. Client</h2>
+                    <div class="field mt">
+                        <div class="field-label" style="font-weight:600;margin-bottom:5px;color:#1a202c;">Nom</div>
+                        <div th:text="${nomClient}"
+                             style="padding: 10px; border: 1px solid #ddd; border-radius: 4px; background: #f6f8fa; font-weight: bold;">Nom del client</div>
+                    </div>
+                    <div class="field mt" style="margin-top: 15px;">
+                        <div class="field-label" style="font-weight:600;margin-bottom:5px;color:#1a202c;">Correu electrònic</div>
+                        <div th:text="${emailClient}"
+                             style="padding: 10px; border: 1px solid #ddd; border-radius: 4px; background: #f6f8fa;">correu@exemple.com</div>
+                    </div>
+                    <p class="hint mt" style="font-size: 0.9em; color: #1a202c; margin-top: 15px;">
+                        La reserva es farà amb el teu compte. El pagament es cobrarà a la targeta de crèdit registrada al teu perfil.
+                    </p>
+                </div>
+
+                <!-- AGENT / ADMIN: tria el client -->
+                <div class="card" th:unless="${esClient}">
+                    <h2>1. Client</h2>
+                    <div class="field mt">
+                        <label for="clientId">Seleccionar Client <span class="req">*</span></label>
+                        <select id="clientId" class="select" th:field="*{clientId}" required style="width: 100%; padding: 10px; border: 1px solid #1a202c; border-radius: 4px;">
+                            <option value="">-- Tria un client --</option>
+                            <option th:each="c : ${clients}" th:value="${c.id}"
+                                    th:text="${(c.nom != null ? c.nom : '') + (c.cognoms != null ? ' ' + c.cognoms : '') + ' · ' + c.email}"></option>
+                        </select>
+                    </div>
+
+                    <div class="field mt" style="margin-top: 20px;">
+                        <a th:href="@{/registre}" class="btn" style="display: block; text-align: center; border: 1px solid #1a202c; background-color: transparent; color: #333; text-decoration: none;">
+                            + Alta ràpida de client
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 2. VEHICLE I DATES -->
+                <div class="card">
+                    <h2>2. Vehicle i dates</h2>
+
+                    <!-- CLIENT: vehicle seleccionat -->
+                    <th:block th:if="${esClient}">
+                        <div class="foto" style="width: 100%; height: 180px; overflow: hidden; display: flex; align-items: center; justify-content: center; margin-top: 10px;">
+                            <img th:if="${vehicleSeleccionat.fotoUrl != null}"
+                                 th:src="@{${vehicleSeleccionat.fotoUrl}}"
+                                 th:alt="${vehicleSeleccionat.marca + ' ' + vehicleSeleccionat.model}"
+                                 style="width: 100%; height: 100%; object-fit: cover;">
+                            <span th:unless="${vehicleSeleccionat.fotoUrl != null}"
+                                  style="color: #8a97a3; font-size: 0.9em;">Sense foto</span>
+                        </div>
+
+                        <div style="font-weight: 700; font-size: 1.15em; margin-top: 12px;"
+                             th:text="${vehicleSeleccionat.marca + ' ' + vehicleSeleccionat.model}">Marca Model</div>
+
+                        <div style="color: #1a202c; font-size: 0.9em; margin-top: 4px;"
+                             th:text="|${vehicleSeleccionat.categoria} · ${vehicleSeleccionat.combustible} · ${vehicleSeleccionat.places} places · ${vehicleSeleccionat.anyMatriculacio}|">TURISME · GASOLINA · 5 places · 2020</div>
+
+                        <input type="hidden" th:field="*{vehicleId}" />
+                    </th:block>
+
+                    <div class="field mt">
+                        <label for="dataInici">Data d'Inici <span class="req">*</span></label>
+                        <input type="date" id="dataInici" class="input"
+                               th:field="*{dataInici}"
+                               th:min="${esClient} ? ${avui} : null"
+                               required
+                               style="width: 100%; padding: 10px; border: 1px solid #1a202c; border-radius: 4px;"/>
+                    </div>
+
+                    <!-- NOU CAMP: HORA DE RECOLLIDA -->
+                    <div class="field mt" style="margin-top: 15px;">
+                        <label for="horaInici">Hora de recollida <span class="req">*</span></label>
+                        <input type="time" id="horaInici" class="input"
+                               th:field="*{horaInici}"
+                               required
+                               style="width: 100%; padding: 10px; border: 1px solid #1a202c; border-radius: 4px;"/>
+                        <small class="hint" style="display: block; margin-top: 5px; color: #1a202c;">
+                            Indica l'hora a la qual començarà el lloguer.
+                        </small>
+                    </div>
+
+                    <div class="field mt" style="margin-top: 15px;">
+                        <label for="dataFi">Data Final <span class="req">*</span></label>
+                        <input type="date" id="dataFi" class="input"
+                               th:field="*{dataFi}"
+                               th:min="${esClient} ? ${avui} : null"
+                               required
+                               style="width: 100%; padding: 10px; border: 1px solid #1a202c; border-radius: 4px;"/>
+                    </div>
+                    <div class="field mt" style="margin-top: 15px;">
+                        <label for="horaFi">Hora de retorn <span class="req">*</span></label>
+                        <input type="time" id="horaFi" class="input"
+                               th:field="*{horaFi}" required
+                               style="width: 100%; padding: 10px; border: 1px solid #1a202c; border-radius: 4px;"/>
+                    </div>
+
+                    <!-- CHECKBOX DOCUMENTACIÓN (antes de Calcular preu, solo para CLIENT) -->
+                    <div class="field mt" style="margin-top: 15px;" th:if="${esClient}">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="acceptaDocumentacio" name="acceptaDocumentacio" th:field="*{acceptaDocumentacio}" required>
+                            <span>Confirmo entendre que en el moment de llogar el vehicle, l'agent pot demanar-me la documentació pertinent (DNI, llicència de conduir, etc.)</span>
+                        </label>
+                    </div>
+
+                    <!-- AGENT / ADMIN: tria el vehicle -->
+                    <div class="field mt" style="margin-top: 15px;" th:unless="${esClient}">
+                        <label for="vehicleId">Vehicle disponible <span class="req">*</span></label>
+                        <select id="vehicleId" class="select" th:field="*{vehicleId}" required style="width: 100%; padding: 10px; border: 1px solid #1a202c; border-radius: 4px;">
+                            <option value="">-- Tria un vehicle --</option>
+                            <option th:each="v : ${vehicles}" th:value="${v.id}" th:text="${v.marca} + ' ' + ${v.model}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 3. CONFIRMACIÓ -->
+                <div class="card">
+                    <h2>3. Confirmació</h2>
+
+                    <div class="resum mt mb">
+                        <dl style="display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-bottom: 20px;">
+                            <dt th:if="${esClient and dies != null}">Durada</dt>
+                            <dd class="right" th:if="${esClient and dies != null}" th:text="${dies == 1} ? '1 dia' : |${dies} dies|">3 dies</dd>
+
+                            <dt>Subtotal</dt>
+                            <dd class="right" th:text="${reservaDto.subtotal != null ? #numbers.formatDecimal(reservaDto.subtotal, 1, 2) + ' €' : 'Pendent'}">Pendent</dd>
+
+                            <dt>Fiança</dt>
+                            <dd class="right" th:text="${reservaDto.fianca != null ? #numbers.formatDecimal(reservaDto.fianca, 1, 2) + ' €' : 'Pendent'}">Pendent</dd>
+                        </dl>
+
+                        <div class="total" style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.2em; border-top: 2px solid #eee; padding-top: 10px;">
+                            <span>Total</span>
+                            <span th:text="${reservaDto.total != null ? #numbers.formatDecimal(reservaDto.total, 1, 2) + ' €' : '-- €'}">-- €</span>
+                        </div>
+                    </div>
+
+                    <p class="hint center-text mb" style="font-size: 0.9em; color: #1a202c; margin-bottom: 15px;"
+                       th:text="${esClient} ? 'Tria les dates i l’hora i clica a Calcular preu. Quan vegis l’import, podràs confirmar la reserva.' : 'Tria les dates, l’hora, el vehicle i el client i clica a Calcular preu abans de confirmar.'">
+                        Tria les dates, l'hora, el vehicle i el client i clica a Calcular preu abans de confirmar.
+                    </p>
+
+                    <button type="submit" th:formaction="@{/reserva/calcular}" class="btn mt"
+                            style="width: 100%; background-color: #f0ad4e; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-bottom: 10px;">
+                        Calcular preu
+                    </button>
+
+                    <button type="submit" id="btn-confirmar" class="btn btn-teal btn-block btn-lg"
+                            th:disabled="${esClient and reservaDto.total == null}"
+                            th:style="'width: 100%; background-color: #2b7a8c; color: white; border: none; padding: 12px; border-radius: 5px; font-weight: bold;' + (${esClient and reservaDto.total == null} ? ' opacity: .55; cursor: not-allowed;' : ' cursor: pointer;')">
+                        Confirmar reserva
+                    </button>
+                </div>
+            </div>
+
+            <!-- Camp ocult per conservar el total -->
+            <input type="hidden" th:field="*{total}" />
+        </form>
+
+        <!-- Si el client canvia dates o hora, cal tornar a calcular el preu -->
+        <script th:if="${esClient}">
+            (function () {
+                var btn = document.getElementById('btn-confirmar');
+
+                ['dataInici', 'dataFi', 'horaInici'].forEach(function (id) {
+                    var el = document.getElementById(id);
+
+                    if (el) {
+                        el.addEventListener('change', function () {
+                            btn.disabled = true;
+                            btn.style.opacity = '.55';
+                            btn.style.cursor = 'not-allowed';
+                            btn.title = 'Torna a calcular el preu';
+                        });
+                    }
+                });
+            })();
+        </script>
+    </main>
+</div>
+</body>
+</html>

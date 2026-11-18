@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ca" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mètode de Pagament | Nothingan Pri S.A.</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+
+<body>
+
+<main class="container">
+
+    <header class="page-head">
+        <a th:href="@{/perfil}" class="muted">
+            ← Tornar al perfil
+        </a>
+
+        <h1>Mètode de pagament</h1>
+
+        <p>
+            Afegeix o actualitza el teu mètode de pagament
+            per gestionar les teves reserves.
+        </p>
+    </header>
+
+    <div class="split">
+
+        <section class="card">
+
+            <form th:action="@{/perfil/tarjeta}"
+                  method="post"
+                  onsubmit="return validarTargeta()">
+
+                <div class="field">
+                    <label for="titular">Nom del titular *</label>
+
+                    <input type="text"
+                           id="titular"
+                           name="titular"
+                           class="input"
+                           placeholder="Nom del titular"
+                           th:value="${client != null ? client.titularTargeta : ''}"
+                           maxlength="100"
+                           required>
+                </div>
+
+                <div class="field">
+                    <label for="numtarjetacredit">
+                        Número de targeta *
+                    </label>
+
+                    <input type="text"
+                           id="numtarjetacredit"
+                           name="numtarjetacredit"
+                           class="input"
+                           placeholder="Introdueix el número de targeta"
+                           inputmode="numeric"
+                           autocomplete="off"
+                           maxlength="19"
+                           required>
+
+                    <small class="muted">
+                        Introdueix el número complet de la targeta.
+                        No es mostrarà ni es conservarà completament.
+                    </small>
+                </div>
+
+                <div class="row-2">
+
+                    <div class="field">
+                        <label for="caducitatTargeta">
+                            Data de caducitat *
+                        </label>
+
+                        <input type="text"
+                               id="caducitatTargeta"
+                               name="caducitatTargeta"
+                               class="input"
+                               placeholder="MM/AA"
+                               th:value="${client != null ? client.caducitatTargeta : ''}"
+                               maxlength="5"
+                               required>
+                    </div>
+
+                    <div class="field">
+                        <label for="cvv">CVV *</label>
+
+                        <input type="password"
+                               id="cvv"
+                               class="input"
+                               placeholder="CVV"
+                               inputmode="numeric"
+                               autocomplete="off"
+                               maxlength="4"
+                               required>
+                    </div>
+
+                </div>
+
+                <input type="hidden" name="plan" value="BASIC">
+
+                <p class="muted">
+                    El CVV només s'utilitza com a dada introduïda
+                    al formulari i no s'envia ni s'emmagatzema.
+                </p>
+
+                <div class="btn-row between mt">
+
+                    <a th:href="@{/perfil}" class="btn btn-outline">
+                        Cancel·lar
+                    </a>
+
+                    <button type="submit" class="btn btn-teal">
+                        ✓ Desar targeta
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+        <aside class="stack-gap">
+
+            <article class="card">
+
+                <h2>Estat actual</h2>
+
+                <p class="muted mb">
+                    Estat del teu mètode de pagament:
+                </p>
+
+                <div th:if="${client != null
+                             and client.numtarjetacredit != null
+                             and !#strings.isEmpty(client.numtarjetacredit)}">
+
+                    <span class="pill validat">
+                        ✓ Targeta registrada
+                    </span>
+
+                    <p class="muted mt">
+                        Titular:
+                        <strong th:text="${client.titularTargeta}"></strong>
+                    </p>
+
+                    <p class="muted">
+                        Número registrat:
+                        <strong>
+                            **** **** ****
+                            <span th:text="${#strings.substring(
+                                client.numtarjetacredit,
+                                #strings.length(client.numtarjetacredit) - 4)}">
+                            </span>
+                        </strong>
+                    </p>
+
+                    <p class="muted">
+                        Caducitat:
+                        <strong th:text="${client.caducitatTargeta}"></strong>
+                    </p>
+
+                    <p class="muted">
+                        Si modifiques les dades, el canvi quedarà
+                        pendent de revisió per part de l'agent.
+                    </p>
+
+                </div>
+
+                <div th:unless="${client != null
+                                 and client.numtarjetacredit != null
+                                 and !#strings.isEmpty(client.numtarjetacredit)}">
+
+                    <span class="pill pendent">
+                        Pendent d'afegir
+                    </span>
+
+                    <p class="muted mt">
+                        La primera targeta es registrarà directament.
+                    </p>
+
+                </div>
+
+            </article>
+
+            <article class="card">
+
+                <h2>Avantatges</h2>
+
+                <p class="muted">
+                    Gestiona les teves reserves i els pagaments
+                    de manera més còmoda.
+                </p>
+
+            </article>
+
+        </aside>
+
+    </div>
+
+</main>
+
+<script>
+    function validarTargeta() {
+
+        const numero = document.getElementById('numtarjetacredit').value;
+        const titular = document.getElementById('titular').value;
+        const data = document.getElementById('caducitatTargeta').value;
+        const cvv = document.getElementById('cvv').value;
+
+        const numeroNet = numero.replace(/\s/g, '');
+
+        if (!titular.trim() || !data.trim() || !numeroNet || !cvv.trim()) {
+            alert('Has d\'omplir tots els camps.');
+            return false;
+        }
+
+        if (!/^\d{12,19}$/.test(numeroNet)) {
+            alert('El número de targeta ha de tenir entre 12 i 19 dígits.');
+            return false;
+        }
+
+        if (!/^\d{3,4}$/.test(cvv)) {
+            alert('El CVV ha de tenir 3 o 4 dígits.');
+            return false;
+        }
+
+        if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(data)) {
+            alert('La data de caducitat ha de tenir el format MM/AA.');
+            return false;
+        }
+
+        return true;
+    }
+</script>
+
+</body>
+</html>

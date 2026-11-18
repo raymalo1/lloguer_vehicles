@@ -1,0 +1,215 @@
+
+<!DOCTYPE html>
+<html lang="ca" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#1e2a5e">
+
+    <title>Llistat d'agents · Nothingan Pri S.A.</title>
+
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+
+    <style>
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+            border: 1px solid #dc3545;
+            cursor: pointer;
+        }
+
+        .btn-delete:hover {
+            background: #b02a37;
+            border-color: #b02a37;
+        }
+
+        .delete-form {
+            display: inline;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+<div th:replace="~{fragments/office :: topbar}"></div>
+
+<div class="app">
+
+    <input type="checkbox" id="side" class="side-toggle"
+           aria-label="Menú de gestió">
+
+    <div th:replace="~{fragments/office :: sidebar(activeMenu='agents')}"></div>
+
+    <div class="scrim" aria-hidden="true"></div>
+
+    <main class="main">
+
+        <div class="page-head">
+            <h1>Llistat i gestió d'agents</h1>
+            <p>
+                Consulta i gestiona els agents de Nothingan Pri S.A.
+            </p>
+        </div>
+
+        <!-- MISSATGES -->
+        <div th:if="${error}" class="alert alert-error"
+             th:text="${error}">
+        </div>
+
+        <div th:if="${missatge}" class="alert alert-success"
+             th:text="${missatge}">
+        </div>
+
+        <!-- FILTRES I ACCIONS -->
+        <form class="toolbar"
+              th:action="@{/admin/agents/filtrar}"
+              method="post">
+
+            <input type="hidden"
+                   th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}">
+
+            <div class="field">
+                <label for="dni">DNI</label>
+
+                <input class="input"
+                       type="text"
+                       id="dni"
+                       name="dni"
+                       placeholder="Introdueix el DNI..."
+                       th:value="${dni}">
+            </div>
+
+            <button class="btn" type="submit">
+                Filtrar
+            </button>
+
+            <a class="btn"
+               th:href="@{/admin/agents}">
+                Netejar
+            </a>
+
+            <a class="btn"
+               th:href="@{/admin/agents/nou}">
+                + Registrar nou agent
+            </a>
+
+        </form>
+
+        <!-- TAULA D'AGENTS -->
+        <div class="card table-card">
+
+            <div class="table-wrap">
+
+                <table class="table stack">
+
+                    <thead>
+                        <tr>
+                            <th scope="col">DNI</th>
+                            <th scope="col">Nom complet</th>
+                            <th scope="col">Telèfon</th>
+                            <th scope="col">Correu electrònic</th>
+                            <th scope="col">Rol</th>
+                            <th scope="col">Data de contractació</th>
+                            <th scope="col">Accions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr th:each="agent : ${agents}">
+
+                            <td data-label="DNI"
+                                th:text="${agent.DNI}">
+                                DNI
+                            </td>
+
+                            <td data-label="Nom complet"
+                                th:text="${agent.nom + ' ' + agent.cognoms}">
+                                Nom complet
+                            </td>
+
+                            <td data-label="Telèfon"
+                                th:text="${agent.telefon}">
+                                Telèfon
+                            </td>
+
+                            <td data-label="Correu electrònic"
+                                th:text="${agent.email}">
+                                Correu electrònic
+                            </td>
+
+                            <td data-label="Rol"
+                                th:text="${agent.rol}">
+                                Rol
+                            </td>
+
+                            <td data-label="Data de contractació"
+                                th:text="${agent.dataContracte}">
+                                Data de contractació
+                            </td>
+
+                            <!-- ACCIONS -->
+                            <td data-label="Accions">
+
+                                <div class="btn-row">
+
+                                    <!-- VEURE FITXA -->
+                                    <a class="btn"
+                                       th:href="@{/admin/agents/dni/{dni}(dni=${agent.DNI})}">
+                                        Veure fitxa
+                                    </a>
+
+                                    <!-- EDITAR -->
+                                    <a class="btn btn-outline"
+                                       th:href="@{/admin/agents/editar/{id}(id=${agent.id})}">
+                                        Editar
+                                    </a>
+
+                                    <!-- ELIMINAR -->
+                                    <form class="delete-form"
+                                          th:action="@{/admin/agents/eliminar/{id}(id=${agent.id})}"
+                                          method="post"
+                                          onsubmit="return confirm('Estàs segur que vols eliminar aquest agent? Aquesta acció no es pot desfer.');">
+
+                                        <input type="hidden"
+                                               th:name="${_csrf.parameterName}"
+                                               th:value="${_csrf.token}">
+
+                                        <button type="submit"
+                                                class="btn btn-danger">
+                                            Eliminar
+                                        </button>
+
+                                    </form>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                        <!-- SENSE RESULTATS -->
+                        <tr th:if="${#lists.isEmpty(agents)}">
+                            <td colspan="7">
+                                No s'han trobat agents.
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+</html>

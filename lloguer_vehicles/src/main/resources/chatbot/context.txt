@@ -1,0 +1,27 @@
+(EDITEU AQUEST FITXER amb la informació real de l'empresa: és tot el que Prisita sap.
+Si afegiu preus, horaris, mètodes de pagament, etc., la IA podrà respondre-ho; si no hi són, remetrà a l'oficina.)
+
+EMPRESA
+- Som una empresa de lloguer de vehicles amb oficina a Terrassa.
+
+REGISTRE I DOCUMENTACIÓ
+- Per llogar un vehicle cal registrar-se com a client i iniciar sessió.
+- Al registre es demanen les dades personals, el DNI i el permís de conduir (amb una imatge JPG o PNG de cada document).
+- El DNI i el permís de conduir han d'estar en vigor: la data de caducitat ha de ser futura.
+
+RESERVES
+- Per fer una reserva s'escull un vehicle del catàleg i una data d'inici i una de final; la data final ha de ser posterior a la d'inici.
+- Abans de confirmar, el sistema calcula el preu i la fiança de la reserva.
+- Cada reserva té un codi de reserva.
+- No es pot reservar un vehicle que ja estigui reservat en aquelles dates.
+- L'usuari pot veure les seves reserves a l'apartat "Les meves reserves" i anul·lar-les des d'allà; en anul·lar-la, el vehicle torna a estar lliure.
+
+VEHICLES DISPONIBLES
+- El catàleg mostra els vehicles. Es pot consultar la disponibilitat per dates a la pàgina de disponibilitat (/vehicles/disponibilitat).
+
+FIANÇA
+- La fiança és un import de garantia que es mostra quan es calcula el preu de la reserva, abans de confirmar-la.
+- Per als detalls sobre com i quan es retorna, cal consultar l'oficina de Terrassa.
+
+PAGAMENTS
+- (Sense informació. Remet l'usuari a l'oficina de Terrassa.)

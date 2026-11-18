@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ca" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1e2a5e">
+    <title>Revisió · Nothingan Pri S.A.</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+
+<body>
+
+<header class="topbar">
+    <div class="topbar-inner">
+        <a class="brand" th:href="@{/}">
+            <span class="brand-mark">N</span>
+            <span>Nothingan Pri S.A.</span>
+        </a>
+
+        <nav class="nav">
+            <a th:href="@{/login}">Inicia sessió</a>
+            <a class="active" th:href="@{/registre}">Registra't</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container">
+    <div class="center-col">
+        <section class="card wide">
+
+            <div class="steps">
+                <span class="step">1. Dades personals</span>
+                <span class="step">2. Documentació</span>
+                <span class="step active">3. Revisió</span>
+            </div>
+
+            <h1>Revisa la teva sol·licitud</h1>
+
+            <p class="muted">
+                Comprova que totes les dades siguin correctes abans de confirmar.
+            </p>
+
+            <div th:if="${error}" class="alert err"
+                 th:text="${error}"></div>
+
+            <!-- DADES PERSONALS -->
+            <section class="field">
+                <h2>Dades personals</h2>
+
+                <p><strong>Nom:</strong>
+                    <span th:text="${registre.nom}">No indicat</span>
+                </p>
+
+                <p><strong>Cognoms:</strong>
+                    <span th:text="${registre.cognoms}">No indicats</span>
+                </p>
+
+                <p><strong>Correu electrònic:</strong>
+                    <span th:text="${registre.email}">No indicat</span>
+                </p>
+
+                <p><strong>Telèfon:</strong>
+                    <span th:text="${registre.telefon}">No indicat</span>
+                </p>
+
+                <p><strong>Província:</strong>
+                    <span th:text="${registre.provincia != null and !#strings.isEmpty(registre.provincia) ? registre.provincia : 'No indicada'}">No indicada</span>
+                </p>
+
+                <p><strong>Nacionalitat:</strong>
+                    <span th:text="${registre.nacionalitat}">No indicada</span>
+                </p>
+
+                <p><strong>Adreça:</strong>
+                    <span th:text="${registre.adreca}">No indicada</span>
+                </p>
+
+                <p class="muted">
+                    <a th:href="@{/registre}">Modificar les dades personals</a>
+                </p>
+            </section>
+
+            <!-- DOCUMENTACIÓ -->
+            <div class="field">
+                <h2>Documentació</h2>
+
+                <p>Número de document:
+                    <span th:text="${documentacio.numeroDocument}"></span>
+                </p>
+
+                <p>Document d'identitat:
+                    <span th:text="${documentacio.nomDocumentIdentitat}">
+                        No adjuntat
+                    </span>
+                </p>
+
+                <p>Caducitat del document:
+                    <span th:text="${documentacio.dataCaducitat}"></span>
+                </p>
+
+                <p>Permís de conduir:
+                    <span th:text="${documentacio.nomLlicenciaConduir}">
+                        No adjuntat
+                    </span>
+                </p>
+
+                <p>Tipus de llicència:
+                    <span th:text="${documentacio.tipusLlicencia}"></span>
+                </p>
+
+                <p>Caducitat de la llicència:
+                    <span th:text="${documentacio.dataCaducitatLlicencia}"></span>
+                </p>
+            </div>
+
+            <!-- CONFIRMACIÓ -->
+            <form th:action="@{/revisio}" method="post">
+
+                <input type="hidden"
+                       th:name="${_csrf.parameterName}"
+                       th:value="${_csrf.token}">
+
+                <div class="field">
+                    <label>
+                        <input type="checkbox"
+                               id="confirmacioDades"
+                               name="confirmacioDades"
+                               value="true"
+                               required>
+                        Confirmo que les dades proporcionades són correctes.
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-block">
+                    Confirmar les dades
+                </button>
+
+            </form>
+
+        </section>
+    </div>
+</main>
+
+</body>
+</html>

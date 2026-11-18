@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ca" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revisar sol·licitud</title>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 30px 15px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        h1, h2 { color: #263445; }
+        h1 { margin-top: 0; }
+        h2 { font-size: 20px; margin-top: 25px; }
+
+        .info {
+            background: #f5f7fa;
+            padding: 18px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .field { margin-bottom: 18px; }
+
+        .field label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 13px;
+        }
+
+        .field p {
+            margin: 0;
+            overflow-wrap: anywhere;
+            font-size: 15px;
+            color: #1a202c;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px 24px;
+        }
+
+        @media (max-width: 600px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+
+        .document-preview {
+            display: block;
+            max-width: 100%;
+            max-height: 350px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        a { color: #1769aa; }
+
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-family: Arial, sans-serif;
+            font-size: 15px;
+            resize: vertical;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        button, .back-link {
+            display: inline-block;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .reject-button {
+            background: #c0392b;
+            color: white;
+        }
+
+        .reject-button:hover { background: #a93226; }
+
+        .approve-button {
+            background: #1e7a45;
+            color: white;
+        }
+
+        .approve-button:hover { background: #196338; }
+
+        .back-link {
+            background: #e5e9ef;
+            color: #263445;
+        }
+
+        .alert-error {
+            background: #fde8e8;
+            color: #b42318;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px solid #ddd;
+            margin: 25px 0;
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 20px; }
+            .actions { flex-direction: column; }
+
+            button, .back-link {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <h1>Revisar sol·licitud</h1>
+
+    <div th:if="${error != null}"
+         class="alert-error"
+         th:text="${error}"></div>
+
+    <!-- ===== DADES DE LA SOL·LICITUD ===== -->
+    <div class="info" th:if="${solicitud != null}">
+
+        <div class="grid-2">
+            <div class="field">
+                <label>ID de la sol·licitud</label>
+                <p th:text="${solicitud.id}"></p>
+            </div>
+
+            <div class="field">
+                <label>Tipus de sol·licitud</label>
+                <p th:text="${solicitud.tipo}"></p>
+            </div>
+
+            <div class="field">
+                <label>Estat</label>
+                <p th:text="${solicitud.estado}"></p>
+            </div>
+
+            <div class="field">
+                <label>Data de sol·licitud</label>
+                <p th:text="${solicitud.dataSolicitud}"></p>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- ===== DADES DEL CLIENT QUE ES REGISTRA ===== -->
+    <h2>Dades del client</h2>
+
+    <div class="info" th:if="${solicitud != null and solicitud.cliente != null}">
+        <div class="grid-2">
+
+            <div class="field">
+                <label>Nom</label>
+                <p th:text="${solicitud.cliente.nom != null ? solicitud.cliente.nom : '—'}">—</p>
+            </div>
+
+            <div class="field">
+                <label>Cognoms</label>
+                <p th:text="${solicitud.cliente.cognoms != null ? solicitud.cliente.cognoms : '—'}">—</p>
+            </div>
+
+            <div class="field">
+                <label>Correu electrònic</label>
+                <p th:text="${solicitud.cliente.email != null ? solicitud.cliente.email : '—'}">—</p>
+            </div>
+
+            <div class="field">
+                <label>Telèfon</label>
+                <p th:text="${solicitud.cliente.telefon != null ? solicitud.cliente.telefon : '—'}">—</p>
+            </div>
+
+            <div class="field">
+                <label>Província</label>
+                <p th:text="${solicitud.cliente.provincia != null ? solicitud.cliente.provincia : '—'}">—</p>
+            </div>
+
+            <div class="field">
+                <label>DNI</label>
+                <p th:text="${solicitud.cliente.DNI != null ? solicitud.cliente.DNI : '—'}">—</p>
+            </div>
+
+            <div class="field" th:if="${solicitud.cliente.cadDNI != null}">
+                <label>Caducitat DNI</label>
+                <p th:text="${solicitud.cliente.cadDNI}">—</p>
+            </div>
+
+            <div class="field" th:if="${solicitud.cliente.Lliconduir != null}">
+                <label>Llicència de conduir</label>
+                <p th:text="${solicitud.cliente.Lliconduir}">—</p>
+            </div>
+
+            <div class="field" th:if="${solicitud.cliente.adreca != null}">
+                <label>Adreça</label>
+                <p th:text="${solicitud.cliente.adreca}">—</p>
+            </div>
+
+        </div>
+    </div>
+
+    <div th:if="${solicitud == null or solicitud.cliente == null}">
+        <p>No hi ha dades de client disponibles.</p>
+    </div>
+
+    <hr>
+
+    <!-- ===== DADES PROPOSADES (canvis / documentació) ===== -->
+    <h2>Dades proposades</h2>
+
+    <div th:if="${datosLegibles != null and !datosLegibles.isEmpty()}">
+        <div class="field" th:each="entrada : ${datosLegibles}">
+            <label th:text="${entrada.key}"></label>
+            <p th:text="${entrada.value}"></p>
+        </div>
+    </div>
+
+    <div th:if="${datosLegibles == null or datosLegibles.isEmpty()}">
+        <p>No hi ha dades proposades addicionals per mostrar.</p>
+    </div>
+
+    <div th:if="${fotoDniProposada != null or fotoPermisProposat != null}">
+        <hr>
+        <h2>Documents nous proposats</h2>
+
+        <div th:if="${fotoDniProposada != null}" class="field">
+            <label>Document d'identitat nou</label>
+
+            <img th:if="${#strings.startsWith(fotoDniProposada, 'data:image/')}"
+                 th:src="${fotoDniProposada}"
+                 alt="DNI proposat"
+                 class="document-preview">
+
+            <a th:if="${#strings.startsWith(fotoDniProposada, 'data:application/pdf')}"
+               th:href="${fotoDniProposada}"
+               target="_blank"
+               rel="noopener">
+                Obrir DNI proposat en PDF
+            </a>
+        </div>
+
+        <div th:if="${fotoPermisProposat != null}" class="field">
+            <label>Permís de conduir nou</label>
+
+            <img th:if="${#strings.startsWith(fotoPermisProposat, 'data:image/')}"
+                 th:src="${fotoPermisProposat}"
+                 alt="Permís proposat"
+                 class="document-preview">
+
+            <a th:if="${#strings.startsWith(fotoPermisProposat, 'data:application/pdf')}"
+               th:href="${fotoPermisProposat}"
+               target="_blank"
+               rel="noopener">
+                Obrir permís proposat en PDF
+            </a>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- ===== ACCIONS ===== -->
+    <h2>Accions</h2>
+
+    <div class="actions" th:if="${solicitud != null}">
+
+        <!-- Aprovar (registre) -->
+        <form th:if="${solicitud.tipo != null and #strings.equalsIgnoreCase(solicitud.tipo, 'REGISTRO')}"
+              th:action="@{/agent/solicitudes/aprobar}"
+              method="post"
+              style="display:inline;"
+              onsubmit="return confirm('Vols aprovar aquest registre?');">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <input type="hidden" name="id" th:value="${solicitud.id}">
+            <button type="submit" class="approve-button">Aprovar registre</button>
+        </form>
+
+        <!-- Rebutjar -->
+        <form th:action="@{/agent/solicitudes/rechazar}"
+              method="post"
+              style="flex: 1; min-width: 260px;">
+
+            <input type="hidden"
+                   th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}">
+
+            <input type="hidden"
+                   name="id"
+                   th:value="${solicitud.id}">
+
+            <div class="field">
+                <label for="motivo">Motiu del rebuig</label>
+                <textarea id="motivo"
+                          name="motivo"
+                          minlength="3"
+                          maxlength="1000"
+                          required
+                          placeholder="Explica el motiu pel qual rebutges aquesta sol·licitud..."></textarea>
+            </div>
+
+            <div class="actions">
+                <button type="submit" class="reject-button">
+                    Rebutjar sol·licitud
+                </button>
+
+                <a th:href="@{/agent/clients}" class="back-link">
+                    Tornar als clients
+                </a>
+            </div>
+        </form>
+    </div>
+
+</div>
+</body>
+</html>

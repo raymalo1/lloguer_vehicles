@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ca" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="theme-color" content="#1e2a5e"/>
+  <title>Nova reserva des de l'oficina · Nothingan Pri S.A.</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+</head>
+<body>
+<div th:replace="~{fragments/office :: topbar}"></div>
+<div class="app">
+    <input type="checkbox" id="side" class="side-toggle" aria-label="Menú de gestió">
+    <div th:replace="~{fragments/office :: sidebar(activeMenu='nova')}"></div>
+    <div class="scrim" aria-hidden="true"></div>
+    <main class="main">
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" th:href="@{/cataleg}" aria-label="Nothingan Pri S.A.">
+        <span>Nothingan <b>Pri S.A.</b></span>
+      </a>
+      
+      <nav class="nav">
+        <a th:href="@{/cataleg}">Catàleg</a>
+        <a th:href="@{/reserva/nova}" class="active">Nova reserva</a>
+        <a th:href="@{/reserva/meves}">Les meves reserves</a>
+        <a href="#">El meu perfil</a>
+      </nav>
+      
+      <div class="nav-actions">
+        <a th:href="@{/logout}" class="btn btn-outline">Tancar sessió</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="page-head">
+      <h1>Nova reserva des de l'oficina</h1>
+      <p class="lead">Introdueix les dades necessàries per registrar la reserva.</p>
+    </div>
+
+    <div th:if="${error}" class="alert err" th:text="${error}"></div>
+    <div th:if="${missatge}" class="alert ok" th:text="${missatge}"></div>
+
+    <!-- El formulario. IMPORTANTE: th:action base para que Spring no se queje, pero lo cambiaremos por JS -->
+    <form id="reservaForm" th:action="@{/reserva/calcular}" th:object="${reservaDto}" method="post" class="mt">
+      
+      <!-- Campos ocultos para mantener los valores calculados al enviar a /guardar -->
+      <input type="hidden" th:field="*{subtotal}" />
+      <input type="hidden" th:field="*{fianca}" />
+      <input type="hidden" th:field="*{total}" />
+
+      <div class="cols-3">
+          
+        <div class="card">
+          <h2>1. Client</h2>
+          <div class="field">
+            <label for="clientId">Cercar client (ID de prova): <span class="req">*</span></label>
+            <input type="number" id="clientId" th:field="*{clientId}" class="input" placeholder="Introdueix ID del client" required="required"/>
+          </div>
+          <button type="button" class="btn btn-outline btn-block mt">+ Alta ràpida de client</button>
+        </div>
+
+        <div class="card">
+          <h2>2. Vehicle i dates</h2>
+          <div class="field">
+            <label for="dataInici">Data d'Inici: <span class="req">*</span></label>
+            <!-- Añadimos value formateado para que no se borre la fecha al recargar -->
+            <input type="date" id="dataInici" name="dataInici" class="input" required="required"
+                   th:value="${reservaDto.dataInici != null ? #temporals.format(reservaDto.dataInici, 'yyyy-MM-dd') : ''}" />
+          </div>
+          <div class="field">
+            <label for="dataFi">Data Final: <span class="req">*</span></label>
+            <input type="date" id="dataFi" name="dataFi" class="input" required="required"
+                   th:value="${reservaDto.dataFi != null ? #temporals.format(reservaDto.dataFi, 'yyyy-MM-dd') : ''}" />
+          </div>
+          <div class="field">
+            <label for="vehicleId">Vehicle disponible (ID de prova): <span class="req">*</span></label>
+            <input type="number" id="vehicleId" th:field="*{vehicleId}" class="input" placeholder="Introdueix ID del vehicle" required="required"/>
+          </div>
+        </div>
+
+        <div class="card resum">
+          <h2>3. Confirmació</h2>
+          
+          <dl class="mt">
+            <dt>Subtotal</dt>
+            <!-- Eliminamos el recuadro de EUR a petición tuya, mostrando solo el número y el símbolo € -->
+            <dd class="right" th:text="${reservaDto.subtotal != null ? reservaDto.subtotal + ' €' : '--'}">--</dd>
+            
+            <dt>Fiança</dt>
+            <dd class="right" th:text="${reservaDto.fianca != null ? reservaDto.fianca + ' €' : '--'}">--</dd>
+          </dl>
+
+          <div class="total">
+            <span>Total</span>
+            <span th:text="${reservaDto.total != null ? reservaDto.total + ' €' : '--'}">--</span>
+          </div>
+          
+          <p class="hint mt" th:if="${reservaDto.total == null}">
+            Has de calcular el preu abans de confirmar.
+          </p>
+
+          <button type="button" onclick="submitForm('/reserva/calcular')" class="btn btn-outline btn-block mt">
+            1. Calcular Preu
+          </button>
+
+          <button type="button" onclick="submitForm('/reserva/guardar')" class="btn btn-teal btn-block mt" 
+                  th:disabled="${reservaDto.total == null || reservaDto.total == 0.0}">
+            2. Confirmar reserva
+          </button>
+        </div>
+
+      </div>
+    </form>
+    </main>
+  </div>
+
+  <script>
+    function submitForm(actionUrl) {
+        var form = document.getElementById('reservaForm');
+        form.action = actionUrl;
+        form.submit();
+    }
+  </script>
+
+</body>
+</html>

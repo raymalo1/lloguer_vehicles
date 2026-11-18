@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ca" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<!--
+  Menú lateral i topbar del back-office.
+  La pestanya esquerra només es pinta per a AGENT, ADMIN i ADMINISTRADOR.
+  El client veu la mateixa capçalera, sense menú de gestió.
+
+  Pantalles públiques (no usar aquest fragment):
+  login, registre, documentació/revisió de l'alta, catàleg, perfil i les seves subpàgines.
+
+  Ús:
+    <div th:replace="~{fragments/office :: topbar}"></div>
+    <div class="app">
+      <input type="checkbox" id="side" class="side-toggle" aria-label="Menú de gestió">
+      <div th:replace="~{fragments/office :: sidebar(activeMenu='clients')}"></div>
+      <div class="scrim" aria-hidden="true"></div>
+      <main class="main"> ... </main>
+    </div>
+
+  activeMenu: vehicles | clients | reserves | agents | disponibilitat | nova
+-->
+
+<header th:fragment="topbar" class="topbar office">
+    <div class="topbar-inner">
+        <label class="burger left" for="side" aria-label="Obre o tanca el menú de gestió"
+               sec:authorize="hasAnyRole('ADMIN','ADMINISTRADOR','AGENT')">
+            <span></span><span></span><span></span>
+        </label>
+        <a class="brand" th:href="@{/cataleg}" aria-label="Nothingan Pri S.A. · catàleg">
+            <span>Nothingan <b>Pri S.A.</b></span>
+        </a>
+
+        <nav class="office-client-nav" sec:authorize="hasRole('CLIENT') and !hasAnyRole('ADMIN','ADMINISTRADOR','AGENT')"
+             aria-label="Navegació del client">
+            <a th:href="@{/cataleg}">Catàleg</a>
+            <a th:href="@{/reserva/meves}">Les meves reserves</a>
+            <a th:href="@{/perfil}">El meu perfil</a>
+        </nav>
+
+        <a class="user-chip" th:href="@{/perfil}" sec:authorize="isAuthenticated()">
+            <span class="avatar"
+                  th:text="${#authentication != null and #authentication.name != null
+                            ? #strings.substring(#authentication.name,0,1).toUpperCase()
+                            : 'U'}">U</span>
+            <span class="who">
+                <small sec:authorize="hasAnyRole('ADMIN','ADMINISTRADOR')">Admin</small>
+                <small sec:authorize="hasRole('AGENT') and !hasAnyRole('ADMIN','ADMINISTRADOR')">Agent</small>
+                <small sec:authorize="hasRole('CLIENT') and !hasAnyRole('ADMIN','ADMINISTRADOR','AGENT')">Client</small>
+            </span>
+        </a>
+    </div>
+</header>
+
+<aside th:fragment="sidebar(activeMenu)" class="sidebar"
+       sec:authorize="hasAnyRole('ADMIN','ADMINISTRADOR','AGENT')"
+       aria-label="Menú de gestió">
+
+    <div class="group">Operativa</div>
+
+    <a th:href="@{/cataleg}">Quadre de comandament</a>
+
+    <a th:href="@{/vehicles}"
+       th:classappend="${activeMenu == 'vehicles'} ? ' active'"
+       th:attr="aria-current=${activeMenu == 'vehicles'} ? 'page' : null">
+        Vehicles
+    </a>
+
+    <a th:href="@{/vehicles/disponibilitat}"
+       th:classappend="${activeMenu == 'disponibilitat'} ? ' active'"
+       th:attr="aria-current=${activeMenu == 'disponibilitat'} ? 'page' : null">
+        Disponibilitat
+    </a>
+
+    <a th:href="@{/agent/clients}"
+       th:classappend="${activeMenu == 'clients'} ? ' active'"
+       th:attr="aria-current=${activeMenu == 'clients'} ? 'page' : null">
+        Clients
+    </a>
+
+    <a th:href="@{/reserva/meves}"
+       th:classappend="${activeMenu == 'reserves' or activeMenu == 'lliuraments'} ? ' active'"
+       th:attr="aria-current=${activeMenu == 'reserves' or activeMenu == 'lliuraments'} ? 'page' : null">
+        Reserves
+    </a>
+
+    <a th:href="@{/reserva/nova}"
+       th:classappend="${activeMenu == 'nova'} ? ' active'"
+       th:attr="aria-current=${activeMenu == 'nova'} ? 'page' : null">
+        Nova reserva
+    </a>
+
+    <div sec:authorize="hasAnyRole('ADMIN','ADMINISTRADOR')">
+    <div class="group">Només administrador</div>
+
+        <a th:href="@{/admin/agents}"
+        th:classappend="${activeMenu == 'agents'} ? ' active'"
+        th:attr="aria-current=${activeMenu == 'agents'} ? 'page' : null">
+            Agents
+        </a>
+        <a th:href="@{/reserva/informe}"
+           th:classappend="${activeMenu == 'informe'} ? ' active'"
+           th:attr="aria-current=${activeMenu == 'informe'} ? 'page' : null">
+            Informe reserves
+        </a> 
+        <a th:href="@{/admin/logs}"
+           th:classappend="${activeMenu == 'informe'} ? ' active'"
+           th:attr="aria-current=${activeMenu == 'informe'} ? 'page' : null">
+            Logs
+        </a>             
+    </div>
+
+    <div class="bottom">
+        <form th:action="@{/logout}" method="post" style="margin:0">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <button type="submit"
+                    style="display:block;width:100%;text-align:left;background:none;border:0;
+                           color:#cfe0ec;padding:11px 20px;font-size:14px;cursor:pointer">
+                Tancar sessió
+            </button>
+        </form>
+    </div>
+</aside>
+
+</html>

@@ -1,0 +1,488 @@
+
+<!DOCTYPE html>
+<html lang="ca" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Actualitzar Documents | Nothingan Pri S.A.</title>
+
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+
+    <style>
+        .preview-image {
+            max-width: 100%;
+            max-height: 220px;
+            object-fit: contain;
+            border-radius: 10px;
+            margin-top: 12px;
+        }
+
+        .upload-box {
+            padding: 15px;
+            border: 1px dashed var(--border);
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .document-link {
+            display: inline-block;
+            margin-top: 10px;
+            color: var(--ok);
+            font-weight: 600;
+        }
+
+        .preview-container {
+            margin-top: 12px;
+        }
+
+        .field {
+            margin-bottom: 15px;
+        }
+
+        .field label {
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .field input {
+            width: 100%;
+        }
+
+        .approval-notice {
+            padding: 13px;
+            border-radius: 10px;
+            margin-top: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .approval-notice.warning {
+            background: #fff4df;
+            border: 1px solid #e9c77e;
+            color: #805b12;
+        }
+
+        .approval-notice.success {
+            background: #e8f7ee;
+            border: 1px solid #a5d6b5;
+            color: #246b3c;
+        }
+    </style>
+</head>
+
+<body>
+
+<main class="container">
+
+    <header class="page-head">
+
+        <a th:href="@{/perfil}"
+           class="muted"
+           style="display:inline-block; margin-bottom:8px;">
+            ← Tornar al perfil
+        </a>
+
+        <h1>Actualitzar Documents d'Identificació</h1>
+
+        <p>
+            Puja o renova els documents del teu DNI/NIE
+            i del teu permís de conduir.
+        </p>
+
+    </header>
+
+    <div class="split">
+
+        <section class="card">
+
+            <form th:action="@{/perfil/documentacio}"
+                  method="post"
+                  enctype="multipart/form-data">
+
+                <input type="hidden"
+                       th:if="${_csrf != null}"
+                       th:name="${_csrf.parameterName}"
+                       th:value="${_csrf.token}">
+
+                <h2>Document d'identitat (DNI / NIE)</h2>
+
+                <p class="muted mb">
+                    Introdueix les dades del teu document d'identitat.
+                </p>
+
+                <div class="field">
+
+                    <label for="numeroDocument">
+                        Número de DNI / NIE
+                    </label>
+
+                    <input type="text"
+                           id="numeroDocument"
+                           name="numeroDocument"
+                           class="input"
+                           placeholder="Ex. 12345678A"
+                           th:value="${client != null ? client.DNI : ''}"
+                           required>
+
+                </div>
+
+                <div class="field">
+
+                    <label for="dataCaducitat">
+                        Data de caducitat del DNI / NIE
+                    </label>
+
+                    <input type="date"
+                           id="dataCaducitat"
+                           name="dataCaducitat"
+                           class="input"
+                           th:value="${client != null ? client.cadDNI : ''}"
+                           required>
+
+                </div>
+
+                <div class="field upload-box">
+
+                    <label for="documentIdentitat">
+                        Seleccionar document DNI/NIE
+                    </label>
+
+                    <input type="file"
+                           id="documentIdentitat"
+                           name="documentIdentitat"
+                           class="input"
+                           accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf"
+                           th:attr="required=${client == null or client.fotoDniAnverso == null}">
+
+                    <small class="muted">
+                        Si ja tens un document guardat, només cal
+                        seleccionar un fitxer si el vols substituir.
+                    </small>
+
+                    <div id="previewDni"
+                         class="preview-container">
+                    </div>
+
+                    <div th:if="${client != null and client.fotoDniAnverso != null}"
+                         class="approval-notice warning">
+
+                        <strong>Important:</strong>
+                        Si substitueixes el document actual,
+                        la nova fotografia quedarà pendent
+                        de validació per un administrador.
+
+                        El document actual es mantindrà fins
+                        que l'administrador aprovi el canvi.
+
+                    </div>
+
+                </div>
+
+                <div class="field mt">
+
+                    <label>Document actual</label>
+
+                    <div class="doc-preview">
+
+                        <span th:if="${client != null and client.fotoDniAnverso != null}"
+                              class="muted">
+                            ✓ Document DNI guardat
+                        </span>
+
+                        <span th:unless="${client != null and client.fotoDniAnverso != null}"
+                              class="muted">
+                            Encara no hi ha cap document guardat.
+                        </span>
+
+                        <div th:if="${client != null and client.fotoDniAnverso != null}">
+
+                            <img th:if="${client.fotoDniAnversoTipus != null and #strings.startsWith(client.fotoDniAnversoTipus, 'image/')}"
+                                 th:src="@{/perfil/documentacio/dni}"
+                                 class="preview-image"
+                                 alt="DNI guardat">
+
+                            <iframe th:if="${client.fotoDniAnversoTipus == 'application/pdf'}"
+                                    th:src="@{/perfil/documentacio/dni}"
+                                    width="100%"
+                                    height="350"
+                                    title="Document DNI actual"
+                                    style="margin-top:12px; border:1px solid var(--border); border-radius:10px;">
+                            </iframe>
+
+                            <a th:if="${client.fotoDniAnversoTipus == 'application/pdf'}"
+                               th:href="@{/perfil/documentacio/dni}"
+                               target="_blank"
+                               class="document-link">
+                                Obrir document PDF
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <hr class="mb mt"
+                    style="border:0; border-top:1px solid var(--border);">
+
+                <h2>Permís de conduir</h2>
+
+                <p class="muted mb">
+                    Introdueix les dades del teu permís de conduir.
+                </p>
+
+                <div class="field">
+
+                    <label for="tipusLlicencia">
+                        Número o tipus de permís de conduir
+                    </label>
+
+                    <input type="text"
+                           id="tipusLlicencia"
+                           name="tipusLlicencia"
+                           class="input"
+                           placeholder="Ex. B"
+                           th:value="${client != null ? client.Lliconduir : ''}"
+                           required>
+
+                </div>
+
+                <div class="field">
+
+                    <label for="dataCaducitatLlicencia">
+                        Data de caducitat del permís
+                    </label>
+
+                    <input type="date"
+                           id="dataCaducitatLlicencia"
+                           name="dataCaducitatLlicencia"
+                           class="input"
+                           th:value="${client != null ? client.cdLLiconduir : ''}"
+                           required>
+
+                </div>
+
+                <div class="field upload-box">
+
+                    <label for="llicenciaConduir">
+                        Seleccionar permís de conduir
+                    </label>
+
+                    <input type="file"
+                           id="llicenciaConduir"
+                           name="llicenciaConduir"
+                           class="input"
+                           accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf"
+                           th:attr="required=${client == null or client.fotoPermiso == null}">
+
+                    <small class="muted">
+                        Si ja tens un permís guardat, només cal
+                        seleccionar un fitxer si el vols substituir.
+                    </small>
+
+                    <div id="previewPermis"
+                         class="preview-container">
+                    </div>
+
+                    <div th:if="${client != null and client.fotoPermiso != null}"
+                         class="approval-notice warning">
+
+                        <strong>Important:</strong>
+                        Si substitueixes el permís actual,
+                        la nova fotografia quedarà pendent
+                        de validació per un administrador.
+
+                        El document actual es mantindrà fins
+                        que l'administrador aprovi el canvi.
+
+                    </div>
+
+                </div>
+
+                <div class="field mt">
+
+                    <label>Permís actual</label>
+
+                    <div class="doc-preview">
+
+                        <span th:if="${client != null and client.fotoPermiso != null}"
+                              class="muted">
+                            ✓ Permís de conduir guardat
+                        </span>
+
+                        <span th:unless="${client != null and client.fotoPermiso != null}"
+                              class="muted">
+                            Encara no hi ha cap permís guardat.
+                        </span>
+
+                        <div th:if="${client != null and client.fotoPermiso != null}">
+
+                            <img th:if="${client.fotoPermisoTipus != null and #strings.startsWith(client.fotoPermisoTipus, 'image/')}"
+                                 th:src="@{/perfil/documentacio/permis}"
+                                 class="preview-image"
+                                 alt="Permís de conduir guardat">
+
+                            <iframe th:if="${client.fotoPermisoTipus == 'application/pdf'}"
+                                    th:src="@{/perfil/documentacio/permis}"
+                                    width="100%"
+                                    height="350"
+                                    title="Permís de conduir actual"
+                                    style="margin-top:12px; border:1px solid var(--border); border-radius:10px;">
+                            </iframe>
+
+                            <a th:if="${client.fotoPermisoTipus == 'application/pdf'}"
+                               th:href="@{/perfil/documentacio/permis}"
+                               target="_blank"
+                               class="document-link">
+                                Obrir permís PDF
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="btn-row between mt">
+
+                    <a th:href="@{/perfil}"
+                       class="btn btn-outline">
+                        Cancel·lar
+                    </a>
+
+                    <button type="submit"
+                            class="btn btn-teal">
+                        ✓ Enviar documents
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+        <aside class="stack-gap">
+
+            <article class="card">
+
+                <h3>Requisits dels fitxers</h3>
+
+                <p class="muted mb">
+                    Assegura't que els documents compleixin aquestes condicions:
+                </p>
+
+                <ul style="padding-left:18px;
+                           font-size:14px;
+                           color:var(--text-muted);
+                           line-height:1.8;">
+
+                    <li>Format: <strong>JPG, PNG o PDF</strong>.</li>
+                    <li>Mida màxima: <strong>5 MB per fitxer</strong>.</li>
+                    <li>Documents llegibles i sense reflexos.</li>
+
+                </ul>
+
+                <div class="alert info mt">
+
+                    <strong>Avís:</strong>
+
+                    La primera càrrega es guardarà directament.
+                    Les modificacions posteriors dels documents
+                    quedaran pendents de revisió i aprovació
+                    per un administrador.
+
+                </div>
+
+            </article>
+
+            <article class="card">
+
+                <h3>Privacitat</h3>
+
+                <p class="muted">
+                    Els documents personals només s'han
+                    d'utilitzar per a les verificacions
+                    necessàries de la plataforma.
+                </p>
+
+            </article>
+
+        </aside>
+
+    </div>
+
+</main>
+
+<script>
+
+    function mostrarVistaPrevia(inputId, previewId) {
+
+        const input = document.getElementById(inputId);
+        const preview = document.getElementById(previewId);
+
+        input.addEventListener("change", function () {
+
+            preview.innerHTML = "";
+
+            const file = this.files[0];
+
+            if (!file) {
+                return;
+            }
+
+            const tipusValid = [
+                "image/jpeg",
+                "image/png",
+                "application/pdf"
+            ];
+
+            if (!tipusValid.includes(file.type)) {
+
+                alert("Només s'admeten fitxers JPG, PNG o PDF.");
+
+                this.value = "";
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+
+                alert("El fitxer no pot superar els 5 MB.");
+
+                this.value = "";
+                return;
+            }
+
+            if (file.type === "application/pdf") {
+
+                const missatge = document.createElement("p");
+
+                missatge.className = "alert info";
+                missatge.textContent =
+                    "✓ PDF seleccionat: " + file.name;
+
+                preview.appendChild(missatge);
+
+            } else {
+
+                const img = document.createElement("img");
+
+                img.src = URL.createObjectURL(file);
+                img.className = "preview-image";
+                img.alt = "Vista prèvia del document";
+
+                preview.appendChild(img);
+            }
+
+        });
+
+    }
+
+    mostrarVistaPrevia("documentIdentitat", "previewDni");
+    mostrarVistaPrevia("llicenciaConduir", "previewPermis");
+
+</script>
+
+</body>
+</html>

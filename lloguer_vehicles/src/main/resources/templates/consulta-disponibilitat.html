@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ca" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Disponibilitat de Vehicles - Nothingan Pri S.A.</title>
+    <!-- CSS Corporativo -->
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<div th:replace="~{fragments/office :: topbar}"></div>
+<div class="app">
+    <input type="checkbox" id="side" class="side-toggle" aria-label="Menú de gestió">
+    <div th:replace="~{fragments/office :: sidebar(activeMenu='disponibilitat')}"></div>
+    <div class="scrim" aria-hidden="true"></div>
+    <main class="main">
+
+
+
+        <div class="page-head center-text mb">
+            <h1>Cerca de vehicles</h1>
+            <p class="lead">Filtra per matrícula, marca, model, any o dates. Tots els filtres són opcionals.</p>
+        </div>
+
+        <!-- FORMULARIO DE FILTROS (GET) -->
+        <div class="card mb">
+            <form th:action="@{/vehicles/disponibilitat}" method="get" class="search-grid">
+                <div class="field">
+                    <label for="matricula">Matrícula</label>
+                    <input type="text" id="matricula" name="matricula" class="input" th:value="${matricula}">
+                </div>
+                <div class="field">
+                    <label for="marca">Marca</label>
+                    <input type="text" id="marca" name="marca" class="input" th:value="${marca}">
+                </div>
+                <div class="field">
+                    <label for="model">Model</label>
+                    <input type="text" id="model" name="model" class="input" th:value="${modelVehicle}">
+                </div>
+                <div class="field">
+                    <label for="any">Any</label>
+                    <input type="number" id="any" name="any" class="input" min="1900" th:value="${any}">
+                </div>
+                <div class="field">
+                    <label for="dataInici">Data d'inici</label>
+                    <input type="date" id="dataInici" name="dataInici" class="input" th:value="${dataInici}">
+                </div>
+                <div class="field">
+                    <label for="dataFi">Data final</label>
+                    <input type="date" id="dataFi" name="dataFi" class="input" th:value="${dataFi}">
+                </div>
+                <div class="field" style="display: flex; align-items: flex-end; gap: 8px;">
+                    <button type="submit" class="btn btn-teal btn-block" style="height: 44px; margin-bottom: 2px;">Cercar</button>
+                    <a th:href="@{/vehicles/disponibilitat}" class="btn btn-outline" style="height: 44px; margin-bottom: 2px;">Netejar</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- MENSAJE DE ERROR DE NEGOCIO -->
+        <div class="alert err" role="alert" th:if="${errorNegoci}">
+            <strong th:text="${errorNegoci}">Motiu de l'error</strong>
+        </div>
+
+        <!-- RESULTADOS -->
+        <div th:if="${vehicles != null}">
+
+            <h2 class="mb" style="margin-top: 30px;">Vehicles trobats: <span th:text="${#lists.size(vehicles)}"></span></h2>
+
+            <div class="grid-cards" th:if="${not #lists.isEmpty(vehicles)}">
+                <div class="vehicle" th:each="v : ${vehicles}">
+
+                    <!-- FOTO DEL VEHÍCULO CORREGIDA -->
+                    <!-- FOTO DEL VEHÍCULO -->
+<div class="foto" style="width: 100%; height: 180px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+    
+    <!-- Carga directa usando la ruta guardada en la BD (/uploads/uuid.png) -->
+    <img th:if="${v.fotoUrl != null and !#strings.isEmpty(v.fotoUrl)}" 
+         th:src="@{${v.fotoUrl}}" 
+         th:alt="${v.marca + ' ' + v.model}" 
+         style="width: 100%; height: 100%; object-fit: cover;">
+
+    <!-- Imagen de respaldo por si el campo foto_url fuese nulo -->
+    <img th:unless="${v.fotoUrl != null and !#strings.isEmpty(v.fotoUrl)}" 
+         th:src="@{/img/polo.png}" 
+         alt="Vehicle sense foto" 
+         style="width: 100%; height: 100%; object-fit: cover;">
+</div>
+                    <div class="nom" th:text="${v.marca} + ' ' + ${v.model}">Marca i Model</div>
+                    <div class="preu" style="margin-bottom: 10px;"
+                         th:text="${v.matricula} + ' · ' + ${v.anyMatriculacio}">1234ABC · 2020</div>
+                    <a th:href="@{/reserva/nova(vehicleId=${v.id})}" class="btn btn-outline btn-block btn-sm">Reservar aquest</a>
+                </div>
+            </div>
+
+            <!-- SIN RESULTADOS -->
+            <div th:if="${#lists.isEmpty(vehicles)}" class="alert warn mt">
+                <strong>Cap vehicle coincideix amb els filtres.</strong> Prova amb altres valors o neteja el formulari.
+            </div>
+        </div>
+
+        </main>
+    </div>
+</body>
+</html>

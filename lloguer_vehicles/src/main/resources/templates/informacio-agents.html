@@ -1,0 +1,151 @@
+
+<!DOCTYPE html>
+<html lang="ca" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#1e2a5e">
+
+    <title>Fitxa d'agent · Nothingan Pri S.A.</title>
+
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+
+<body>
+
+<!-- TOPBAR -->
+<div th:replace="~{fragments/office :: topbar}"></div>
+
+<div class="app">
+
+    <!-- CONTROL DEL MENÚ -->
+    <input type="checkbox"
+           id="side"
+           class="side-toggle"
+           aria-label="Menú de gestió">
+
+    <!-- SIDEBAR -->
+    <div th:replace="~{fragments/office :: sidebar(activeMenu='agents')}"></div>
+
+    <!-- FONS PER TANCAR EL MENÚ -->
+    <div class="scrim" aria-hidden="true"></div>
+
+    <main class="main">
+
+        <!-- CAPÇALERA -->
+        <div class="page-head">
+            <h1>Fitxa de l'agent</h1>
+            <p>
+                Informació personal i professional de
+                <strong>
+                    <span th:text="${agent.nom}">Nom</span>
+                    <span th:text="${agent.cognoms}">Cognoms</span>
+                </strong>
+            </p>
+        </div>
+
+        <!-- MISSATGES DE RESULTAT -->
+        <div th:if="${error}"
+             class="alert alert-danger"
+             role="alert"
+             th:text="${error}">
+        </div>
+
+        <div th:if="${success}"
+             class="alert alert-success"
+             role="status"
+             th:text="${success}">
+        </div>
+
+        <!-- INFORMACIÓ DE L'AGENT -->
+        <div class="split">
+
+            <!-- DADES PERSONALS -->
+            <section class="card stack-gap">
+
+                <h2>Dades personals</h2>
+
+                <dl class="dl-grid">
+
+                    <div>
+                        <dt>Nom</dt>
+                        <dd th:text="${agent.nom}">Nom</dd>
+                    </div>
+
+                    <div>
+                        <dt>Cognoms</dt>
+                        <dd th:text="${agent.cognoms}">Cognoms</dd>
+                    </div>
+
+                    <div>
+                        <dt>DNI</dt>
+                        <dd th:text="${agent.DNI}">DNI</dd>
+                    </div>
+
+                    <div>
+                        <dt>Telèfon</dt>
+                        <dd th:text="${agent.telefon}">Telèfon</dd>
+                    </div>
+
+                    <div>
+                        <dt>Correu electrònic</dt>
+                        <dd th:text="${agent.email}">Correu electrònic</dd>
+                    </div>
+
+                    <div>
+                        <dt>Província</dt>
+                        <dd th:text="${agent.provincia}">Província</dd>
+                    </div>
+
+                </dl>
+
+            </section>
+
+            <!-- DADES PROFESSIONALS -->
+            <section class="card stack-gap">
+
+                <h2>Informació professional</h2>
+
+                <dl class="dl-grid">
+
+                    <div>
+                        <dt>Rol dins l'empresa</dt>
+                        <dd th:text="${agent.rol}">Rol</dd>
+                    </div>
+
+                    <div>
+                        <dt>Data de contractació</dt>
+                        <dd th:text="${agent.dataContracte != null ? #temporals.format(agent.dataContracte, 'dd/MM/yyyy') : 'No disponible'}">
+                            Data de contractació
+                        </dd>
+                    </div>
+
+                </dl>
+
+            </section>
+
+        </div>
+
+        <!-- BOTONS D'ACCIONS -->
+        <div class="btn-row">
+
+            <a class="btn"
+               th:href="@{/admin/agents}">
+                Tornar al llistat
+            </a>
+
+            <a class="btn btn-outline"
+               th:href="@{/admin/agents/editar/{id}(id=${agent.id})}">
+                Editar agent
+            </a>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+</html>

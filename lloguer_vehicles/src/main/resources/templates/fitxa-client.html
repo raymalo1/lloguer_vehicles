@@ -1,0 +1,478 @@
+
+<!DOCTYPE html>
+<html lang="ca" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#1e2a5e">
+
+    <title>Fitxa de client · Nothingan Pri S.A.</title>
+
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+
+    <style>
+        .main {
+            padding-bottom: 30px;
+        }
+
+        .page-head {
+            width: 100%;
+            margin: 0 0 24px;
+        }
+
+        .page-head h1 {
+            color: #1e2a5e;
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.6px;
+            margin-bottom: 12px;
+        }
+
+        .page-head p {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            margin: 4px 10px 0 0;
+            padding: 8px 13px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 9px;
+            color: #475569;
+            font-size: 12px;
+            font-weight: 650;
+            box-shadow: 0 2px 6px rgba(30, 42, 94, 0.04);
+        }
+
+        .split {
+            display: grid;
+            grid-template-columns: minmax(280px, 0.85fr) minmax(0, 1.5fr);
+            align-items: start;
+            gap: 22px;
+            width: 100%;
+            margin: 0;
+        }
+
+        .split > .card {
+            min-width: 0;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 23px;
+            background: #ffffff;
+            border: 1px solid #e5eaf2;
+            border-radius: 15px;
+            box-shadow: 0 4px 16px rgba(30, 42, 94, 0.055);
+            transition: box-shadow 0.2s ease, transform 0.2s ease;
+        }
+
+        .split > .card:hover {
+            box-shadow: 0 8px 24px rgba(30, 42, 94, 0.09);
+            transform: translateY(-2px);
+        }
+
+        .split > .card h2 {
+            color: #1e2a5e;
+            font-size: 19px;
+            font-weight: 800;
+            margin: 0 0 20px;
+            padding-bottom: 14px;
+            border-bottom: 2px solid #edf1f7;
+        }
+
+        .split > .card h3 {
+            color: #1e2a5e;
+            font-size: 16px;
+            font-weight: 750;
+            margin: 20px 0 14px;
+        }
+
+        .dl-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 11px;
+        }
+
+        .dl-grid > div {
+            min-width: 0;
+            padding: 13px 15px;
+            background: #f7f9fd;
+            border: 1px solid #e9edf5;
+            border-radius: 10px;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+
+        .dl-grid > div:hover {
+            background: #f0f4fb;
+            border-color: #d9e2f1;
+        }
+
+        .dl-grid dt {
+            color: #75819a;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 7px;
+        }
+
+        .dl-grid dd {
+            color: #243454;
+            font-size: 13px;
+            font-weight: 650;
+            line-height: 1.5;
+            margin: 0;
+            overflow-wrap: anywhere;
+        }
+
+        .split > .card:first-child .dl-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .split > .card:first-child .dl-grid > div {
+            padding: 15px 17px;
+        }
+
+        .split-eq {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+            align-items: stretch;
+        }
+
+        .split-eq > div {
+            min-width: 0;
+            padding: 13px;
+            background: #f8fafd;
+            border: 1px solid #e5eaf2;
+            border-radius: 11px;
+        }
+
+        .split-eq p {
+            color: #35415c;
+            font-size: 13px;
+            font-weight: 750;
+            margin-bottom: 12px;
+        }
+
+        .split-eq img,
+        .split-eq iframe {
+            display: block;
+            width: 100% !important;
+            max-width: 100% !important;
+            height: 210px !important;
+            box-sizing: border-box;
+            border: 1px solid #e1e7f0;
+            border-radius: 9px;
+            background: #ffffff;
+        }
+
+        .split-eq img {
+            object-fit: contain;
+            padding: 5px;
+        }
+
+        .split-eq iframe {
+            object-fit: contain;
+        }
+
+        .split-eq > div > p:last-child {
+            margin-bottom: 4px;
+        }
+
+        .alert {
+            width: 100%;
+            box-sizing: border-box;
+            margin: 0 0 18px;
+            padding: 13px 17px;
+            border-radius: 10px;
+        }
+
+        .btn-row {
+            width: 100%;
+            margin: 23px 0 0;
+        }
+
+        .btn-row .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 11px 19px;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 700;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-row .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 14px rgba(30, 42, 94, 0.15);
+        }
+
+        @media (max-width: 1100px) {
+            .split {
+                grid-template-columns: minmax(250px, 0.8fr) minmax(0, 1.2fr);
+                gap: 15px;
+            }
+
+            .split > .card {
+                padding: 17px;
+            }
+
+            .split-eq {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 850px) {
+            .split {
+                grid-template-columns: 1fr;
+            }
+
+            .split-eq {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .split > .card:first-child .dl-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 600px) {
+            .page-head h1 {
+                font-size: 23px;
+            }
+
+            .split {
+                gap: 14px;
+            }
+
+            .split > .card {
+                padding: 15px;
+            }
+
+            .dl-grid,
+            .split > .card:first-child .dl-grid,
+            .split-eq {
+                grid-template-columns: 1fr;
+            }
+
+            .split-eq img,
+            .split-eq iframe {
+                height: 190px !important;
+            }
+
+            .split > .card h2 {
+                font-size: 17px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div th:replace="~{fragments/office :: topbar}"></div>
+
+<div class="app">
+    <input type="checkbox" id="side" class="side-toggle" aria-label="Menú de gestió">
+    <div th:replace="~{fragments/office :: sidebar(activeMenu='clients')}"></div>
+    <div class="scrim" aria-hidden="true"></div>
+
+    <main class="main">
+
+        <div class="page-head">
+
+            <h1>Fitxa de client</h1>
+
+            <p>
+                DNI:
+                <span th:text="${client.DNI}">DNI del client</span>
+            </p>
+
+        </div>
+
+        <div th:if="${error}"
+             class="alert alert-danger"
+             role="alert"
+             th:text="${error}">
+        </div>
+
+        <div th:if="${success}"
+             class="alert alert-success"
+             role="status"
+             th:text="${success}">
+        </div>
+
+        <div class="split">
+
+            <section class="card">
+
+                <h2>Informació de contacte</h2>
+
+                <dl class="dl-grid">
+
+                    <div>
+                        <dt>Nom</dt>
+                        <dd th:text="${client.nom} + ' ' + ${client.cognoms}">
+                            Nom
+                        </dd>
+                    </div>
+
+                    <div>
+                        <dt>Telèfon</dt>
+                        <dd th:text="${client.telefon}">
+                            Telèfon
+                        </dd>
+                    </div>
+
+                    <div>
+                        <dt>Població</dt>
+                        <dd th:text="${client.poblacio}">
+                            Població
+                        </dd>
+                    </div>
+
+                    <div>
+                        <dt>Correu electrònic</dt>
+                        <dd th:text="${client.email}"></dd>
+                    </div>
+
+                </dl>
+
+            </section>
+
+            <section class="card stack-gap">
+
+                <div>
+
+                    <h2>Dades del client</h2>
+
+                    <dl class="dl-grid">
+
+                        <div>
+                            <dt>DNI</dt>
+                            <dd th:text="${client.DNI}">DNI</dd>
+                        </div>
+
+                        <div>
+                            <dt>Caducitat DNI</dt>
+                            <dd th:text="${client.cadDNI}">
+                                Caducitat DNI
+                            </dd>
+                        </div>
+
+                        <div>
+                            <dt>Llicència de conduir</dt>
+                            <dd th:text="${client.Lliconduir}">
+                                Llicència de conduir
+                            </dd>
+                        </div>
+
+                        <div>
+                            <dt>Caducitat de la llicència</dt>
+                            <dd th:text="${client.cdLLiconduir}">
+                                Caducitat llicència
+                            </dd>
+                        </div>
+
+                        <div>
+                            <dt>Adreça</dt>
+                            <dd th:text="${client.adreca}">
+                                Adreça
+                            </dd>
+                        </div>
+
+                        <div>
+                            <dt>Nacionalitat</dt>
+                            <dd th:text="${client.nacionalitat}">
+                                Nacionalitat
+                            </dd>
+                        </div>
+
+                        <div>
+                            <dt>Número de targeta de crèdit</dt>
+                            <dd>••••••••••••</dd>
+                        </div>
+
+                    </dl>
+
+                </div>
+
+                <div>
+
+                    <h3 class="mb">Documents</h3>
+
+                    <div class="split-eq">
+
+                        <div>
+
+                            <p class="mb">
+                                Document d'identitat
+                            </p>
+
+                            <img th:if="${client.fotoDniAnverso != null
+                                         and client.fotoDniAnversoTipus != 'application/pdf'}"
+                                 th:src="@{/clients/{dni}/document/dni(dni=${client.DNI})}"
+                                 alt="Document d'identitat"
+                                 style="width:100%; max-width:350px; border-radius:10px;">
+
+                            <iframe th:if="${client.fotoDniAnverso != null
+                                            and client.fotoDniAnversoTipus == 'application/pdf'}"
+                                    th:src="@{/clients/{dni}/document/dni(dni=${client.DNI})}"
+                                    title="Document d'identitat PDF"
+                                    style="width:100%; height:300px; border:0; border-radius:10px;">
+                            </iframe>
+
+                            <p th:if="${client.fotoDniAnverso == null}">
+                                No hi ha cap document d'identitat pujat.
+                            </p>
+
+                        </div>
+
+                        <div>
+
+                            <p class="mb">
+                                Llicència de conduir
+                            </p>
+
+                            <img th:if="${client.fotoPermiso != null
+                                         and client.fotoPermisoTipus != 'application/pdf'}"
+                                 th:src="@{/clients/{dni}/document/llicencia(dni=${client.DNI})}"
+                                 alt="Permís de conduir"
+                                 style="width:100%; max-width:350px; border-radius:10px;">
+
+                            <iframe th:if="${client.fotoPermiso != null
+                                            and client.fotoPermisoTipus == 'application/pdf'}"
+                                    th:src="@{/clients/{dni}/document/llicencia(dni=${client.DNI})}"
+                                    title="Permís de conduir PDF"
+                                    style="width:100%; height:300px; border:0; border-radius:10px;">
+                            </iframe>
+
+                            <p th:if="${client.fotoPermiso == null}">
+                                No hi ha cap permís de conduir pujat.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+        <div class="btn-row">
+
+            <a class="btn" th:href="@{/agent/clients}">
+                Tornar al llistat de clients
+            </a>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+</html>

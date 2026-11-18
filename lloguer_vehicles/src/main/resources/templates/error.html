@@ -1,0 +1,363 @@
+
+<!DOCTYPE html>
+<html lang="ca" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Error | Nothingan Pri S.A.</title>
+
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+
+    <style>
+        :root {
+            --error-primary: #e67e22;
+            --error-danger: #dc3545;
+            --error-text: #263238;
+            --error-muted: #1a202c;
+            --error-background: #f4f7fb;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--error-background);
+        }
+
+        .error-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 35px 15px;
+        }
+
+        .error-card {
+            width: 100%;
+            max-width: 680px;
+            padding: 45px;
+            text-align: center;
+            background: #fff;
+            border-radius: 22px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, .07);
+            animation: appear .5s ease;
+        }
+
+        @keyframes appear {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .error-icon {
+            width: 110px;
+            height: 110px;
+            margin: 0 auto 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #fef3c7;
+            font-size: 52px;
+        }
+
+        .error-title {
+            color: var(--error-text);
+            font-size: 30px;
+            font-weight: 750;
+            margin-bottom: 12px;
+        }
+
+        .error-description {
+            max-width: 480px;
+            margin: 0 auto 20px;
+            color: #1a202c;
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+        .error-code {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            margin: 10px 0 25px;
+            border-radius: 30px;
+            background: #b33a30;
+            color: #ffffff;
+            font-size: 17px;
+            font-weight: 750;
+        }
+
+        .error-detail {
+            padding: 20px;
+            margin-top: 10px;
+            border-radius: 12px;
+            background: #f0f7fa;
+            border-left: 4px solid #3197a8;
+            text-align: left;
+        }
+
+        .error-detail strong {
+            display: block;
+            margin-bottom: 9px;
+            color: #263238;
+            font-size: 14px;
+        }
+
+        .error-detail p {
+            margin: 0;
+            color: #1a202c;
+            font-size: 14px;
+            line-height: 1.7;
+            overflow-wrap: anywhere;
+        }
+
+        .error-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .error-actions .btn {
+            flex: 1;
+            min-width: 190px;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all .25s ease;
+        }
+
+        .btn-outline {
+            color: #1a202c;
+            background: #fff;
+            border: 1px solid #4a5568 !important;
+        }
+
+        .btn-teal {
+            color: #fff;
+            background: #168c91;
+        }
+
+        .btn-outline:hover {
+            background: #f1f5f9;
+            transform: translateY(-2px);
+        }
+
+        .btn-teal:hover {
+            background: #117579;
+            transform: translateY(-2px);
+        }
+
+        .error-footer {
+            margin-top: 35px;
+            padding-top: 22px;
+            border-top: 1px solid #edf0f2;
+            color: #1a202c;
+            font-size: 13px;
+        }
+
+        .error-footer strong {
+            color: #52616b;
+        }
+
+        @media (max-width: 550px) {
+            .error-card {
+                padding: 35px 20px;
+                border-radius: 16px;
+            }
+
+            .error-icon {
+                width: 90px;
+                height: 90px;
+                font-size: 43px;
+            }
+
+            .error-title {
+                font-size: 24px;
+            }
+
+            .error-actions {
+                flex-direction: column;
+            }
+
+            .error-actions .btn {
+                width: 100%;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: .01ms !important;
+                transition-duration: .01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<main class="container error-container">
+
+    <section class="card error-card" role="alert">
+
+        <!-- Icona -->
+        <div class="error-icon" aria-hidden="true">
+            <span th:if="${status == 404}">🔍</span>
+            <span th:if="${status == 403}">🔒</span>
+            <span th:if="${status == 401}">🔐</span>
+            <span th:if="${status == 500}">⚙️</span>
+            <span th:if="${status == 503}">🔧</span>
+            <span th:if="${status != 404 and status != 403
+                and status != 401 and status != 500
+                and status != 503}">⚠️</span>
+        </div>
+
+        <!-- Títol -->
+        <h1 class="error-title">
+            S'ha produït un error!
+        </h1>
+
+        <p class="error-description">
+            Ho sentim, però no hem pogut completar la teva sol·licitud.
+            No et preocupis, pots tornar a intentar-ho o tornar a la pàgina principal.
+        </p>
+
+        <!-- Codi HTTP -->
+        <div class="error-code">
+            <span>⚠</span>
+            Error
+            <span th:text="${status}">500</span>
+        </div>
+
+        <!-- Missatges segons el codi -->
+        <div>
+
+            <p th:if="${status == 400}">
+                La sol·licitud enviada no és vàlida.
+                Revisa les dades introduïdes i torna-ho a intentar.
+            </p>
+
+            <p th:if="${status == 401}">
+                La teva sessió no està iniciada o ha caducat.
+                Inicia sessió per continuar.
+            </p>
+
+            <p th:if="${status == 403}">
+                No tens els permisos necessaris per accedir
+                a aquest contingut.
+            </p>
+
+            <p th:if="${status == 404}">
+                La pàgina que estàs buscant no existeix
+                o pot haver estat eliminada.
+            </p>
+
+            <p th:if="${status == 405}">
+                El mètode utilitzat per realitzar aquesta operació
+                no està permès.
+            </p>
+
+            <p th:if="${status == 500}">
+                S'ha produït un error intern al servidor.
+                El nostre sistema no ha pogut processar la sol·licitud.
+            </p>
+
+            <p th:if="${status == 503}">
+                El servei no està disponible temporalment.
+                Torna-ho a intentar d'aquí a uns minuts.
+            </p>
+
+            <p th:if="${status != 400 and status != 401
+                and status != 403 and status != 404
+                and status != 405 and status != 500
+                and status != 503}">
+                S'ha produït un error inesperat.
+                Si el problema persisteix, contacta amb el suport tècnic.
+            </p>
+
+        </div>
+
+        <!-- Informació de l'error -->
+        <div class="error-detail">
+
+            <strong>
+                <span>ℹ️</span>
+                Informació de l'error
+            </strong>
+
+            <p th:text="${errorMessage != null
+                ? errorMessage
+                : 'S''ha produït un error inesperat.'}">
+                S'ha produït un error inesperat.
+            </p>
+
+        </div>
+
+        <!-- Botons -->
+        <div class="error-actions">
+
+            <button type="button"
+                    class="btn btn-outline"
+                    onclick="if (window.history.length > 1) {
+                        window.history.back();
+                    } else {
+                        window.location.href = '/index';
+                    }"
+                    aria-label="Tornar a la pàgina anterior">
+
+                ← Tornar enrere
+
+            </button>
+
+            <a th:href="@{/index}"
+               class="btn btn-teal"
+               aria-label="Tornar a la pàgina principal">
+
+                🏠 Tornar a l'inici
+
+            </a>
+
+        </div>
+
+        <!-- Peu de pàgina -->
+        <footer class="error-footer">
+
+            <p>
+                <strong>Nothingan Pri S.A.</strong>
+            </p>
+
+            <p>
+                Gràcies per la teva comprensió.
+            </p>
+
+            <p>
+                &copy; <span th:text="${#dates.year(#dates.createNow())}">2026</span>
+                Nothingan Pri S.A. · Tots els drets reservats.
+            </p>
+
+        </footer>
+
+    </section>
+
+</main>
+
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ca" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#1e2a5e">
+    <title>Activar vehicle · Nothingan Pri S.A.</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/office :: topbar}"></div>
+
+<div class="app">
+    <input type="checkbox" id="side" class="side-toggle" aria-label="Menú de gestió">
+    <div th:replace="~{fragments/office :: sidebar(activeMenu='vehicles')}"></div>
+    <div class="scrim" aria-hidden="true"></div>
+
+    <main class="main">
+        <div class="page-head">
+            <h1>Activar vehicle</h1>
+            <p th:text="${vehicle.marca} + ' ' + ${vehicle.model} + ' (' + ${vehicle.matricula} + ')'">Vehicle</p>
+        </div>
+
+        <div class="alert err" role="alert" th:if="${errorNegoci}">
+            <strong th:text="${errorNegoci}"></strong>
+        </div>
+
+        <form th:action="@{/vehicles/{id}/activar(id=${vehicle.id})}" method="post" class="card" style="max-width: 500px;">
+            <div class="field">
+                <label for="motiu">Motiu de l'activació <span class="req">*</span></label>
+                <textarea id="motiu" name="motiu" class="textarea" rows="3" required aria-label="Motiu activació"></textarea>
+            </div>
+
+            <div class="field">
+                <label for="importActivacio">Import activació (EUR)</label>
+                <input id="importActivacio" name="importActivacio" type="number" step="0.01" min="0" class="input" placeholder="Opcional">
+                <div class="hint">Import associat a l'activació (ex: cost reparació, neteja...).</div>
+            </div>
+
+            <div class="btn-row" style="margin-top: 20px;">
+                <button class="btn btn-teal btn-block" type="submit">Activar</button>
+                <a class="btn btn-outline btn-block" th:href="@{/vehicles}">Cancel·la</a>
+            </div>
+        </form>
+    </main>
+</div>
+
+</body>
+</html>

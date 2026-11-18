@@ -1,0 +1,230 @@
+
+<!DOCTYPE html>
+<html lang="ca" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Seguretat | Nothingan Pri S.A.</title>
+
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+
+<body>
+
+<main class="container profile-container">
+
+    <!-- Capçalera -->
+    <header class="page-head">
+
+        <a th:href="@{/perfil}" class="profile-back">
+            ← Tornar al perfil
+        </a>
+
+        <h1>Seguretat del compte</h1>
+
+        <p style="color: #1a202c; font-weight: 500;">
+            Protegeix el teu compte i gestiona les opcions de seguretat.
+        </p>
+
+    </header>
+
+    <!-- Navegació -->
+    <nav class="tabs" aria-label="Seccions del perfil">
+
+        <a th:href="@{/perfil}" class="tab">
+            Dades personals
+        </a>
+
+        <a th:href="@{/reserva/meves}" class="tab">
+            Reserves
+        </a>
+
+        <a th:href="@{/perfil/configuracio}" class="tab active">
+            Seguretat
+        </a>
+
+    </nav>
+
+    <div class="split">
+
+        <!-- Contingut principal -->
+        <section class="stack-gap">
+
+            <!-- Canviar contrasenya -->
+            <article class="card">
+
+                <h2>Canviar contrasenya</h2>
+
+                <p class="muted mb">
+                    Actualitza la teva contrasenya per mantenir el compte protegit.
+                </p>
+
+                <div class="profile-data-item">
+
+                    <span class="profile-data-icon">🔑</span>
+
+                    <div class="profile-data-text">
+                        <strong>Contrasenya actual</strong>
+                        <small>Canvia-la periòdicament per més seguretat.</small>
+                    </div>
+
+                </div>
+
+                <p class="mt">
+                    <a th:href="@{/perfil/contrasenya}"
+                       class="btn btn-teal btn-block">
+                        Canviar contrasenya →
+                    </a>
+                </p>
+
+            </article>
+
+            <!-- Protecció del compte -->
+            <article class="card">
+
+                <h2>Protecció del compte</h2>
+
+                <p class="muted mb">
+                    Recomanacions per evitar accessos no autoritzats.
+                </p>
+
+                <div class="profile-data-item">
+
+                    <span class="profile-data-icon">🛡️</span>
+
+                    <div class="profile-data-text">
+                        <strong>Utilitza una contrasenya segura</strong>
+                        <small>
+                            Combina lletres majúscules, minúscules,
+                            números i símbols.
+                        </small>
+                    </div>
+
+                </div>
+
+                <div class="profile-divider"></div>
+
+                <div class="profile-data-item">
+
+                    <span class="profile-data-icon">🔒</span>
+
+                    <div class="profile-data-text">
+                        <strong>No comparteixis les teves credencials</strong>
+                        <small>
+                            Mantén el teu usuari i contrasenya en privat.
+                        </small>
+                    </div>
+
+                </div>
+
+                <div class="profile-divider"></div>
+
+                <div class="profile-data-item">
+
+                    <span class="profile-data-icon">💻</span>
+
+                    <div class="profile-data-text">
+                        <strong>Tanca la sessió</strong>
+                        <small>
+                            Tanca sempre la sessió quan utilitzis
+                            un dispositiu compartit.
+                        </small>
+                    </div>
+
+                </div>
+
+            </article>
+
+            <!-- Activitat sospitosa -->
+            <article class="card">
+
+                <h2>Activitat sospitosa</h2>
+
+                <p class="muted">
+                    Si detectes accessos que no reconeixes o sospites
+                    que algú ha entrat al teu compte, canvia immediatament
+                    la contrasenya.
+                </p>
+
+                <div class="alert info mt">
+                    <strong>Consell:</strong>
+                    No obris enllaços sospitosos ni comparteixis
+                    les teves dades d'accés.
+                </div>
+
+            </article>
+
+        </section>
+
+        <!-- Columna lateral -->
+        <aside class="stack-gap">
+
+            <article class="card">
+
+                <h3>Consells de seguretat</h3>
+
+                <p class="muted mb">
+                    Recorda aquestes bones pràctiques:
+                </p>
+
+                <ul>
+                    <li>Fes servir una contrasenya única.</li>
+                    <li>No utilitzis dades personals com a contrasenya.</li>
+                    <li>No comparteixis el teu compte.</li>
+                    <li>Evita iniciar sessió en dispositius públics.</li>
+                </ul>
+
+            </article>
+
+            <article class="card">
+
+                <h3>Privacitat</h3>
+
+                <p class="muted">
+                    La seguretat del teu compte és important.
+                    Mantén protegides les teves credencials i
+                    les teves dades personals.
+                </p>
+
+                <div class="profile-divider"></div>
+
+                <p>
+                    <strong>Nothingan Pri S.A.</strong>
+                </p>
+
+                <p class="muted">
+                    La teva seguretat és la nostra prioritat.
+                </p>
+
+            </article>
+
+        </aside>
+
+    </div>
+
+    <!-- Botó final -->
+    <div class="profile-actions">
+
+        <div>
+            <h3>Configuració de seguretat</h3>
+            <p class="muted">
+                Mantén el teu compte protegit.
+            </p>
+        </div>
+
+        <div class="btn-row">
+
+            <a th:href="@{/perfil}" class="btn btn-outline">
+                Tornar al perfil
+            </a>
+
+        </div>
+
+    </div>
+
+</main>
+
+</body>
+</html>

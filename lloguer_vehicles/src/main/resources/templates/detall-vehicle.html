@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ca" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#1e2a5e">
+    <title>Detall vehicle · Nothingan Pri S.A.</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/office :: topbar}"></div>
+
+<div class="app">
+    <input type="checkbox" id="side" class="side-toggle" aria-label="Menú de gestió">
+    <div th:replace="~{fragments/office :: sidebar(activeMenu='vehicles')}"></div>
+    <div class="scrim" aria-hidden="true"></div>
+
+    <main class="main">
+        <div class="page-head row-between">
+            <div>
+                <h1>Detall del vehicle</h1>
+                <p th:text="${vehicle.marca} + ' ' + ${vehicle.model} + ' (' + ${vehicle.matricula} + ')'">Vehicle</p>
+            </div>
+            <div class="btn-row" style="gap: 8px;">
+                <a th:href="@{/vehicles/{id}/editar(id=${vehicle.id})}" class="btn btn-teal">Editar</a>
+                <a th:href="@{/vehicles}" class="btn btn-outline">Tornar al llistat</a>
+            </div>
+        </div>
+
+        <div class="alert ok" role="status" th:if="${missatge}" th:text="${missatge}"></div>
+
+        <section class="card" style="margin-bottom: 20px;">
+            <h2>Fotografia</h2>
+            <div th:if="${vehicle.fotoUrl != null}">
+                <img th:src="@{${vehicle.fotoUrl}}" alt="Foto vehicle" style="max-width: 300px; border-radius: 8px;">
+            </div>
+            <div th:unless="${vehicle.fotoUrl != null}" class="alert info">
+                El vehicle no té fotografia.
+            </div>
+        </section>
+
+        <section class="card" style="margin-bottom: 20px;">
+            <h2>Identificació</h2>
+            <div class="detail-grid">
+                <div><strong>Matrícula:</strong> <span th:text="${vehicle.matricula}"></span></div>
+                <div><strong>Marca:</strong> <span th:text="${vehicle.marca}"></span></div>
+                <div><strong>Model:</strong> <span th:text="${vehicle.model}"></span></div>
+                <div><strong>Any matriculació:</strong> <span th:text="${vehicle.anyMatriculacio}"></span></div>
+                <div><strong>Categoria:</strong> <span class="pill convidat" th:text="${vehicle.categoria}"></span></div>
+                <div><strong>Combustible:</strong> <span th:text="${vehicle.combustible}"></span></div>
+                <div><strong>Color:</strong> <span th:text="${vehicle.color}">—</span></div>
+                <div><strong>Potència:</strong> <span th:text="${vehicle.potenciaCv}">—</span> CV</div>
+                <div><strong>Places:</strong> <span th:text="${vehicle.places}"></span></div>
+            </div>
+        </section>
+
+        <section class="card" style="margin-bottom: 20px;">
+            <h2>Dades comercials</h2>
+            <div class="detail-grid">
+                <div><strong>Preu / hora:</strong> <span th:text="${#numbers.formatDecimal(vehicle.preuHora, 1, 2)} + ' €'"></span></div>
+                <div><strong>Fiança estàndard:</strong> <span th:text="${#numbers.formatDecimal(vehicle.fiancaEstandard, 1, 2)} + ' €'"></span></div>
+                <div><strong>Dies mínims:</strong> <span th:text="${vehicle.minDies}"></span></div>
+                <div><strong>Dies màxims:</strong> <span th:text="${vehicle.maxDies}">Sense límit</span></div>
+                <div><strong>Límit km:</strong> <span th:text="${vehicle.limitQuilometres}">Sense límit</span></div>
+            </div>
+        </section>
+
+        <!-- UNA SOLA SECCIÓ ESTAT CON TODO -->
+        <section class="card" style="margin-bottom: 20px;">
+            <h2>Estat</h2>
+            <div class="detail-grid">
+                <div><strong>Estat:</strong> 
+                    <span class="pill actiu" th:if="${vehicle.actiu}">Actiu</span>
+                    <span class="pill inactiu" th:unless="${vehicle.actiu}">Inactiu / De baixa</span>
+                </div>
+
+                <!-- Data fi desactivació actual (si inactiu) -->
+                <div th:if="${not vehicle.actiu and vehicle.dataFiDesactivacio != null}">
+                    <strong>Data fi desactivació actual:</strong> <span th:text="${#temporals.format(vehicle.dataFiDesactivacio, 'dd/MM/yyyy')}"></span>
+                </div>
+                <div th:if="${vehicle.dataBaixa != null}">
+                    <strong>Data baixa definitiva:</strong> <span th:text="${#temporals.format(vehicle.dataBaixa, 'dd/MM/yyyy')}"></span>
+                </div>
+                <div th:if="${vehicle.motiuBaixa != null}">
+                    <strong>Motiu baixa definitiva:</strong> <span th:text="${vehicle.motiuBaixa}"></span>
+                </div>
+
+                <!-- Última activación -->
+                <div th:if="${vehicle.dataUltimaActivacio != null}" style="grid-column: 1 / -1;">
+                    <hr style="margin: 8px 0;">
+                    <strong>Última activació:</strong>
+                    <div class="detail-grid" style="margin-top: 8px;">
+                        <div><strong>Data:</strong> <span th:text="${#temporals.format(vehicle.dataUltimaActivacio, 'dd/MM/yyyy')}"></span></div>
+                        <div th:if="${vehicle.importUltimaActivacio != null}"><strong>Import:</strong> <span th:text="${#numbers.formatDecimal(vehicle.importUltimaActivacio, 1, 2)} + ' €'"></span></div>
+                        <div th:if="${vehicle.motiuUltimaActivacio != null}"><strong>Motiu:</strong> <span th:text="${vehicle.motiuUltimaActivacio}"></span></div>
+                    </div>
+                </div>
+
+                <!-- Última desactivación -->
+                <div th:if="${vehicle.dataUltimaDesactivacio != null}" style="grid-column: 1 / -1;">
+                    <hr style="margin: 8px 0;">
+                    <strong>Última desactivació:</strong>
+                    <div class="detail-grid" style="margin-top: 8px;">
+                        <div><strong>Data:</strong> <span th:text="${#temporals.format(vehicle.dataUltimaDesactivacio, 'dd/MM/yyyy')}"></span></div>
+                        <div th:if="${vehicle.dataFiDesactivacioPrevista != null}"><strong>Fi prevista:</strong> <span th:text="${#temporals.format(vehicle.dataFiDesactivacioPrevista, 'dd/MM/yyyy')}"></span></div>
+                        <div th:if="${vehicle.motiuUltimaDesactivacio != null}"><strong>Motiu:</strong> <span th:text="${vehicle.motiuUltimaDesactivacio}"></span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Comentari privat (solo notas internas) -->
+        <section class="card" th:if="${vehicle.comentariPrivat != null and not #strings.isEmpty(vehicle.comentariPrivat)}">
+            <h2>Comentari privat</h2>
+            <p class="muted" th:text="${vehicle.comentariPrivat}"></p>
+        </section>
+
+    </main>
+</div>
+
+<style>
+    .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 16px;
+        margin-top: 12px;
+    }
+    .detail-grid div {
+        padding: 8px 0;
+        border-bottom: 1px solid #edf0f5;
+    }
+    .detail-grid div:last-child {
+        border-bottom: none;
+    }
+    .detail-grid strong {
+        display: block;
+        color: #52617b;
+        font-size: 12px;
+        margin-bottom: 4px;
+    }
+    .detail-grid span {
+        color: #1e2a5e;
+        font-weight: 500;
+    }
+</style>
+
+</body>

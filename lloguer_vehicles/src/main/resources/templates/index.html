@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ca"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#1e2a5e">
+    <title>Inici · Nothingan Pri S.A.</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+
+<body>
+
+<!-- CAPÇALERA -->
+<header class="topbar">
+    <div class="topbar-inner">
+
+        <!-- LOGO -->
+       <a class="brand" th:href="@{/}" aria-label="Nothingan Pri S.A.">
+    <img th:src="@{/img/logo.png}"
+         alt=""
+         aria-hidden="true"
+         class="brand-logo">
+    <span>Nothingan <b>Pri S.A.</b></span>
+        </a>
+
+        <nav class="nav">
+            <a th:href="@{/}" class="active">Inici</a>
+            <a th:href="@{/cataleg}">Catàleg</a>
+            <a th:href="@{/registre}" sec:authorize="!isAuthenticated()">Registre</a>
+            <a th:href="@{/login}" sec:authorize="!isAuthenticated()">Inicia sessió</a>
+            <a th:href="@{/reserva/meves}" sec:authorize="isAuthenticated()">Les meves reserves</a>
+
+            <a sec:authorize="hasAnyRole('ADMIN','ADMINISTRADOR','AGENT')"
+               th:href="@{/agent/clients}">
+                Gestió de clients
+            </a>
+        </nav>
+
+        <div class="profile-menu" sec:authorize="isAuthenticated()">
+            <button type="button"
+                    class="profile-avatar"
+                    aria-label="Obrir menú d'usuari"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                    onclick="toggleProfileMenu(this)">
+                <span th:text="${nomUsuari != null and !#strings.isEmpty(nomUsuari)
+                    ? #strings.toUpperCase(#strings.substring(nomUsuari, 0, 1))
+                    : 'U'}">U</span>
+            </button>
+
+            <div class="profile-dropdown">
+                <div class="profile-dropdown-header">
+                    <span class="profile-name"
+                          th:text="${nomUsuari != null ? nomUsuari : 'El meu compte'}">Nom</span>
+                    <span class="profile-subtitle"
+                          th:text="${emailUsuari != null ? emailUsuari : ''}">email</span>
+                </div>
+                <div class="dropdown-divider"></div>
+                <a th:href="@{/perfil}">
+                    <span class="menu-icon">👤</span>
+                    <span>El meu perfil</span>
+                </a>
+                <a th:href="@{/reserva/meves}">
+                    <span class="menu-icon">📅</span>
+                    <span>Les meves reserves</span>
+                </a>
+                <!-- CONFIGURACIÓ -->
+                <a th:href="@{/perfil/configuracio}">
+
+                    <span class="menu-icon">⚙️</span>
+                    <span>Configuració del compte</span>
+
+                </a>
+
+                <div class="dropdown-divider"></div>
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="dropdown-logout">
+                        <span class="menu-icon">↪</span>
+                        <span>Tancar sessió</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-inner">
+        <h1>La teva propera aventura comença aquí</h1>
+        <p class="slogan">
+            Reserva el vehicle ideal en minuts. Flexible, fiable i pensat per a tu.
+        </p>
+        <div class="hero-actions">
+            <a th:href="@{/cataleg}" class="btn">Veure tot el catàleg</a>
+            <a th:href="@{/registre}" class="btn btn-outline-light"
+               sec:authorize="!isAuthenticated()">Crea el teu compte</a>
+            <a th:href="@{/reserva/meves}" class="btn btn-outline-light"
+               sec:authorize="isAuthenticated()">Les meves reserves</a>
+        </div>
+    </div>
+</section>
+
+<!-- BENEFICIS -->
+<section class="section">
+    <div class="section-inner">
+        <h2 class="section-title">Per què escollir-nos?</h2>
+        <p class="section-lead">
+            Simple, transparent i sense sorpreses. Així és llogar un vehicle amb Nothingan Pri.
+        </p>
+
+        <ul class="features" style="list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;">
+            <li class="feature-card">
+                <span class="feature-icon" aria-hidden="true">⚡</span>
+                <h3>Reserva en minuts</h3>
+                <p>Tria dates, filtra per tipus de vehicle i confirma. Tot online i sense paperassa innecessària.</p>
+            </li>
+            <li class="feature-card">
+                <span class="feature-icon" aria-hidden="true">🛡️</span>
+                <h3>Seguretat i confiança</h3>
+                <p>Vehicles revisats, fiança clara i atenció personalitzada per agents professionals.</p>
+            </li>
+            <li class="feature-card">
+                <span class="feature-icon" aria-hidden="true">💰</span>
+                <h3>Preus transparents</h3>
+                <p>Saps exactament què pagues: import + fiança. Clients premium gaudeixen d’un 25% de descompte a la fiança.</p>
+            </li>
+            <li class="feature-card">
+                <span class="feature-icon" aria-hidden="true">📍</span>
+                <h3>Disponibilitat real</h3>
+                <p>Només veus vehicles realment disponibles en les dates que necessites. Sense reservar a cegues.</p>
+            </li>
+        </ul>
+    </div>
+</section>
+
+<!-- VEHICLES DISPONIBLES -->
+<section class="section vehicles-section">
+    <div class="section-inner">
+        <div class="page-head">
+            <h2 class="section-title">Vehicles disponibles</h2>
+            <p class="section-lead">
+                Aquests són alguns dels vehicles actius que tens a l’abast. Entra al catàleg per filtrar per dates i categoria.
+            </p>
+        </div>
+
+        <!-- Llistat de vehicles actius -->
+        <div class="grid-cards mt" th:if="${vehicles != null and !vehicles.isEmpty()}">
+            <div class="vehicle"
+                 th:each="v : ${vehicles}"
+                 th:if="${v.actiu}">
+
+                <div class="foto"
+                     style="width:100%; height:180px; overflow:hidden; display:flex; align-items:center; justify-content:center;">
+
+                    <img th:if="${v.fotoUrl != null}"
+                         th:src="${v.fotoUrl}"
+                         th:alt="${v.marca + ' ' + v.model}"
+                         style="width:100%; height:100%; object-fit:cover;">
+
+                    <img th:unless="${v.fotoUrl != null}"
+                         th:src="@{/img/Corsa.png}"
+                         alt="Vehicle"
+                         style="width:100%; height:100%; object-fit:cover;">
+                </div>
+
+                <div class="nom" th:text="${v.marca + ' ' + v.model}">Marca Model</div>
+
+                <div class="preu"
+                     th:text="${v.preuHora != null ? v.preuHora + ' EUR/hora' : '—'}">
+                    0 EUR/hora
+                </div>
+
+                <div class="actions-grid mt">
+                    <a th:href="@{/reserva/nova(vehicleId=${v.id})}"
+                       class="btn btn-teal btn-block">
+                        Reservar
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Missatge si no hi ha vehicles -->
+        <div th:if="${vehicles == null or vehicles.isEmpty()}"
+             class="muted center-text mt"
+             style="padding: 24px 0;">
+            Ara mateix no hi ha vehicles disponibles.
+        </div>
+
+        <div class="center-text mt" style="margin-top: 28px;">
+            <a th:href="@{/cataleg}" class="btn">Veure tot el catàleg</a>
+        </div>
+    </div>
+</section>
+
+<!-- QUI SOM -->
+<section class="section about">
+    <div class="section-inner">
+        <div class="about-grid">
+            <div class="about-text">
+                <h2>Qui som</h2>
+                <p>
+                    <strong>Nothingan Pri S.A.</strong> és una empresa especialitzada en la gestió i reserva de vehicles.
+                    Oferim una experiència completa: des de la sol·licitud de registre fins al lliurament i retorn del vehicle.
+                </p>
+                <p>
+                    El nostre objectiu és que puguis moure’t amb llibertat, amb un servei àgil, professional i centrat en el client.
+                </p>
+                <ul class="about-badges" style="list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:8px;">
+                    <li class="badge">Multiusuari</li>
+                    <li class="badge">Reserva online</li>
+                    <li class="badge">Atenció d’agents</li>
+                    <li class="badge">Històric de reserves</li>
+                </ul>
+            </div>
+
+            <div class="about-text">
+                <h2>Com funciona</h2>
+                <p><strong>1.</strong> Registra’t i espera la validació de l’administrador.</p>
+                <p><strong>2.</strong> Tria les dates i el vehicle que més et convé al catàleg.</p>
+                <p><strong>3.</strong> Confirma la reserva (import + fiança).</p>
+                <p><strong>4.</strong> L’agent et lliura el vehicle i, al final, el retornes amb total transparència.</p>
+                <p class="mt">
+                    <a th:href="@{/cataleg}" class="btn">Començar ara</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-section">
+    <h2>Preparat per sortir a la carretera?</h2>
+    <p>Explora el nostre catàleg i reserva el vehicle que necessites en menys de dos minuts.</p>
+    <a th:href="@{/cataleg}" class="btn">Anar al catàleg</a>
+</section>
+
+<footer class="footer-mini">
+    © 2026 Nothingan Pri S.A. · Gestió de vehicles
+</footer>
+
+<script>
+    function toggleProfileMenu(button) {
+        const menu = button.closest('.profile-menu');
+        const isOpen = menu.classList.toggle('open');
+        button.setAttribute('aria-expanded', isOpen);
+    }
+
+    document.addEventListener('click', function (event) {
+        document.querySelectorAll('.profile-menu').forEach(function (menu) {
+            if (!menu.contains(event.target)) {
+                menu.classList.remove('open');
+                const button = menu.querySelector('.profile-avatar');
+                if (button) button.setAttribute('aria-expanded', 'false');
+            }
+        });
+    });
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+            document.querySelectorAll('.profile-menu').forEach(function (menu) {
+                menu.classList.remove('open');
+                const button = menu.querySelector('.profile-avatar');
+                if (button) button.setAttribute('aria-expanded', 'false');
+            });
+        }
+    });
+</script>
+<!-- CHATBOT -->
+<div th:replace="~{fragments/chatbot :: prisita}"></div>
+</body>
+</html>

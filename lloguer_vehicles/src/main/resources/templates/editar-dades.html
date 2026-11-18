@@ -1,0 +1,181 @@
+
+<!DOCTYPE html>
+<html lang="ca" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar perfil | Nothingan Pri</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<main class="container">
+
+    <header class="page-head">
+        <a th:href="@{/perfil}" class="muted"
+           style="display: inline-block; margin-bottom: 8px;">
+            ← Tornar al perfil
+        </a>
+        <h1>Editar les meves dades</h1>
+        <p>Actualitza la teva informació personal i la documentació.</p>
+    </header>
+
+    <div class="split">
+
+        <section class="card">
+
+            <!-- RUTA CORREGIDA -->
+            <form th:action="@{/perfil/editar-dades}" method="post">
+
+                <h2>Informació personal</h2>
+                <p class="muted mb">Modifica les teves dades personals.</p>
+
+                <div class="row-2">
+                    <div class="field">
+                        <label for="nom">Nom *</label>
+                        <input type="text" id="nom" name="nom"
+                               class="input"
+                               th:value="${usuari.nom}" required>
+                    </div>
+
+                    <div class="field">
+                        <label for="cognoms">Cognoms *</label>
+                        <input type="text" id="cognoms" name="cognoms"
+                               class="input"
+                               th:value="${usuari.cognoms}" required>
+                    </div>
+                </div>
+
+                <div class="row-2">
+                    <div class="field">
+                        <label for="email">Correu electrònic</label>
+                        <input type="email" id="email" name="email"
+                               class="input"
+                               th:value="${usuari.email}" readonly>
+                    </div>
+
+                    <div class="field">
+                        <label for="telefon">Telèfon</label>
+                        <input type="tel" id="telefon" name="telefon"
+                               class="input"
+                               th:value="${usuari.telefon}">
+                    </div>
+                </div>
+
+                <div class="row-2">
+                    <div class="field">
+                        <label for="nacionalitat">Nacionalitat</label>
+                        <input type="text" id="nacionalitat"
+                               name="nacionalitat" class="input"
+                               th:value="${client != null ? client.nacionalitat : ''}">
+                    </div>
+
+                    <div class="field">
+                        <label for="adreca">Adreça / Domicili</label>
+                        <input type="text" id="adreca" name="adreca"
+                               class="input"
+                               th:value="${client != null ? client.adreca : ''}">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="provincia">Província *</label>
+                    <select id="provincia" name="provincia" class="input" required>
+                        <option value="">Selecciona una província</option>
+                        <option th:each="prov : ${provincias}"
+                                th:value="${prov}"
+                                th:text="${prov}"
+                                th:selected="${usuari != null and usuari.provincia == prov}">
+                        </option>
+                    </select>
+                </div>
+
+                <hr class="mb mt"
+                    style="border: 0; border-top: 1px solid var(--border);">
+
+                <h2>Documentació</h2>
+                <p class="muted mb">
+                    Actualitza les dades i valideses dels teus documents.
+                </p>
+
+                <div class="row-2">
+                    <div class="field">
+                        <label for="DNI">Número de document (DNI/NIE)</label>
+                        <input type="text" id="DNI" name="DNI"
+                               class="input"
+                               th:value="${client != null ? client.DNI : ''}">
+                    </div>
+
+                    <div class="field">
+                        <label for="cadDNI">Caducitat del document</label>
+                        <input type="date" id="cadDNI" name="cadDNI"
+                               class="input"
+                               th:value="${client != null and client.cadDNI != null ? client.cadDNI : ''}">
+                    </div>
+                </div>
+
+                <div class="row-2">
+                    <div class="field">
+                        <label for="Lliconduir">Tipus de llicència</label>
+                        <input type="text" id="Lliconduir"
+                               name="Lliconduir" class="input"
+                               th:value="${client != null ? client.Lliconduir : ''}">
+                    </div>
+
+                    <div class="field">
+                        <label for="cdLLiconduir">Caducitat de la llicència</label>
+                        <input type="date" id="cdLLiconduir"
+                               name="cdLLiconduir" class="input"
+                               th:value="${client != null and client.cdLLiconduir != null ? client.cdLLiconduir : ''}">
+                    </div>
+                </div>
+
+                <div class="btn-row between mt">
+                    <a th:href="@{/perfil}" class="btn btn-outline">
+                        Cancel·lar
+                    </a>
+
+                    <button type="submit" class="btn btn-teal">
+                        ✓ Guardar canvis
+                    </button>
+                </div>
+
+            </form>
+
+        </section>
+
+        <aside class="stack-gap">
+
+            <article class="card">
+                <h3>Desar els canvis</h3>
+                <p class="muted">
+                    Comprova atentament totes les dades abans de guardar-les.
+                </p>
+
+                <div class="alert info mt">
+                    <strong>Important:</strong>
+                    Les dades han de coincidir amb la teva documentació oficial.
+                </div>
+            </article>
+
+            <article class="card">
+                <h3>Documentació personal</h3>
+                <p class="muted mb">Estat de la informació del client:</p>
+
+                <div th:if="${client != null}">
+                    <span class="pill validat">Documentació disponible</span>
+                </div>
+
+                <div th:unless="${client != null}">
+                    <span class="pill pendent">Pendent de completar</span>
+                </div>
+            </article>
+
+        </aside>
+
+    </div>
+
+</main>
+
+</body>
+</html>

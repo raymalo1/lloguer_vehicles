@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ca" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#1e2a5e">
+    <title>Informe de reserves · Nothingan Pri S.A.</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+
+    <style>
+        .page-head { margin-bottom: 25px; }
+        .page-head p { color: #78849a; }
+
+        .section-card {
+            margin-bottom: 25px;
+            padding: 24px;
+            border-radius: 14px;
+            background: white;
+            box-shadow: 0 4px 18px rgba(25, 42, 85, .07);
+            border: 1px solid #edf0f6;
+        }
+
+        .section-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .section-heading h2 {
+            margin: 0;
+            color: #1e2a5e;
+            font-size: 19px;
+        }
+
+        .counter {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 29px;
+            height: 29px;
+            padding: 0 9px;
+            border-radius: 20px;
+            background: #e9efff;
+            color: #294caa;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .table-wrap { overflow-x: auto; }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table thead th {
+            background: #f3f5fa;
+            color: #52617b;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            padding: 14px;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .table tbody td {
+            padding: 15px 14px;
+            border-bottom: 1px solid #edf0f5;
+            vertical-align: middle;
+            font-size: 13px;
+        }
+
+        .table tbody tr:last-child td { border-bottom: none; }
+        .table tbody tr:hover { background: #fafbff; }
+
+        .empty-row {
+            padding: 25px !important;
+            text-align: center;
+            color: #1a202c;
+        }
+
+        .totals {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 1px solid #edf0f5;
+        }
+
+        .total-box {
+            background: #f3f5fa;
+            border-radius: 10px;
+            padding: 14px 18px;
+            min-width: 160px;
+        }
+
+        .total-box .label {
+            display: block;
+            color: #71809a;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .3px;
+            margin-bottom: 4px;
+        }
+
+        .total-box .value {
+            color: #1e2a5e;
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .actions-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 16px;
+            border: 0;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .btn-secondary { background: #e9efff; color: #294caa; }
+        .btn-secondary:hover { filter: brightness(.97); }
+
+        .vehicle-cell { color: #253b70; font-weight: 600; }
+        .client-cell { color: #344675; }
+        .import-cell { font-weight: 700; color: #197344; white-space: nowrap; }
+
+        @media(max-width: 750px) {
+            .section-card { padding: 16px; }
+            .table.stack thead { display: none; }
+            .table.stack, .table.stack tbody, .table.stack tr, .table.stack td {
+                display: block; width: 100%;
+            }
+            .table.stack tr {
+                padding: 10px 0;
+                border-bottom: 1px solid #edf0f5;
+            }
+            .table.stack tbody td {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                gap: 15px;
+                padding: 9px 5px;
+                border: none;
+                text-align: right;
+            }
+            .table.stack tbody td::before {
+                content: attr(data-label);
+                color: #71809a;
+                font-weight: 700;
+                text-align: left;
+                flex: 0 0 38%;
+            }
+            .table.stack tbody td.empty-row {
+                display: block;
+                text-align: center;
+            }
+            .table.stack tbody td.empty-row::before { display: none; }
+        }
+    </style>
+</head>
+
+<body>
+
+<div th:replace="~{fragments/office :: topbar}"></div>
+
+<div class="app">
+    <input type="checkbox" id="side" class="side-toggle" aria-label="Menú de gestió">
+    <div th:replace="~{fragments/office :: sidebar(activeMenu='informe')}"></div>
+    <div class="scrim" aria-hidden="true"></div>
+
+    <main class="main">
+        <div class="page-head">
+            <h1>Informe de reserves per client</h1>
+            <p th:if="${totsClients}">Tots els clients · dades de l'històric (MongoDB)</p>
+            <p th:unless="${totsClients}">Clients seleccionats · dades de l'històric (MongoDB)</p>
+        </div>
+
+        <section class="section-card">
+            <div class="section-heading">
+                <h2>Llistat de reserves</h2>
+                <span class="counter" th:text="${totalReserves}">0</span>
+            </div>
+
+            <div class="table-wrap">
+                <table class="table stack">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Vehicle</th>
+                            <th>Client</th>
+                            <th>Import</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${reserves == null or #lists.isEmpty(reserves)}">
+                            <td colspan="4" class="empty-row">No hi ha reserves a l'històric per als filtres seleccionats.</td>
+                        </tr>
+                        <tr th:each="r : ${reserves}">
+                            <td data-label="Data"
+                                th:text="${r.dataInici != null ? #temporals.format(r.dataInici, 'dd/MM/yyyy') : '—'}">
+                                01/01/2026
+                            </td>
+                            <td data-label="Vehicle" class="vehicle-cell">
+                                <span th:text="${(r.marca != null ? r.marca : '') + ' ' + (r.model != null ? r.model : '')}">Marca Model</span>
+                                <small th:if="${r.matricula != null}"
+                                       th:text="' · ' + r.matricula"
+                                       style="color:#8791a3;font-weight:500;"></small>
+                            </td>
+                            <td data-label="Client" class="client-cell"
+                                th:text="${r.clientNom != null ? r.clientNom : r.clientEmail}">
+                                Client
+                            </td>
+                            <td data-label="Import" class="import-cell"
+                                th:text="${r.importTotal != null ? #numbers.formatDecimal(r.importTotal, 1, 2) + ' €' : '—'}">
+                                0,00 €
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="totals">
+                <div class="total-box">
+                    <span class="label">Total reserves</span>
+                    <span class="value" th:text="${totalReserves}">0</span>
+                </div>
+                <div class="total-box">
+                    <span class="label">Preu total</span>
+                    <span class="value"
+                          th:text="${preuTotal != null ? #numbers.formatDecimal(preuTotal, 1, 2) + ' €' : '0,00 €'}">
+                        0,00 €
+                    </span>
+                </div>
+            </div>
+
+            <div class="actions-bar">
+                <a th:href="@{/reserva/informe}" class="btn btn-secondary">Nou filtre</a>
+                <a th:href="@{/reserva/meves}" class="btn btn-secondary">Tornar a reserves</a>
+            </div>
+        </section>
+    </main>
+</div>
+
+</body>
+</html>

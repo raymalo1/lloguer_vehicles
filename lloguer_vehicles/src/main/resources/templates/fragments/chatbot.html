@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <!-- Definimos el fragmento que vamos a inyectar en las otras páginas -->
+    <div th:fragment="prisita">
+
+        <!-- Input invisible para controlar si el chat está abierto o cerrado con CSS -->
+        <input type="checkbox" id="chat-toggle" class="chat-toggle">
+
+        <!-- Botón flotante (El bicho que sale abajo a la derecha) -->
+        <label for="chat-toggle" class="chat-fab" aria-label="Obrir assistent Prisita">
+            <img th:src="@{/img/prisita.png}" alt="" class="chat-logo">
+        </label>
+
+        <!-- Contenedor del Chat -->
+        <div class="chat">
+
+            <!-- Capucha del chat -->
+            <div class="chat-head">
+                <div class="av">
+                    <img th:src="@{/img/prisita.png}" alt="Prisita" class="chat-logo">
+                </div>
+                <div class="tt">
+                    <strong>Prisita</strong>
+                    <small>En línea - Preguntas frecuentes</small>
+                </div>
+                <label for="chat-toggle" class="chat-close" aria-label="Tancar xat">×</label>
+            </div>
+
+            <!-- Cuerpo del chat (donde salen los mensajes) -->
+            <div class="chat-body" id="chat-body">
+                <div class="bubble bot">
+                    ¡Hola! Soy Prisita, tu asistente. Resuelvo dudas sobre reservas y fianzas.
+                </div>
+                <div class="bubble bot">
+                    ¿Sobre qué quieres saber?
+                </div>
+
+                <!-- Botones rápidos -->
+                <div class="quick">
+                    <button type="button" onclick="enviarMensaje('¿Qué es la fianza?')">¿Qué es la fianza?</button>
+                    <button type="button" onclick="enviarMensaje('¿Hay vehículos disponibles?')">¿Hay vehículos disponibles?</button>
+                    <button type="button" onclick="enviarMensaje('Ver mi reserva')">Ver mi reserva</button>
+                    <button type="button" onclick="enviarMensaje('¿Qué documentos necesito?')">¿Qué documentos necesito?</button>
+                    <button type="button" onclick="enviarMensaje('Pagos')">Pagos</button>
+                </div>
+            </div>
+
+            <!-- Input para escribir texto libre -->
+            <div class="chat-input">
+                <input type="text" id="chat-input" class="input" placeholder="Escribe tu pregunta..." aria-label="Escriu la teva pregunta" onkeypress="handleEnter(event)">
+                <button class="send" type="button" onclick="enviarTextoLibre()" aria-label="Enviar missatge">➤</button>
+            </div>
+        </div>
+
+        <script th:src="@{/js/chatbot.js}" defer></script>
+    </div>
+</body>
+</html>

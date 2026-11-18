@@ -1,0 +1,249 @@
+
+<!DOCTYPE html>
+<html lang="ca" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Configuració del compte | Nothingan Pri</title>
+
+    <!-- CSS compartit -->
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+
+</head>
+
+<body>
+
+<main class="container">
+
+    <!-- CAPÇALERA -->
+    <div class="page-head">
+
+        <h1>Configuració del compte</h1>
+
+        <p class="subtitol">
+            Gestiona les teves dades personals i la seguretat del teu compte.
+        </p>
+
+    </div>
+
+
+    <!-- MISSATGE D'ÈXIT -->
+    <div class="alert ok" th:if="${mensaje}">
+
+        <strong>Canvis desats</strong>
+
+        <span th:text="${mensaje}">
+            Els canvis s'han desat correctament.
+        </span>
+
+    </div>
+
+
+    <!-- MISSATGE D'ERROR -->
+    <div class="alert err" role="alert" th:if="${error}">
+
+        <strong>S'ha produït un error</strong>
+
+        <span th:text="${error}">
+            No s'han pogut desar els canvis.
+        </span>
+
+    </div>
+
+
+    <!-- DADES PERSONALS -->
+    <section class="card wide">
+
+        <div class="row-between mb">
+
+            <div>
+
+                <h2>👤 Dades personals</h2>
+
+                <p class="muted">
+                    Actualitza la informació associada al teu compte.
+                </p>
+
+            </div>
+
+            <span class="pill actiu">
+                Compte actiu
+            </span>
+
+        </div>
+
+
+        <!-- FORMULARI D'EDICIÓ -->
+        <form th:action="@{/perfil/configuracio}" method="post">
+
+            <div class="row-2">
+
+                <!-- NOM -->
+                <div class="field">
+
+                    <label for="nom">
+                        Nom
+                    </label>
+
+                    <input
+                        class="input"
+                        type="text"
+                        id="nom"
+                        name="nom"
+                        th:value="${usuari.nom}"
+                        maxlength="100"
+                        autocomplete="given-name"
+                        required>
+
+                </div>
+
+
+                <!-- COGNOMS -->
+                <div class="field">
+
+                    <label for="cognoms">
+                        Cognoms
+                    </label>
+
+                    <input
+                        class="input"
+                        type="text"
+                        id="cognoms"
+                        name="cognoms"
+                        th:value="${usuari.cognoms}"
+                        maxlength="150"
+                        autocomplete="family-name"
+                        required>
+
+                </div>
+
+
+                <!-- CORREU ELECTRÒNIC -->
+                <div class="field">
+
+                    <label for="email">
+                        Correu electrònic
+                    </label>
+
+                    <input
+                        class="input"
+                        type="email"
+                        id="email"
+                        th:value="${usuari.email}"
+                        autocomplete="email"
+                        readonly>
+
+                    <p class="hint">
+                        El correu electrònic no es pot modificar des d'aquesta pàgina.
+                    </p>
+
+                </div>
+
+
+                <!-- TELÈFON -->
+                <div class="field">
+
+                    <label for="telefon">
+                        Telèfon
+                    </label>
+
+                    <input
+                        class="input"
+                        type="tel"
+                        id="telefon"
+                        name="telefon"
+                        th:value="${usuari.telefon}"
+                        maxlength="20"
+                        autocomplete="tel"
+                        required>
+
+                </div>
+
+            </div>
+
+
+            <!-- BOTONS -->
+            <div class="btn-row between">
+
+                <a class="btn btn-outline"
+                   th:href="@{/perfil}">
+
+                    ← Tornar al perfil
+
+                </a>
+
+                <button class="btn btn-teal" type="submit">
+
+                    ✓ Desar els canvis
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </section>
+
+
+    <!-- SEGURETAT DEL COMPTE -->
+    <section class="card wide mt">
+
+        <h2>🔒 Seguretat del compte</h2>
+
+        <p class="muted">
+            Gestiona la contrasenya i protegeix l'accés al teu compte.
+        </p>
+
+
+        <div class="row-between mt">
+
+            <div>
+
+                <strong>Contrasenya</strong>
+
+                <p class="muted">
+                    És recomanable utilitzar una contrasenya segura
+                    i actualitzar-la periòdicament.
+                </p>
+
+            </div>
+
+
+            <a class="btn btn-outline"
+               th:href="@{/perfil/contrasenya}">
+
+                Canviar contrasenya →
+
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- ACCIONS FINALS -->
+    <div class="btn-row mt">
+
+        <a class="btn btn-outline"
+           th:href="@{/perfil}">
+
+            ← Tornar al meu perfil
+
+        </a>
+
+        <a class="btn btn-outline"
+           th:href="@{/cataleg}">
+
+            Tornar al catàleg
+
+        </a>
+
+    </div>
+
+</main>
+
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ca" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Les meves reserves - Nothingan Pri S.A.</title>
+
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+
+<body>
+
+    <main class="container">
+
+        <!-- Capçalera -->
+        <div class="page-head">
+            <h1>Les meves reserves</h1>
+            <p>Consulta l'historial de les teves reserves de vehicles.</p>
+        </div>
+
+        <!-- Missatges -->
+        <div th:if="${missatge}" class="alert ok">
+            <span th:text="${missatge}"></span>
+        </div>
+
+        <div th:if="${error}" class="alert err">
+            <span th:text="${error}"></span>
+        </div>
+
+        <!-- Taula de reserves -->
+        <section class="card table-card">
+
+            <div class="table-wrap">
+
+                <table class="table stack">
+
+                    <thead>
+                        <tr>
+                            <th>Codi</th>
+                            <th>Vehicle</th>
+                            <th>Dates</th>
+                            <th>Lloguer + fiança</th>
+                            <th>Estat</th>
+                            <th>Accions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr th:each="reserva : ${reserves}">
+
+                            <!-- Codi -->
+                            <td data-label="Codi">
+                                <strong th:text="${reserva.codiReserva}">
+                                    RV-310
+                                </strong>
+                            </td>
+
+                            <!-- Vehicle -->
+                            <td data-label="Vehicle"
+                                th:text="${reserva.vehicle}">
+                                Peugeot 3008
+                            </td>
+
+                            <!-- Dates -->
+                            <td data-label="Dates">
+                                <span th:text="${reserva.dataInici}">
+                                    12-10-2026
+                                </span>
+                                -
+                                <span th:text="${reserva.dataFi}">
+                                    17-10-2026
+                                </span>
+                            </td>
+
+                            <!-- Preu -->
+                            <td data-label="Lloguer + fiança">
+                                <span th:text="${reserva.preuLloguer}">
+                                    310
+                                </span>
+                                € +
+                                <span th:text="${reserva.fianca}">
+                                    270
+                                </span>
+                                €
+                            </td>
+
+                            <!-- Estat -->
+                            <td data-label="Estat">
+                                <span class="pill confirmada"
+                                      th:classappend="${#strings.toLowerCase(reserva.estat)}"
+                                      th:text="${reserva.estat}">
+                                    Confirmada
+                                </span>
+                            </td>
+
+                            <!-- Accions -->
+                            <td data-label="Accions" class="actions">
+
+                                <form th:if="${reserva.estat == 'Confirmada'}"
+                                      th:action="@{/reserva/anul·lar/{id}(id=${reserva.id})}"
+                                      method="post">
+
+                                    <button type="submit"
+                                            class="btn btn-danger btn-sm"
+                                            onclick="return confirm('Segur que vols anul·lar aquesta reserva?')">
+                                        Anul·lar
+                                    </button>
+
+                                </form>
+
+                                <span th:unless="${reserva.estat == 'Confirmada'}"
+                                      class="muted">
+                                    -
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+                        <!-- Si no hi ha reserves -->
+                        <tr th:if="${#lists.isEmpty(reserves)}">
+                            <td colspan="6" class="center-text">
+                                Encara no tens cap reserva.
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <!-- Tornar al catàleg -->
+        <div class="btn-row">
+            <a th:href="@{/vehicles}" class="btn btn-outline">
+                Tornar al catàleg
+            </a>
+        </div>
+
+    </main>
+
+</body>
+</html>

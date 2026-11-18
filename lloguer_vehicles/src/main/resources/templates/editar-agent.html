@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ca"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="theme-color" content="#1e2a5e"/>
+    <title>Editar agent · Nothingan Pri S.A.</title>
+
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+
+    <style>
+        .required {
+            color: #dc3545;
+            font-weight: bold;
+            margin-left: 3px;
+        }
+
+        .error-message {
+            display: flex;
+            align-items: flex-start;
+            gap: 7px;
+            width: fit-content;
+            max-width: 100%;
+            box-sizing: border-box;
+            margin-top: 8px;
+            padding: 8px 11px;
+            border: 1px solid #f2c6c9;
+            border-left: 3px solid #dc3545;
+            border-radius: 7px;
+            background: #fff5f5;
+            color: #b42332;
+            font-size: 12px;
+            line-height: 1.45;
+            font-weight: 600;
+        }
+
+        .error-message::before {
+            content: "!";
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 16px;
+            width: 16px;
+            height: 16px;
+            margin-top: 1px;
+            border-radius: 50%;
+            background: #dc3545;
+            color: white;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .input-error {
+            border: 1px solid #dc3545 !important;
+            background-color: #fff8f8 !important;
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, .09) !important;
+        }
+
+        .input-error:focus {
+            border-color: #bd2535 !important;
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, .15) !important;
+            outline: none;
+        }
+
+        .alert-error {
+            display: flex;
+            align-items: flex-start;
+            gap: 11px;
+            padding: 15px 18px;
+            margin: 0 0 22px;
+            border: 1px solid #f1bfc4;
+            border-left: 4px solid #dc3545;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #fff5f5, #fdeaea);
+            color: #842029;
+            box-shadow: 0 3px 12px rgba(180, 35, 50, .07);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .alert-error::before {
+            content: "!";
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 23px;
+            width: 23px;
+            height: 23px;
+            margin-top: 1px;
+            border-radius: 50%;
+            background: #dc3545;
+            color: white;
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .alert-error strong {
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .required-legend {
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            color: #666;
+        }
+
+        input[readonly] {
+            background-color: #eeeeee;
+            cursor: not-allowed;
+        }
+
+        .field-help {
+            display: block;
+            margin-top: 7px;
+            font-size: 12px;
+            line-height: 1.5;
+            color: #666;
+        }
+
+        @media (max-width: 600px) {
+            .error-message {
+                width: 100%;
+            }
+
+            .alert-error {
+                padding: 12px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div th:replace="~{fragments/office :: topbar}"></div>
+
+<div class="app">
+
+    <input type="checkbox" id="side" class="side-toggle"
+           aria-label="Menú de gestió">
+
+    <div th:replace="~{fragments/office :: sidebar(activeMenu='agents')}"></div>
+
+    <label class="scrim" for="side" aria-label="Tancar el menú"></label>
+
+    <main class="main">
+        <div class="container">
+
+            <div class="page-head">
+                <h1>Editar agent</h1>
+                <p class="lead">
+                    Consulta i modifica les dades personals i la informació laboral de l'agent.
+                </p>
+            </div>
+
+            <p class="required-legend">
+                Els camps marcats amb <span class="required">*</span> són obligatoris.
+            </p>
+
+            <!-- MISSATGES GENERALS -->
+            <div th:if="${error}"
+                 class="alert alert-error"
+                 role="alert">
+                <strong>Error:</strong>
+                <span th:text="${error}"></span>
+            </div>
+
+            <div th:if="${missatge}"
+                 class="alert ok"
+                 role="status"
+                 th:text="${missatge}">
+            </div>
+
+            <form th:action="@{/admin/agents/editar/{id}(id=${agent.id})}"
+                  th:object="${agent}"
+                  method="post"
+                  class="mt">
+
+                <input type="hidden" th:field="*{id}">
+
+                <!-- 1. DADES PERSONALS -->
+                <div class="card">
+
+                    <h3>1. Dades personals</h3>
+
+                    <div class="cols-3">
+
+                        <div class="field">
+                            <label>DNI</label>
+                            <input type="text"
+                                   th:field="*{DNI}"
+                                   class="input"
+                                   readonly/>
+                            <small class="field-help">El DNI no es pot modificar.</small>
+                            <span th:if="${#fields.hasErrors('DNI')}"
+                                  th:errors="*{DNI}"
+                                  class="error-message"></span>
+                        </div>
+
+                        <div class="field">
+                            <label>Nom <span class="required">*</span></label>
+                            <input type="text"
+                                   th:field="*{nom}"
+                                   class="input"
+                                   th:classappend="${#fields.hasErrors('nom')} ? ' input-error' : ''"/>
+                            <span th:if="${#fields.hasErrors('nom')}"
+                                  th:errors="*{nom}"
+                                  class="error-message"></span>
+                        </div>
+
+                        <div class="field">
+                            <label>Cognoms <span class="required">*</span></label>
+                            <input type="text"
+                                   th:field="*{cognoms}"
+                                   class="input"
+                                   th:classappend="${#fields.hasErrors('cognoms')} ? ' input-error' : ''"/>
+                            <span th:if="${#fields.hasErrors('cognoms')}"
+                                  th:errors="*{cognoms}"
+                                  class="error-message"></span>
+                        </div>
+
+                        <div class="field">
+                            <label>Telèfon <span class="required">*</span></label>
+                            <input type="text"
+                                   th:field="*{telefon}"
+                                   class="input"
+                                   maxlength="9"
+                                   th:classappend="${#fields.hasErrors('telefon')} ? ' input-error' : ''"/>
+                            <span th:if="${#fields.hasErrors('telefon')}"
+                                  th:errors="*{telefon}"
+                                  class="error-message"></span>
+                        </div>
+
+                        <div class="field">
+                            <label>Correu electrònic <span class="required">*</span></label>
+                            <input type="email"
+                                   th:field="*{email}"
+                                   class="input"
+                                   th:classappend="${#fields.hasErrors('email')} ? ' input-error' : ''"/>
+                            <span th:if="${#fields.hasErrors('email')}"
+                                  th:errors="*{email}"
+                                  class="error-message"></span>
+                        </div>
+
+                        <div class="field">
+                            <label>Província <span class="required">*</span></label>
+                            <select th:field="*{provincia}"
+                                    class="input"
+                                    th:classappend="${#fields.hasErrors('provincia')} ? ' input-error' : ''">
+
+                                <option value="">Selecciona una província</option>
+
+                                <option th:each="prov : ${provincies}"
+                                        th:value="${prov}"
+                                        th:text="${prov}">
+                                </option>
+
+                            </select>
+
+                            <span th:if="${#fields.hasErrors('provincia')}"
+                                  th:errors="*{provincia}"
+                                  class="error-message"></span>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- 2. INFORMACIÓ LABORAL -->
+                <div class="card mt">
+
+                    <h3>2. Informació laboral</h3>
+
+                    <div class="cols-3">
+
+                        <div class="field">
+                            <label>Data de contractació</label>
+                            <input type="date"
+                                   th:field="*{dataContracte}"
+                                   class="input"
+                                   th:classappend="${#fields.hasErrors('dataContracte')} ? ' input-error' : ''"/>
+                            <small class="field-help">La data actual es conserva si no la modifiques.</small>
+                            <span th:if="${#fields.hasErrors('dataContracte')}"
+                                  th:errors="*{dataContracte}"
+                                  class="error-message"></span>
+                        </div>
+
+                        <div class="field">
+                            <label>Rol de l'agent <span class="required">*</span></label>
+                            <select th:field="*{rol}"
+                                    class="input"
+                                    th:classappend="${#fields.hasErrors('rol')} ? ' input-error' : ''">
+
+                                <option value="">Selecciona un rol</option>
+
+                                <option th:each="rolDisponible : ${rols}"
+                                        th:value="${rolDisponible}"
+                                        th:text="${rolDisponible}">
+                                </option>
+
+                            </select>
+
+                            <span th:if="${#fields.hasErrors('rol')}"
+                                  th:errors="*{rol}"
+                                  class="error-message"></span>
+                        </div>
+
+                    </div>
+
+                    <div class="actions mt">
+                        <button type="submit" class="btn btn-teal">
+                            Guardar canvis
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+
+            <!-- TORNAR -->
+            <div class="mt">
+                <a th:href="@{/admin/agents}" class="btn btn-outline">
+                    Tornar als agents
+                </a>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+</body>
+</html>

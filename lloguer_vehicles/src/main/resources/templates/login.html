@@ -1,0 +1,229 @@
+
+<!DOCTYPE html>
+<html lang="ca" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#1e2a5e">
+        <title>Inici de sessió · Nothingan Pri S.A.</title>
+        <link rel="stylesheet" th:href="@{/css/styles.css}">
+    </head>
+    <body>
+        <main class="container">
+            <div class="center-col">
+                <section class="card narrow">
+                    <div class="auth-logo">
+                        <a class="brand" th:href="@{/}" aria-label="Nothingan Pri S.A.">
+                            <img th:src="@{/img/logo-azul.png}"
+                                 alt="Nothingan Pri S.A."
+                                 class="brand-logo">
+                            <span>Nothingan <b>Pri S.A.</b></span>
+                        </a>
+                    </div>
+
+                    <h1 class="center-text mb">Inicia sessió</h1>
+
+                    <form th:action="@{/login}" method="post" id="loginForm">
+                        <div class="field">
+                            <label for="email">Email (nom d'usuari)</label>
+                            <input class="input"
+                                   id="email"
+                                   name="email"
+                                   type="text"
+                                   inputmode="email"
+                                   autocomplete="username"
+                                   placeholder="nom@gmail.com"
+                                   required
+                                   maxlength="254"
+                                   aria-describedby="emailError">
+
+                            <div id="emailError" class="alert err" role="alert" hidden>
+                                Introdueix un correu electrònic vàlid.
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label for="password">Contrasenya</label>
+
+                            <div style="position: relative;">
+                                <input class="input"
+                                       id="password"
+                                       name="password"
+                                       type="password"
+                                       autocomplete="current-password"
+                                       required
+                                       aria-describedby="passwordError"
+                                       style="padding-right: 45px;">
+
+                                <button type="button"
+                                        onclick="mostrarPassword('password', this)"
+                                        aria-label="Mostrar contrasenya"
+                                        style="position: absolute;
+                                        right: 8px;
+                                        top: 50%;
+                                        transform: translateY(-50%);
+                                        background: #0f4c6e;
+                                        border: 1px solid #0f4c6e;
+                                        border-radius: 6px;
+                                        padding: 4px 8px;
+                                        cursor: pointer;
+                                        color: #ffffff;
+                                        font-size: 14px;
+                                        line-height: 1;">
+                                    👁
+                                </button>
+                            </div>
+
+                            <div id="passwordError"
+                                 class="alert err"
+                                 role="alert"
+                                 hidden>
+                                Introdueix la contrasenya.
+                            </div>
+                        </div>
+
+                        <script>
+                            function mostrarPassword(id, boto) {
+                                const camp = document.getElementById(id);
+
+                                if (!camp)
+                                    return;
+
+                                if (camp.type === "password") {
+                                    camp.type = "text";
+                                    boto.textContent = "🙈";
+                                    boto.setAttribute("aria-label", "Amagar contrasenya");
+                                } else {
+                                    camp.type = "password";
+                                    boto.textContent = "👁";
+                                    boto.setAttribute("aria-label", "Mostrar contrasenya");
+                                }
+                            }
+                        </script>
+
+                        <div class="row-between mb">
+                            <label class="check" style="margin:0">
+                                <input type="checkbox" name="remember-me">
+                                Recorda'm
+                            </label>
+
+                            <!-- Enllaç corregit: Thymeleaf processa la ruta -->
+                            <a th:href="@{/recuperar-contrasenya}" id="forgotLink" style="color: #0b3d57; font-weight: 600; text-decoration: underline;">
+                                Has oblidat la contrasenya?
+                            </a>
+                        </div>
+
+                        <button class="btn btn-block" type="submit">Entrar</button>
+
+                        <!-- Missatges segons l'estat del compte -->
+                        <div class="alert err"
+                             role="alert"
+                             th:if="${param.error}">
+
+                            <span th:if="${param.error[0] == 'pendent'}">
+                                El teu compte està pendent de validació.
+                                Un agent ha de revisar la teva sol·licitud abans
+                                que puguis iniciar sessió.
+                            </span>
+
+                            <span th:if="${param.error[0] == 'rebutjat'}">
+                                La teva sol·licitud de registre ha estat rebutjada.
+                                Contacta amb l'administració per obtenir més informació.
+                            </span>
+
+                            <span th:if="${param.error[0] == 'disabled'}">
+                                El teu compte està desactivat.
+                                Contacta amb l'administració per obtenir més informació.
+                            </span>
+
+                            <span th:unless="${param.error[0] == 'pendent'
+                                             or param.error[0] == 'rebutjat'
+                                             or param.error[0] == 'disabled'}">
+                                El correu electrònic o la contrasenya són incorrectes.
+                                Comprova les dades i torna-ho a provar.
+                            </span>
+                        </div>
+
+                        <div class="alert ok" role="status" th:if="${param.logout}">
+                            Has tancat la sessió correctament.
+                        </div>
+                    </form>
+
+                    <p class="muted center-text mt">
+                        Encara no tens compte?
+                        <a th:href="@{/registre}">Registra't</a>
+                    </p>
+                </section>
+            </div>
+        </main>
+
+        <script>
+            const form = document.getElementById('loginForm');
+            const email = document.getElementById('email');
+            const password = document.getElementById('password');
+            const emailError = document.getElementById('emailError');
+            const passwordError = document.getElementById('passwordError');
+
+            function validateEmail() {
+                const value = email.value.trim();
+
+                // L'administrador pot entrar amb el nom "admin".
+                if (value.toLowerCase() === 'admin') {
+                    emailError.hidden = true;
+                    return true;
+                }
+
+                if (value === '') {
+                    emailError.textContent = 'Introdueix el teu correu electrònic.';
+                    emailError.hidden = false;
+                    return false;
+                }
+
+                const validFormat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
+                if (!validFormat) {
+                    emailError.textContent =
+                            'El correu no és vàlid. Exemple: nom@gmail.com';
+                    emailError.hidden = false;
+                    return false;
+                }
+
+                emailError.hidden = true;
+                return true;
+            }
+
+            function validatePassword() {
+                if (password.value === '') {
+                    passwordError.textContent = 'Introdueix la contrasenya.';
+                    passwordError.hidden = false;
+                    return false;
+                }
+
+                passwordError.hidden = true;
+                return true;
+            }
+
+            email.addEventListener('input', () => {
+                emailError.hidden = true;
+            });
+
+            password.addEventListener('input', () => {
+                passwordError.hidden = true;
+            });
+
+            form.addEventListener('submit', function (event) {
+                const validEmail = validateEmail();
+                const validPassword = validatePassword();
+
+                if (!validEmail || !validPassword) {
+                    event.preventDefault();
+                    if (!validEmail) {
+                        email.focus();
+                    } else {
+                        password.focus();
+                    }
+                }
+            });
+        </script>
+    </body>
+</html>

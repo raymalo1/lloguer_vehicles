@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ca" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1e2a5e">
+  <title>Fitxa de vehicle · Nothingan Pri S.A.</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+
+<div th:replace="~{fragments/office :: topbar}"></div>
+
+<div class="app">
+    <input type="checkbox" id="side" class="side-toggle" aria-label="Menú de gestió">
+    <div th:replace="~{fragments/office :: sidebar(activeMenu='vehicles')}"></div>
+    <div class="scrim" aria-hidden="true"></div>
+
+    <main class="main">
+    <div class="page-head">
+      <h1 th:text="${vehicle.id == null} ? 'Nou vehicle' : 'Fitxa del vehicle'">Fitxa del vehicle</h1>
+      <p>Agent / Administrador · Els camps amb <span style="color:var(--err, #e53935)">*</span> són obligatoris.</p>
+    </div>
+
+    <!-- Mensajes de feedback -->
+    <div class="alert ok" role="status" th:if="${missatge}" th:text="${missatge}"></div>
+    <div class="alert err" role="alert" th:if="${errorNegoci}">
+      <strong>Error en l'operació:</strong>
+      <span th:text="${errorNegoci}">Motiu de l'error</span>
+    </div>
+
+    <form class="split" th:action="@{/vehicles/desa}" th:object="${vehicle}" method="post" enctype="multipart/form-data" novalidate>
+      <input type="hidden" th:field="*{id}">
+
+      <div class="stack-gap">
+
+        <div class="alert err" role="alert" th:if="${#fields.hasErrors('*')}">
+          <strong>Revisa el formulari</strong>
+          <ul style="margin-left:18px"><li th:each="e : ${#fields.allErrors()}" th:text="${e}"></li></ul>
+        </div>
+
+        <section class="card">
+          <h2>Identificació</h2>
+          <div class="row-2">
+            <div class="field">
+              <label for="matricula">Matrícula <span class="req">*</span></label>
+              <input id="matricula" class="input" th:field="*{matricula}" th:errorclass="error"
+                     placeholder="1234BCD" pattern="[0-9]{4}[\s-]?[BCDFGHJKLMNPRSTVWXYZ]{3}"
+                     title="Format espanyol nou: 4 xifres i 3 consonants (ex. 1234BCD)">
+              <div class="hint">Format espanyol nou: 4 xifres + 3 consonants (ex. 1234BCD)</div>
+              <div class="hint error" th:errors="*{matricula}"></div>
+            </div>
+            <div class="field">
+              <label for="anyMatriculacio">Any de matriculació <span class="req">*</span></label>
+              <input id="anyMatriculacio" class="input" type="number" th:field="*{anyMatriculacio}" th:errorclass="error">
+              <div class="hint error" th:errors="*{anyMatriculacio}"></div>
+            </div>
+          </div>
+          <div class="row-2">
+            <div class="field">
+              <label for="marca">Marca <span class="req">*</span></label>
+              <input id="marca" class="input" th:field="*{marca}" th:errorclass="error">
+              <div class="hint error" th:errors="*{marca}"></div>
+            </div>
+            <div class="field">
+              <label for="model">Model <span class="req">*</span></label>
+              <input id="model" class="input" th:field="*{model}" th:errorclass="error">
+              <div class="hint error" th:errors="*{model}"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Fotografia del vehicle</h2>
+          <div class="field">
+            <label for="fileFoto">Selecciona una imatge (només JPG / PNG)</label>
+            <input id="fileFoto" name="fileFoto" type="file"
+                   accept=".jpg,.jpeg,.png,image/jpeg,image/png" class="input">
+            <div class="hint">Només es permeten fitxers JPG o PNG (màx. 5 MB).</div>
+          </div>
+          <div th:if="*{fotoUrl != null}" style="margin-top: 10px;">
+            <p class="muted">Imatge actual:</p>
+            <img th:src="@{*{fotoUrl}}" alt="Foto vehicle" style="max-width: 200px; border-radius: 8px;">
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Característiques</h2>
+          <div class="row-2">
+            <div class="field">
+              <label for="categoria">Categoria <span class="req">*</span></label>
+              <select id="categoria" class="select" th:field="*{categoria}" th:errorclass="error">
+                <option value="">— Tria —</option>
+                <option th:each="c : ${categories}" th:value="${c}" th:text="${c}"></option>
+              </select>
+              <div class="hint error" th:errors="*{categoria}"></div>
+            </div>
+            <div class="field">
+              <label for="combustible">Combustible <span class="req">*</span></label>
+              <select id="combustible" class="select" th:field="*{combustible}" th:errorclass="error">
+                <option value="">— Tria —</option>
+                <option th:each="c : ${combustibles}" th:value="${c}" th:text="${c}"></option>
+              </select>
+              <div class="hint error" th:errors="*{combustible}"></div>
+            </div>
+          </div>
+          <div class="row-2">
+            <div class="field">
+              <label for="places">Places <span class="req">*</span></label>
+              <input id="places" class="input" type="number" th:field="*{places}" th:errorclass="error">
+              <div class="hint error" th:errors="*{places}"></div>
+            </div>
+            <div class="field">
+              <label for="potenciaCv">Potència (CV)</label>
+              <input id="potenciaCv" class="input" type="number" th:field="*{potenciaCv}" th:errorclass="error">
+              <div class="hint error" th:errors="*{potenciaCv}"></div>
+            </div>
+          </div>
+          <div class="field">
+            <label for="color">Color</label>
+            <input id="color" class="input" th:field="*{color}" th:errorclass="error">
+            <div class="hint error" th:errors="*{color}"></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Dades comercials</h2>
+          <div class="row-2">
+            <div class="field">
+              <label for="preuHora">Preu / hora (EUR) <span class="req">*</span></label>
+              <input type="number" id="preuHora" class="input" step="0.01" min="0" th:field="*{preuHora}" th:errorclass="error" inputmode="decimal">
+              <div class="hint error" th:errors="*{preuHora}"></div>
+            </div>
+            <div class="field">
+              <label for="fiancaEstandard">Fiança estàndard (EUR) <span class="req">*</span></label>
+              <input type="number" id="fiancaEstandard" class="input" th:field="*{fiancaEstandard}" th:errorclass="error" inputmode="decimal">
+              <div class="hint error" th:errors="*{fiancaEstandard}"></div>
+            </div>
+          </div>
+          <div class="row-2">
+            <div class="field">
+              <label for="minDies">Dies mínims <span class="req">*</span></label>
+              <input id="minDies" class="input" type="number" th:field="*{minDies}" th:errorclass="error">
+              <div class="hint error" th:errors="*{minDies}"></div>
+            </div>
+            <div class="field">
+              <label for="maxDies">Dies màxims</label>
+              <input id="maxDies" class="input" type="number" th:field="*{maxDies}" th:errorclass="error">
+              <div class="hint error" th:errors="*{maxDies}"></div>
+            </div>
+          </div>
+          <div class="field">
+            <label for="limitQuilometres">Límit de quilòmetres</label>
+            <input id="limitQuilometres" class="input" type="number" th:field="*{limitQuilometres}" th:errorclass="error">
+            <div class="hint error" th:errors="*{limitQuilometres}"></div>
+          </div>
+        </section>
+      </div>
+
+      <aside class="stack-gap">
+        <section class="card">
+          <div class="row-between mb">
+            <h2 style="margin:0">Estat</h2>
+            <span class="pill actiu" th:if="*{actiu}">Actiu</span>
+            <span class="pill inactiu" th:unless="*{actiu}">Inactiu</span>
+          </div>
+          <label class="check">
+            <input type="checkbox" id="actiu" th:field="*{actiu}"> Vehicle actiu
+          </label>
+
+          <!-- RF40: només visible si el vehicle NO està actiu -->
+          <div class="field" id="blocDataFiDesactivacio"
+               th:style="*{actiu} ? 'display:none' : 'display:block'">
+            <label for="dataFiDesactivacio">Data de fi de la desactivació <span class="req">*</span></label>
+            <input id="dataFiDesactivacio" class="input" type="date"
+                   th:field="*{dataFiDesactivacio}" th:errorclass="error">
+            <div class="hint">Obligatòria si el vehicle no està actiu.</div>
+            <div class="hint error" th:errors="*{dataFiDesactivacio}"></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Comentari privat</h2>
+          <p class="muted mb">Només visible per a agents i administradors.</p>
+          <div class="field">
+            <textarea id="comentariPrivat" class="textarea" rows="5" th:field="*{comentariPrivat}" th:errorclass="error" aria-label="Comentari privat"></textarea>
+            <div class="hint error" th:errors="*{comentariPrivat}"></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="btn-row" style="margin-top:0">
+            <button class="btn btn-teal btn-block" type="submit">Desa els canvis</button>
+            <a class="btn btn-outline btn-block" th:href="@{/vehicles}">Cancel·la</a>
+          </div>
+        </section>
+      </aside>
+    </form>
+
+    <!-- RF41: zona de baixa (només en editar un vehicle existent i encara actiu) -->
+    <div th:if="${vehicle.id != null and vehicle.actiu}" style="margin-top: 20px;">
+      <section class="card">
+        <p>Donar de baixa el vehicle el deixa inactiu (no s'esborra). No es pot fer si té reserves actives.</p>
+        <form th:action="@{/vehicles/{id}/baixa(id=${vehicle.id})}" method="post">
+          <button type="submit" class="btn btn-danger btn-block">Donar de baixa</button>
+        </form>
+      </section>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  (function () {
+    const actiu = document.getElementById('actiu');
+    const bloc = document.getElementById('blocDataFiDesactivacio');
+    const dataFi = document.getElementById('dataFiDesactivacio');
+    if (!actiu || !bloc || !dataFi) return;
+
+    function actualitzarVisibilitat() {
+      if (actiu.checked) {
+        bloc.style.display = 'none';
+        dataFi.value = ''; // no enviar data si està actiu
+      } else {
+        bloc.style.display = 'block';
+      }
+    }
+
+    actiu.addEventListener('change', actualitzarVisibilitat);
+    actualitzarVisibilitat();
+  })();
+</script>
+
+</body>
+</html>

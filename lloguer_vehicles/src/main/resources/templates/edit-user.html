@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="ca"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="theme-color" content="#1e2a5e"/>
+    <title>Editar client · Nothingan Pri S.A.</title>
+
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+
+    <style>
+        .required {
+            color: #dc3545;
+            font-weight: bold;
+            margin-left: 3px;
+        }
+
+        .error-message {
+            display: flex;
+            align-items: flex-start;
+            gap: 7px;
+            width: fit-content;
+            max-width: 100%;
+            box-sizing: border-box;
+            margin-top: 8px;
+            padding: 8px 11px;
+            border: 1px solid #f2c6c9;
+            border-left: 3px solid #dc3545;
+            border-radius: 7px;
+            background: #fff5f5;
+            color: #b42332;
+            font-size: 12px;
+            line-height: 1.45;
+            font-weight: 600;
+        }
+
+        .error-message::before {
+            content: "!";
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 16px;
+            width: 16px;
+            height: 16px;
+            margin-top: 1px;
+            border-radius: 50%;
+            background: #dc3545;
+            color: white;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .input-error {
+            border: 1px solid #dc3545 !important;
+            background-color: #fff8f8 !important;
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, .09) !important;
+        }
+
+        .input-error:focus {
+            border-color: #bd2535 !important;
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, .15) !important;
+            outline: none;
+        }
+
+        .alert-error {
+            display: flex;
+            align-items: flex-start;
+            gap: 11px;
+            padding: 15px 18px;
+            margin: 0 0 22px;
+            border: 1px solid #f1bfc4;
+            border-left: 4px solid #dc3545;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #fff5f5, #fdeaea);
+            color: #842029;
+            box-shadow: 0 3px 12px rgba(180, 35, 50, .07);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .alert-error::before {
+            content: "!";
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 23px;
+            width: 23px;
+            height: 23px;
+            margin-top: 1px;
+            border-radius: 50%;
+            background: #dc3545;
+            color: white;
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .alert-error strong {
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .required-legend {
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            color: #666;
+        }
+
+        input[readonly] {
+            background-color: #eeeeee;
+            cursor: not-allowed;
+        }
+
+        .card-status {
+            display: block;
+            margin-top: 7px;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .card-status.saved {
+            color: #198754;
+        }
+
+        .card-status.info {
+            color: #666;
+        }
+
+        @media (max-width: 600px) {
+            .error-message {
+                width: 100%;
+            }
+
+            .alert-error {
+                padding: 12px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div th:replace="~{fragments/office :: topbar}"></div>
+
+<div class="app">
+
+    <input type="checkbox" id="side" class="side-toggle"
+           aria-label="Menú de gestió">
+
+    <div th:replace="~{fragments/office :: sidebar(activeMenu='clients')}"></div>
+
+    <label class="scrim" for="side" aria-label="Tancar el menú"></label>
+
+    <main class="main">
+        <div class="container">
+
+            <div class="page-head">
+                <h1>Editar client</h1>
+                <p class="lead">
+                    Consulta i modifica les dades personals i la informació del client.
+                </p>
+            </div>
+
+            <p class="required-legend">
+                Els camps marcats amb <span class="required">*</span> són obligatoris.
+            </p>
+
+            <!-- MISSATGES GENERALS -->
+            <div th:if="${error}"
+                 class="alert alert-error"
+                 role="alert">
+                <strong>Error:</strong>
+                <span th:text="${error}"></span>
+            </div>
+
+            <div th:if="${missatge}"
+                 class="alert ok"
+                 role="status"
+                 th:text="${missatge}">
+            </div>
+
+            <!-- 1. DADES PERSONALS -->
+            <form th:action="@{/agent/clients/{dni}/guardar(dni=${dni})}"
+                  th:object="${client}"
+                  method="post"
+                  class="mt">
+
+                <div class="card">
+
+                    <h3>1. Dades personals</h3>
+
+                    <div class="cols-3">
+
+                        <div class="field">
+                            <label>Nom <span class="required">*</span></label>
+                            <input type="text"
+                                   th:field="*{nom}"
+                                   class="input"
+                                   th:classappend="${#fields.hasErrors('nom')} ? ' input-error' : ''"/>
+                            <span th:if="${#fields.hasErrors('nom')}"
+                                  th:errors="*{nom}"
+                                  class="error-message"></span>
+                        </div>
+
+                        <div class="field">
+                            <label>Cognoms <span class="required">*</span></label>
+                            <input type="text"
+                                   th:field="*{cognoms}"
+                                   class="input"
+                                   th:classappend="${#fields.hasErrors('cognoms')} ? ' input-error' : ''"/>
+                            <span th:if="${#fields.hasErrors('cognoms')}"
+                                  th:errors="*{cognoms}"
+                                  class="error-message"></span>
+                        </div>
+
+                        <div class="field">
+                            <label>Telèfon <span class="required">*</span></label>
+                            <input type="text"
+                                   th:field="*{telefon}"
+                                   class="input"
+                                   th:classappend="${#fields.hasErrors('telefon')} ? ' input-error' : ''"/>
+                            <span th:if="${#fields.hasErrors('telefon')}"
+                                  th:errors="*{telefon}"
+                                  class="error-message"></span>
+                        </div>
+
+                        <div class="field">
+                            <label>Correu electrònic <span class="required">*</span></label>
+                            <input type="email"
+                                   th:field="*{email}"
+                                   class="input"
+                                   th:classappend="${#fields.hasErrors('email')} ? ' input-error' : ''"/>
+                            <span th:if="${#fields.hasErrors('email')}"
+                                  th:errors="*{email}"
+                                  class="error-message"></span>
+                        </div>
+
+                        <div class="field">
+                            <label>Adreça <span class="required">*</span></label>
+                            <input type="text"
+                                   th:field="*{adreca}"
+                                   class="input"
+                                   th:classappend="${#fields.hasErrors('adreca')} ? ' input-error' : ''"/>
+                            <span th:if="${#fields.hasErrors('adreca')}"
+                                  th:errors="*{adreca}"
+                                  class="error-message"></span>
+                        </div>
+
+                        <div class="field">
+                            <label>Província <span class="required">*</span></label>
+                            <select th:field="*{provincia}"
+                                    class="input"
+                                    th:classappend="${#fields.hasErrors('provincia')} ? ' input-error' : ''">
+
+                                <option value="">Selecciona una província</option>
+
+                                <option th:each="prov : ${provincias}"
+                                        th:value="${prov}"
+                                        th:text="${prov}">
+                                </option>
+
+                            </select>
+
+                            <span th:if="${#fields.hasErrors('provincia')}"
+                                  th:errors="*{provincia}"
+                                  class="error-message"></span>
+                        </div>
+
+                        <div class="field">
+                            <label>Nacionalitat <span class="required">*</span></label>
+                            <input type="text"
+                                   th:field="*{nacionalitat}"
+                                   class="input"
+                                   th:classappend="${#fields.hasErrors('nacionalitat')} ? ' input-error' : ''"/>
+                            <span th:if="${#fields.hasErrors('nacionalitat')}"
+                                  th:errors="*{nacionalitat}"
+                                  class="error-message"></span>
+                        </div>
+
+                    </div>
+
+                    <div class="actions mt">
+                        <button type="submit" class="btn btn-teal">
+                            Guardar dades personals
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+
+            <!-- 2. DOCUMENT D'IDENTITAT -->
+            <form th:action="@{/agent/clients/{dni}/guardar-documentacio(dni=${dni})}"
+                  method="post"
+                  enctype="multipart/form-data"
+                  class="mt">
+
+                <div class="card">
+
+                    <h3>2. Document d'identitat (DNI / NIE)</h3>
+
+                    <div class="cols-3">
+
+                        <div class="field">
+                            <label>DNI / NIE</label>
+                            <input type="text"
+                                   name="numeroDocument"
+                                   th:value="${documentacioForm.numeroDocument}"
+                                   class="input"
+                                   readonly/>
+                        </div>
+
+                        <div class="field">
+                            <label>
+                                Data de caducitat del DNI
+                                <span class="required">*</span>
+                            </label>
+
+                            <input type="date"
+                                   name="dataCaducitat"
+                                   th:value="${documentacioForm.dataCaducitat != null ? #temporals.format(documentacioForm.dataCaducitat, 'yyyy-MM-dd') : ''}"
+                                   class="input"
+                                   required/>
+                        </div>
+
+                        <div class="field">
+                            <label>
+                                Fotografia del DNI
+                                <span class="required">*</span>
+                            </label>
+
+                            <input type="file"
+                                   name="fotoDniFile"
+                                   accept="image/*"
+                                   class="input"/>
+                        </div>
+
+                    </div>
+
+                    <div class="actions mt">
+                        <button type="submit" class="btn btn-teal">
+                            Guardar document d'identitat
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+
+            <!-- 3. PERMÍS DE CONDUIR -->
+            <form th:action="@{/agent/clients/{dni}/guardar-llicencia(dni=${dni})}"
+                  method="post"
+                  enctype="multipart/form-data"
+                  class="mt">
+
+                <div class="card">
+
+                    <h3>3. Permís de conduir</h3>
+
+                    <div class="cols-3">
+
+                        <div class="field">
+                            <label>
+                                Tipus de llicència
+                                <span class="required">*</span>
+                            </label>
+
+                            <select name="tipusLlicencia"
+                                    class="input"
+                                    required>
+
+                                <option value="">Selecciona una llicència</option>
+
+                                <option value="AM" th:selected="${documentacioForm.tipusLlicencia == 'AM'}">AM</option>
+                                <option value="A1" th:selected="${documentacioForm.tipusLlicencia == 'A1'}">A1</option>
+                                <option value="A2" th:selected="${documentacioForm.tipusLlicencia == 'A2'}">A2</option>
+                                <option value="A" th:selected="${documentacioForm.tipusLlicencia == 'A'}">A</option>
+                                <option value="B" th:selected="${documentacioForm.tipusLlicencia == 'B'}">B</option>
+                                <option value="BE" th:selected="${documentacioForm.tipusLlicencia == 'BE'}">BE</option>
+                                <option value="C1" th:selected="${documentacioForm.tipusLlicencia == 'C1'}">C1</option>
+                                <option value="C1E" th:selected="${documentacioForm.tipusLlicencia == 'C1E'}">C1E</option>
+                                <option value="C" th:selected="${documentacioForm.tipusLlicencia == 'C'}">C</option>
+                                <option value="CE" th:selected="${documentacioForm.tipusLlicencia == 'CE'}">CE</option>
+                                <option value="D1" th:selected="${documentacioForm.tipusLlicencia == 'D1'}">D1</option>
+                                <option value="D1E" th:selected="${documentacioForm.tipusLlicencia == 'D1E'}">D1E</option>
+                                <option value="D" th:selected="${documentacioForm.tipusLlicencia == 'D'}">D</option>
+                                <option value="DE" th:selected="${documentacioForm.tipusLlicencia == 'DE'}">DE</option>
+
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label>
+                                Data de caducitat del permís
+                                <span class="required">*</span>
+                            </label>
+
+                            <input type="date"
+                                   name="dataCaducitatLlicencia"
+                                   th:value="${documentacioForm.dataCaducitatLlicencia != null ? #temporals.format(documentacioForm.dataCaducitatLlicencia, 'yyyy-MM-dd') : ''}"
+                                   class="input"
+                                   required/>
+                        </div>
+
+                        <div class="field">
+                            <label>
+                                Fotografia del permís
+                                <span class="required">*</span>
+                            </label>
+
+                            <input type="file"
+                                   name="fotoPermisoFile"
+                                   accept="image/*"
+                                   class="input"/>
+                        </div>
+
+                    </div>
+
+                    <div class="actions mt">
+                        <button type="submit" class="btn btn-teal">
+                            Guardar permís de conduir
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+
+            <!-- 4. TARGETA -->
+            <form th:action="@{/agent/clients/{dni}/guardar-targeta(dni=${dni})}"
+                  th:object="${targetaForm}"
+                  method="post"
+                  class="mt"
+                  id="formTargeta">
+
+                <div class="card">
+
+                    <h3>4. Dades de la targeta</h3>
+
+                    <div class="cols-3">
+
+                        <div class="field">
+                            <label>Titular de la targeta</label>
+
+                            <input type="text"
+                                   th:field="*{titularTargeta}"
+                                   class="input"
+                                   placeholder="Nom del titular"
+                                   autocomplete="cc-name"
+                                   th:classappend="${#fields.hasErrors('titularTargeta')} ? ' input-error' : ''"/>
+
+                            <span th:if="${#fields.hasErrors('titularTargeta')}"
+                                  th:errors="*{titularTargeta}"
+                                  class="error-message"></span>
+                        </div>
+
+                        <div class="field">
+                            <label>Número de targeta</label>
+
+                            <!-- Aquest camp sempre queda buit.
+                                 Mai no s'hi ha de mostrar el hash. -->
+                            <input type="text"
+                                   id="numeroTargeta"
+                                   name="numtarjetacredit"
+                                   class="input"
+                                   inputmode="numeric"
+                                   autocomplete="off"
+                                   maxlength="19"
+                                   placeholder="Introdueix un número nou"
+                                   th:classappend="${#fields.hasErrors('numtarjetacredit')} ? ' input-error' : ''"/>
+
+                            <!-- Missatge quan ja hi ha una targeta registrada -->
+                            <small th:if="${targetaGuardada == true}"
+                                   class="card-status saved">
+                                ✓ Ja hi ha una targeta guardada.
+                                Deixa aquest camp buit per mantenir-la.
+                            </small>
+
+                            <!-- Missatge quan encara no hi ha targeta -->
+                            <small th:if="${targetaGuardada != true}"
+                                   class="card-status info">
+                                Introdueix el número de targeta per registrar-la.
+                            </small>
+
+                            <span th:if="${#fields.hasErrors('numtarjetacredit')}"
+                                  th:errors="*{numtarjetacredit}"
+                                  class="error-message"></span>
+                        </div>
+
+                        <div class="field">
+                            <label>Caducitat de la targeta</label>
+
+                            <input type="text"
+                                   th:field="*{caducitatTargeta}"
+                                   class="input"
+                                   placeholder="MM/yy"
+                                   maxlength="5"
+                                   autocomplete="cc-exp"
+                                   th:classappend="${#fields.hasErrors('caducitatTargeta')} ? ' input-error' : ''"/>
+
+                            <span th:if="${#fields.hasErrors('caducitatTargeta')}"
+                                  th:errors="*{caducitatTargeta}"
+                                  class="error-message"></span>
+                        </div>
+
+                    </div>
+
+                    <div class="actions mt">
+                        <button type="submit" class="btn btn-teal">
+                            Guardar targeta
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+
+            <!-- 5. CONTRASENYA -->
+            <form th:action="@{/agent/clients/{dni}/guardar-contrasenya(dni=${dni})}"
+                  method="post"
+                  class="mt">
+
+                <div class="card">
+
+                    <h3>5. Canviar contrasenya</h3>
+
+                    <div class="cols-3">
+
+                        <div class="field">
+                            <label>
+                                Nova contrasenya
+                                <span class="required">*</span>
+                            </label>
+
+                            <input type="password"
+                                   name="novaContrasenya"
+                                   class="input"
+                                   required/>
+                        </div>
+
+                        <div class="field">
+                            <label>
+                                Confirmar contrasenya
+                                <span class="required">*</span>
+                            </label>
+
+                            <input type="password"
+                                   name="confirmarContrasenya"
+                                   class="input"
+                                   required/>
+                        </div>
+
+                    </div>
+
+                    <div class="actions mt">
+                        <button type="submit" class="btn btn-outline">
+                            Canviar contrasenya
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+
+            <!-- 6. HISTORIAL DE RESERVES -->
+            <div class="card mt">
+
+                <h3>6. Historial de reserves</h3>
+
+                <div th:if="${reserves == null or #lists.isEmpty(reserves)}"
+                     class="hint mt">
+                    Aquest client encara no té reserves registrades.
+                </div>
+
+                <div th:if="${reserves != null and !#lists.isEmpty(reserves)}"
+                     class="mt">
+
+                    <ul class="list">
+                        <li th:each="reserva : ${reserves}"
+                            th:text="${reserva}">
+                        </li>
+                    </ul>
+
+                </div>
+
+            </div>
+
+            <!-- TORNAR -->
+            <div class="mt">
+                <a th:href="@{/agent/clients}" class="btn btn-outline">
+                    Tornar als clients
+                </a>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const inputTargeta = document.getElementById("numeroTargeta");
+
+        // Permetre únicament números al número de targeta.
+        if (inputTargeta) {
+            inputTargeta.addEventListener("input", function () {
+                this.value = this.value.replace(/\D/g, "");
+            });
+        }
+
+    });
+</script>
+
+</body>
+</html>

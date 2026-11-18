@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ca" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#1e2a5e">
+    <title>Vehicles · Nothingan Pri S.A.</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/office :: topbar}"></div>
+
+<div class="app">
+    <input type="checkbox" id="side" class="side-toggle" aria-label="Menú de gestió">
+    <div th:replace="~{fragments/office :: sidebar(activeMenu='vehicles')}"></div>
+    <div class="scrim" aria-hidden="true"></div>
+
+    <main class="main">
+
+        <div class="page-head row-between">
+            <div>
+                <h1>Vehicles</h1>
+                <p th:text="${#lists.size(vehicles)} + ' vehicles a la flota'">0 vehicles a la flota</p>
+            </div>
+            <a th:href="@{/vehicles/nou}" class="btn btn-teal">+ Nou vehicle</a>
+        </div>
+        
+        <div class="card" style="margin-bottom: 20px;">
+            <h2>Filtres</h2>
+            <form th:action="@{/vehicles/filtrar}" method="get" class="search-grid">
+                <div class="field">
+                    <label for="matricula">Matrícula</label>
+                    <input type="text" class="input" id="matricula" name="matricula" th:value="${matricula}" placeholder="Ex: 1234ABC">
+                </div>
+                <div class="field">
+                    <label for="marca">Marca</label>
+                    <input type="text" class="input" id="marca" name="marca" th:value="${marca}" placeholder="Ex: Seat">
+                </div>
+                <div class="field">
+                    <label for="model">Model</label>
+                    <input type="text" class="input" id="model" name="model" th:value="${model}" placeholder="Ex: Leon">
+                </div>
+                <div class="field">
+                    <label for="any">Any matriculació</label>
+                    <input type="number" class="input" id="any" name="any" th:value="${any}" placeholder="2022" min="1900" max="2030">
+                </div>
+                <div class="field">
+                    <label for="dataInici">Disponible des de</label>
+                    <input type="date" class="input" id="dataInici" name="dataInici" th:value="${dataInici}">
+                </div>
+                <div class="field">
+                    <label for="dataFi">Disponible fins a</label>
+                    <input type="date" class="input" id="dataFi" name="dataFi" th:value="${dataFi}">
+                </div>
+                <div class="field" style="align-self: end;">
+                    <button type="submit" class="btn btn-teal btn-block" onclick="return validarDates()">Filtrar</button>
+                </div>
+                <div class="field" style="align-self: end;">
+                    <a th:href="@{/vehicles}" class="btn btn-outline btn-block">Netejar</a>
+                </div>
+            </form>
+        </div>
+
+        <div class="alert ok" role="status" th:if="${missatge}">
+            <strong th:text="${missatge}">Vehicle desat correctament</strong>
+        </div>
+        <div class="alert err" role="alert" th:if="${errorNegoci}">
+            <strong th:text="${errorNegoci}">Motiu de l'error</strong>
+        </div>
+        <div class="alert info" th:if="${#lists.isEmpty(vehicles)}">
+            <strong>Encara no hi ha cap vehicle</strong>
+            Dona d'alta el primer amb el botó «Nou vehicle».
+        </div>
+
+        <div class="card table-card" th:unless="${#lists.isEmpty(vehicles)}">
+            <div class="table-wrap">
+                <table class="table stack">
+                    <thead>
+                    <tr>
+                        <th scope="col">Matrícula</th>
+                        <th scope="col">Vehicle</th>
+                        <th scope="col">Any</th>
+                        <th scope="col">Categoria</th>
+                        <th scope="col">Combustible</th>
+                        <th scope="col" class="num">Places</th>
+                        <th scope="col" class="num">Preu/Hora</th>
+                        <th scope="col" class="num">Fiança</th>
+                        <th scope="col">Estat</th>
+                        <th scope="col"><span class="hidden-sm">Accions</span></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="v : ${vehicles}">
+                        <td data-label="Matrícula"><strong th:text="${v.matricula}"></strong></td>
+                        <td data-label="Vehicle" th:text="${v.marca} + ' ' + ${v.model}"></td>
+                        <td data-label="Any" th:text="${v.anyMatriculacio}"></td>
+                        <td data-label="Categoria">
+                            <span class="pill convidat" th:text="${v.categoria}"></span>
+                        </td>
+                        <td data-label="Combustible" th:text="${v.combustible}"></td>
+                        <td data-label="Places" class="num" th:text="${v.places}"></td>
+                        <td data-label="Preu/Hora" class="num"
+                            th:text="${#numbers.formatDecimal(v.preuHora, 1, 2)} + ' €'"></td>
+                        <td data-label="Fiança" class="num"
+                            th:text="${#numbers.formatDecimal(v.fiancaEstandard, 1, 2)} + ' €'"></td>
+                        <td data-label="Estat">
+                            <span class="pill actiu" th:if="${v.actiu}">Actiu</span>
+                            <span class="pill inactiu" th:unless="${v.actiu}">De baixa</span>
+                        </td>
+                        <td data-label="Accions" class="actions">
+                            <a th:href="@{/vehicles/{id}(id=${v.id})}" 
+                               class="btn btn-info btn-sm" 
+                               th:attr="aria-label='Veure detall de ' + ${v.matricula}">Detall</a>
+                            <!-- Editar (sempre) -->
+                            <a th:href="@{/vehicles/{id}/editar(id=${v.id})}" 
+                               class="btn btn-outline btn-sm" 
+                               th:attr="aria-label='Editar ' + ${v.matricula}">Editar</a>
+
+                            <!-- Si ACTIU → mostra Baixa (permanent) i Desactivar (temporal) -->
+                            <div th:if="${v.actiu}" style="display:inline-flex; gap:4px;">
+                                <!-- Desactivar temporalment -->
+                                <a th:href="@{/vehicles/{id}/desactivar(id=${v.id})}" class="btn btn-warning btn-sm">Desactivar</a>
+                                <!-- Baixa permanent (només si sense reserves) -->
+                                <form th:action="@{/vehicles/{id}/baixa(id=${v.id})}" method="post" style="display:inline">
+                                    <button type="submit" class="btn btn-danger btn-sm" 
+                                            onclick="return confirm('Baixa PERMANENT. Només si no té reserves. Segur?')">Baixa</button>
+                                </form>
+                            </div>
+
+                            <!-- Si INACTIU → mostra Activar -->
+                            <div th:unless="${v.actiu}" style="display:inline-flex; gap:4px;">
+                                <a th:href="@{/vehicles/{id}/activar(id=${v.id})}" class="btn btn-ok btn-sm">Activar</a>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+<script>
+function validarDates() {
+    const dataInici = document.getElementById('dataInici').value;
+    const dataFi = document.getElementById('dataFi').value;
+    
+    if (dataInici && dataFi && dataInici > dataFi) {
+        alert("La data d'inici no pot ser posterior a la data final");
+        return false;
+    }
+    return true;
+}
+</script>
+</body>
+</html>

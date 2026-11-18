@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ca" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seguretat - Canviar contrasenya | Nothingan Pri</title>
+
+    <!-- CSS compartit -->
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<main class="container">
+
+    <!-- Capçalera -->
+    <header class="page-head">
+        <h1>Seguretat - Canviar contrasenya</h1>
+        <p>Actualitza la contrasenya del teu compte</p>
+    </header>
+
+    <!-- Contingut principal -->
+    <div class="center-col mt">
+
+        <section class="card narrow">
+
+            <h2>Canvia la teva contrasenya</h2>
+
+            <p class="muted mb">
+                Introdueix la contrasenya actual i escriu la nova
+                contrasenya que vols utilitzar.
+            </p>
+
+            <!-- Missatge d'error -->
+            <div class="alert error"
+                 th:if="${error != null}"
+                 th:text="${error}">
+            </div>
+
+            <!-- Missatge d'èxit -->
+            <div class="alert info"
+                 th:if="${missatge != null}"
+                 th:text="${missatge}">
+            </div>
+
+            <form th:action="@{/perfil/cambiar_contrasenya}"
+                  method="post">
+
+                <!-- Contrasenya actual -->
+                <div class="field">
+                    <label for="contrasenyaActual">
+                        Contrasenya actual
+                    </label>
+                    <input type="password"
+                           id="contrasenyaActual"
+                           name="contrasenyaActual"
+                           class="input"
+                           placeholder="Introdueix la contrasenya actual"
+                           required>
+                </div>
+
+                <!-- Nova contrasenya -->
+                <div class="field">
+                    <label for="novaContrasenya">
+                        Nova contrasenya
+                    </label>
+                    <input type="password"
+                           id="novaContrasenya"
+                           name="novaContrasenya"
+                           class="input"
+                           placeholder="Introdueix la nova contrasenya"
+                           minlength="8"
+                           required>
+                </div>
+
+                <!-- Confirmació -->
+                <div class="field">
+                    <label for="confirmarContrasenya">
+                        Confirma la nova contrasenya
+                    </label>
+                    <input type="password"
+                           id="confirmarContrasenya"
+                           name="confirmarContrasenya"
+                           class="input"
+                           placeholder="Repeteix la nova contrasenya"
+                           minlength="8"
+                           required>
+                </div>
+
+                <!-- Avís -->
+                <div class="alert info">
+                    <strong>Consell de seguretat:</strong>
+                    Utilitza una contrasenya de com a mínim 8 caràcters
+                    i evita compartir-la amb altres persones.
+                </div>
+
+                <!-- Botons -->
+                <div class="btn-row profile-buttons">
+                    <button type="submit"
+                            class="btn btn-teal btn-block">
+                        Canviar contrasenya
+                    </button>
+                </div>
+
+            </form>
+
+            <!-- Tornar al perfil -->
+            <div class="center-text mt">
+                <a th:href="@{/perfil}"
+                   class="muted"
+                   style="font-size: 13px;">
+                    Tornar al perfil
+                </a>
+            </div>
+
+        </section>
+
+    </div>
+
+</main>
+
+</body>
+</html>
